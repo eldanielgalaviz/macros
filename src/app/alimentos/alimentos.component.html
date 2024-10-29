@@ -1,0 +1,165 @@
+<nav class="navbar navbar-dark bg-dark fixed-top mb-5">
+    <div class="container-fluid">
+        <button class="carousel-control-prev ms-autos mb-5" (click)="prev()">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+      <a class="navbar-brand container text-center" >Alimentos</a>
+      <div class="offcanvas-body">
+        <form class="d-flex mt-3 mb-2" role="search">
+          <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search">
+          <button class="btn btn-success" type="submit">Buscar</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+  <div class="container mt-5"></div>
+  
+  <div class="card position-absolute top-50 start-50 translate-middle mt-5" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
+    <div class=""></div>
+    <div class="card-body ">
+      <h5 class="card-title text-center mb-3">Mis Alimentos</h5>
+      <hr style="border: none; border-top: 1px solid #000000;">
+  
+      <div class="row align-items-center">
+        <!-- Primera columna: Título -->
+        <div class="col-md-6 text-center">
+            <h5>Aqui mostrar alimentos desde la bd</h5>
+        </div>
+        <!-- Segunda columna: Input -->
+        <div class="col-md-6 text-center">
+            <input type="text" class="form-control text-center" placeholder="Ingrese la altura">
+        </div>
+      </div>
+
+      <hr style="border: none; border-top: 1px solid #000000;">
+
+      <button class="btn btn-outline-secondary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#staticBackdrop" type="button">Crear un Alimento</button>
+    </div>
+  </div>
+  
+
+
+
+
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5 text-center" id="staticBackdropLabel">Alimento</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="container ">
+                <div class="row justify-content-center">
+                  <div class="col-md-6">
+                     <form #form="ngForm" (ngSubmit)="saveAlimento(form)">
+                      <div class="mb-3 ">
+                        <label for="descripcion" class="form-label">Descripcion</label>
+                        <input type="text" class="form-control" id="descripcion" placeholder="Descricion del alimento" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="porcion" class="form-label">Tamaño de la porcion (gr) </label>
+                        <input type="text" class="form-control" id="porcion" placeholder="Requerido" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="calorias" class="form-label">Calorias (kcal)</label>
+                        <input type="text" class="form-control" id="calorias" placeholder="Requerido" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="grasas" class="form-label">Grasas (g)</label>
+                        <input type="email" class="form-control" id="grasas" placeholder="Requerido" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="Carbohidratos" class="form-label">Carbohidratos (g)</label>
+                        <input type="email" class="form-control" id="Carbohidratos" placeholder="Requerido" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="Proteinas" class="form-label">Proteinas (g)</label>
+                        <input type="email" class="form-control" id="Proteinas" placeholder="Requerido" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="Saturadas" class="form-label">Saturadas (g)</label>
+                        <input type="email" class="form-control" id="Saturadas" placeholder="Opcional" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="Poliinsaturadas" class="form-label">Poliinsaturadas (g)</label>
+                        <input type="email" class="form-control" id="Poliinsaturadas" placeholder="Opcional" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="Colesterol" class="form-label">Colesterol (mg)</label>
+                        <input type="email" class="form-control" id="Colesterol" placeholder="Opcional" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="Sal" class="form-label">Sal (g)</label>
+                        <input type="email" class="form-control" id="Sal" placeholder="Opcional" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="Sodio" class="form-label">Sodio (mg)</label>
+                        <input type="email" class="form-control" id="grasas" placeholder="Opcional" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="Potasio" class="form-label">Potasio (mg)</label>
+                        <input type="email" class="form-control" id="grasas" placeholder="Opcional" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="Azucares" class="form-label">Azucares (g)</label>
+                        <input type="email" class="form-control" id="grasas" placeholder="Opcional" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="Calcio" class="form-label">Calcio (mg)</label>
+                        <input type="email" class="form-control" id="grasas" placeholder="Opcional" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="Hierro" class="form-label">Hierro (mg)</label>
+                        <input type="email" class="form-control" id="grasas" placeholder="Opcional" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="Magnesio" class="form-label">Magnesio (mg)</label>
+                        <input type="email" class="form-control" id="grasas" placeholder="Opcional" required>
+                      </div>
+
+                    </form>
+                  </div>
+                </div>
+              </div>
+              
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="liveAlertBtn" (click)="save()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <style>
+    /* Ajustes adicionales */
+    @media (max-width: 768px) {
+      .navbar-brand {
+        font-size: 1.2rem;
+      }
+      .card-body h5 {
+        font-size: 1rem;
+      }
+    }
+  </style>
+  
+  
+  

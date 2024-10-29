@@ -1,0 +1,116 @@
+<nav class="navbar navbar-dark bg-dark fixed-top">
+    <div class="container-fluid d-flex justify-content-between">
+        <a class="navbar-brand text-center" style="flex-grow: 1;">MACROS</a>
+        <button class="carousel-control-prev ms-auto" (click)="prev()">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+    </div>
+</nav>
+
+<div class="card position-absolute top-50 start-50 translate-middle mt-5 mt-5" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
+    <div class="card-body mt-5">
+        <h5 class="card-title text-center mb-3">Perfil</h5>
+        <hr style="border: none; border-top: 1px solid #000000;">
+
+        <!-- Cada opción está organizada en filas responsivas -->
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center">
+                <h2>Perder Peso</h2>
+                <p>Disminuye tu requerimiento calórico un 20%</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="actividad" id="actividadBajo" value="bajo" (change)="onActivityChange('Perder Peso')">
+                </div>
+            </div>
+        </div>
+        <hr style="border: none; border-top: 1px solid #000000;">
+
+        <!-- Cada sección se repite de manera similar -->
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center">
+                <h2>Perder peso lentamente</h2>
+                <p>Disminuye tu requerimiento calórico un 10%</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="actividad" id="actividadModerado" value="moderado" (change)="onActivityChange('Perder peso lentamente')">
+                </div>
+            </div>
+        </div>
+
+        <!-- Las siguientes filas siguen el mismo formato -->
+        <hr style="border: none; border-top: 1px solid #000000;">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center">
+                <h2>Mantener peso</h2>
+                <p>No modifica tu requerimiento calórico</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="actividad" id="actividadAlto" value="alto" (change)="onActivityChange('Mantener peso')">
+                </div>
+            </div>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid #000000;">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center">
+                <h2>Aumentar peso lentamente</h2>
+                <p>Aumenta tu requerimiento calórico un 10%</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="actividad" id="actividadMuyAlto" value="muyalto" (change)="onActivityChange('Aumentar peso lentamente')">
+                </div>
+            </div>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid #000000;">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center">
+                <h2>Aumentar peso</h2>
+                <p>Aumenta tu requerimiento calórico un 20%</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="actividad" id="actividadHiperactivo" value="hiperactivo" (change)="onActivityChange('Aumentar peso')">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estilos adicionales para responsividad -->
+<style>
+    @media (max-width: 768px) {
+        .navbar-brand {
+            font-size: 1.2rem;
+        }
+        .card-body h5 {
+            font-size: 1rem;
+        }
+        .card {
+            width: 90%;  /* Ancho más adaptable */
+        }
+        .card-body h2 {
+            font-size: 1.1rem;
+        }
+        .card-body p {
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .card-body h5 {
+            font-size: 0.9rem;
+        }
+        .card-body h2 {
+            font-size: 1rem;
+        }
+        .card-body p {
+            font-size: 0.85rem;
+        }
+    }
+</style>

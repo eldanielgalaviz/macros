@@ -1,0 +1,114 @@
+<nav class="navbar navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Nutriologia</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Doctor</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <form class="d-flex mt-3" role="search">
+                <input class="form-control me-2" type="search" placeholder="Nombre del Paciente" aria-label="Search">
+                <button class="btn btn-success" type="submit">Buscar</button>
+              </form>
+
+
+          <!-- <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Dropdown
+              </a>
+              <ul class="dropdown-menu dropdown-menu-dark">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+              </ul>
+            </li>
+          </ul> -->
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="card position-absolute top-50 start-50 translate-middle" style="width: 18rem;">
+    <div class="card-body text-center"> 
+      <h5 class="card-title">Bienvenido User</h5>
+      <p class="card-text">Que tu alimento sea tu medicina y tu medicina sea tu alimento.</p>
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Agregar un Paciente</button>
+    </div>
+  </div>
+
+
+
+  <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+    Launch static backdrop modal
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5 text-center" id="staticBackdropLabel">Registrar Paciente</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="container ">
+                <div class="row justify-content-center">
+                  <div class="col-md-6">
+                     <form #form="ngForm" (ngSubmit)="singup(form)">
+                      <div class="mb-3 ">
+                        <label for="username1" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="username1" placeholder="Ingrese su nombre" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="AP" class="form-label">Apellido Paterno</label>
+                        <input type="text" class="form-control" id="AP" placeholder="Ingrese su Apellido Paterno" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="AM" class="form-label">Apellido Materno</label>
+                        <input type="text" class="form-control" id="AM" placeholder="Ingrese su Apellido Materno" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="email" class="form-label">Correo</label>
+                        <input type="email" class="form-control" id="correo" placeholder="Ingrese su correo" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="edad" class="form-label">Edad</label>
+                        <input type="number" class="form-control" id="edad" placeholder="Ingrese su edad" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="username" class="form-label">Usuario</label>
+                        <input type="text" class="form-control" id="username" placeholder="Ingrese su usuario" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="password" placeholder="Ingrese su contraseña" required>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="liveAlertBtn">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+

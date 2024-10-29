@@ -1,0 +1,126 @@
+<nav class="navbar navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Nutriologia</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Doctor</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <form class="d-flex mt-3" role="search">
+                <input class="form-control me-2" type="search" placeholder="Nombre del Paciente" aria-label="Search">
+                <button class="btn btn-success" type="submit">Buscar</button>
+              </form>
+
+
+          <!-- <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Dropdown
+              </a>
+              <ul class="dropdown-menu dropdown-menu-dark">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+              </ul>
+            </li>
+          </ul> -->
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="card position-absolute top-50 start-50 translate-middle" style="width: 78rem;">
+    <div class="card-body text-center"> 
+      <h5 class="card-title">Paciente "user"</h5>
+      <p class="card-text mt-3">"se mostraran datos extraidos de la BD".</p>
+      <p class="card-text mt-3">"se mostraran datos extraidos de la BD peso :99".</p>
+      <p class="card-text mt-3">"se mostraran datos extraidos de la BD jahwbdua".</p>
+      <p class="card-text mt-3">"se mostraran datose la BD".</p>
+      <p class="card-text mt-3">"se mostraran datos extraidos de la BD".</p>
+      <p class="card-text mt-3">"se mostraran datos extraidos de la BD".</p>
+      <button type="button" class="btn btn-primary me-3 " data-bs-toggle="modal" data-bs-target="#staticBackdrop">Actualizar Datos del Paciente</button>
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#comidas">Comidas</button>
+
+    </div>
+  </div>
+
+
+
+
+  
+  <!-- Modal  Actualizar datos-->
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5 text-center" id="staticBackdropLabel">Datos del Paciente "user"</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="container ">
+                <div class="row justify-content-center">
+                  <div class="col-md-6">
+                     <form #form="ngForm" (ngSubmit)="singup(form)">
+                      <div class="mb-3 ">
+                        <label for="peso" class="form-label">Peso</label>
+                        <input type="text" class="form-control" id="peso" placeholder="Ingrese su Peso (Kg)" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="altura" class="form-label">Altura</label>
+                        <input type="text" class="form-control" id="altura" placeholder="Ingrese su altura (cm)" required>
+                      </div>
+                     
+                    </form>
+                  </div>
+                </div>
+              </div>
+              
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="liveAlertBtn">Guardar</button> <!-- Aqui metenmos la logica en .ts para guardarlo en la BD  -->
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+  <!-- Modal Comida-->
+  <div class="modal fade" id="comidas" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="comidasLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5 text-center" id="comidasLabel">Datos del Paciente "user"</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="container ">
+                <div class="row justify-content-center">
+                  <div class="col-md-6">
+                    <p class="card-text mt-3">"se mostraran datos extraidos de la BD jahwbdua".</p> <!-- Aqui se verian las comidas asignadas extraidas de la bd  -->
+                  </div>
+                </div>
+              </div>
+              
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="liveAlertBtn">Asignar Comidas</button> <!-- Me habrira un menu para asignar comidas -->
+          <button type="button" class="btn btn-primary" id="liveAlertBtn">Guardar</button>  <!-- Aqui metenmos la logica en .ts para guardarlo en la BD  -->
+        </div>
+      </div>
+    </div>
+  </div>
+  

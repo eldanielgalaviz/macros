@@ -1,0 +1,330 @@
+<!-- Barra de navegación -->
+<nav class="navbar navbar-dark bg-dark fixed-top mb-5">
+    <div class="container-fluid">
+      <a class="navbar-brand container text-center">MACROS</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Doctor</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+          <form class="d-flex mt-3" role="search">
+            <input class="form-control me-2" type="search" placeholder="Nombre del Paciente" aria-label="Search">
+            <button class="btn btn-success" type="submit">Buscar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Espaciado para compensar la barra de navegación fija -->
+  <div class="container mt-5 pt-5"></div>
+  
+  <!-- Primer Card -->
+  <div class="card mt-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
+    <div class="card-body row align-items-center">
+      <div class="col text-start">
+        <button class="carousel-control-prev" style="display: inline-block;" (click)="prev()">
+          <span class="carousel-control-prev-icon custom-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+      </div>
+      <div class="col text-center">
+        <h5 class="mt-2">{{ selectedDay }}</h5>
+      </div>
+      <div class="col text-end">
+        <button class="carousel-control-next" style="display: inline-block;" (click)="next()">
+          <span class="carousel-control-next-icon custom-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Segundo Card -->
+  <div class="card mt-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
+    <div class="card-body">
+      <hr style="border: none; border-top: 1px solid #000000;">
+  
+      <!-- Carbohidratos -->
+      <div class=" text-center">
+        <h5>Carbohidratos</h5>
+        <div class="progress mb-2" role="progressbar" aria-label="Info example" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar bg-info text-dark" style="width: 50%">50%</div>
+          </div>
+        <input type="text" class="form-control text-center" placeholder="Se mostraran carbohidratos">
+      </div>
+  
+      <hr style="border: none; border-top: 1px solid #000000;">
+  
+      <!-- Proteínas -->
+      <div class="ms-4 text-center">
+        <h5>Proteínas</h5>
+        <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar bg-success text-dark" style="width: 30%">30%</div>
+          </div>
+        <input type="text" class="form-control text-center" placeholder="0 / 256 g">
+      </div>
+  
+      <hr style="border: none; border-top: 1px solid #000000;">
+  
+      <!-- Grasas -->
+      <div class="ms-4 text-center">
+        <h5>Grasas</h5>
+        <div class="progress mb-2" role="progressbar" aria-label="Warning example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar bg-warning text-dark" style="width: 75%">75%</div>
+          </div>
+        <input type="text" class="form-control text-center" placeholder="Ingrese la cantidad de grasas">
+      </div>
+      
+  
+      <hr style="border: none; border-top: 1px solid #000000;">
+      
+    </div>
+    <div class="progress mb-2 me-5 ms-5" role="progressbar" aria-label="Danger example" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar bg-danger text-dark" style="width: 65%">65%</div>
+      </div>
+      
+  </div>
+    <!-- tercer Card -->
+    <div class="card mt-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
+        <h5 class="card-title text-center mb-3 mt-3">Desayuno</h5>
+        <hr style="border: none; border-top: 1px solid #000000;">
+
+        <div class="card-body">
+
+          <hr style="border: none; border-top: 1px solid #000000;">
+      
+          <!-- Carbohidratos -->
+          <div class=" text-center">
+
+            <input type="text" class="form-control text-center mb-2" placeholder="0">
+            <h5>Carbohidratos</h5>
+
+          </div>
+      
+          <hr style="border: none; border-top: 1px solid #000000;">
+          <div class=" text-center">
+
+            <input type="text" class="form-control text-center mb-2  ms-2" placeholder="0">
+            <h5>Proteinas</h5>
+
+          </div>
+      
+          <hr style="border: none; border-top: 1px solid #000000;">
+          <div class=" text-center">
+
+            <input type="text" class="form-control text-center mb-2  ms-2" placeholder="0">
+            <h5>Grasas</h5>
+
+          </div>
+      
+          <hr style="border: none; border-top: 1px solid #000000;">
+          <div class=" text-center">
+
+            <input type="text" class="form-control text-center mb-2  ms-2" placeholder="0">
+            <h5>Calorias</h5>
+
+          </div>
+      
+          <hr style="border: none; border-top: 1px solid #000000;">
+      
+         
+          
+      
+          <hr style="border: none; border-top: 1px solid #000000;">
+          
+        </div>
+        <hr style="border: none; border-top: 1px solid #000000;">
+        <div class="text-center">
+            <button type="button" class="btn btn-primary" id="liveAlertBtn">Añadir Alimento</button>
+          </div>
+          
+        <hr style="border: none; border-top: 1px solid #000000;">
+          
+
+        
+      </div>
+
+
+          <!-- cuarto Card -->
+    <div class="card mt-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
+        <h5 class="card-title text-center mb-3 mt-3">Comida</h5>
+        <hr style="border: none; border-top: 1px solid #000000;">
+
+        <div class="card-body">
+
+          <hr style="border: none; border-top: 1px solid #000000;">
+      
+          <!-- Carbohidratos -->
+          <div class=" text-center">
+
+            <input type="text" class="form-control text-center mb-2" placeholder="0">
+            <h5>Carbohidratos</h5>
+
+          </div>
+      
+          <hr style="border: none; border-top: 1px solid #000000;">
+          <div class=" text-center">
+
+            <input type="text" class="form-control text-center mb-2  ms-2" placeholder="0">
+            <h5>Proteinas</h5>
+
+          </div>
+      
+          <hr style="border: none; border-top: 1px solid #000000;">
+          <div class=" text-center">
+
+            <input type="text" class="form-control text-center mb-2  ms-2" placeholder="0">
+            <h5>Grasas</h5>
+
+          </div>
+      
+          <hr style="border: none; border-top: 1px solid #000000;">
+          <div class=" text-center">
+
+            <input type="text" class="form-control text-center mb-2  ms-2" placeholder="0">
+            <h5>Calorias</h5>
+
+          </div>
+      
+          <hr style="border: none; border-top: 1px solid #000000;">
+      
+         
+          
+      
+          <hr style="border: none; border-top: 1px solid #000000;">
+          
+        </div>
+        <hr style="border: none; border-top: 1px solid #000000;">
+        <div class="text-center">
+            <button type="button" class="btn btn-primary" id="liveAlertBtn">Añadir Alimento</button>
+          </div>
+          
+        <hr style="border: none; border-top: 1px solid #000000;">
+          
+
+        
+      </div>
+
+
+
+          <!-- quinto Card -->
+    <div class="card mt-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
+        <h5 class="card-title text-center mb-3 mt-3">Cena</h5>
+        <hr style="border: none; border-top: 1px solid #000000;">
+
+        <div class="card-body">
+
+          <hr style="border: none; border-top: 1px solid #000000;">
+      
+          <!-- Carbohidratos -->
+          <div class=" text-center">
+
+            <input type="text" class="form-control text-center mb-2" placeholder="0">
+            <h5>Carbohidratos</h5>
+
+          </div>
+      
+          <hr style="border: none; border-top: 1px solid #000000;">
+          <div class=" text-center">
+
+            <input type="text" class="form-control text-center mb-2  ms-2" placeholder="0">
+            <h5>Proteinas</h5>
+
+          </div>
+      
+          <hr style="border: none; border-top: 1px solid #000000;">
+          <div class=" text-center">
+
+            <input type="text" class="form-control text-center mb-2  ms-2" placeholder="0">
+            <h5>Grasas</h5>
+
+          </div>
+      
+          <hr style="border: none; border-top: 1px solid #000000;">
+          <div class=" text-center">
+
+            <input type="text" class="form-control text-center mb-2  ms-2" placeholder="0">
+            <h5>Calorias</h5>
+
+          </div>
+      
+          <hr style="border: none; border-top: 1px solid #000000;">
+      
+         
+          
+      
+          <hr style="border: none; border-top: 1px solid #000000;">
+          
+        </div>
+        <hr style="border: none; border-top: 1px solid #000000;">
+        <div class="text-center">
+            <button type="button" class="btn btn-primary" id="liveAlertBtn">Añadir Alimento</button>
+          </div>
+          
+        <hr style="border: none; border-top: 1px solid #000000;">
+          
+
+        
+      </div>
+      
+<!-- Segundo Card -->
+<!-- Segundo Card -->
+<div class="card mt-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
+    <div class="card-body d-flex flex-column" style="height: 100%;">
+      <hr style="border: none; border-top: 1px solid #000000;">
+  
+      <div class="text-center">
+        <h5 class="mt-2">Agua: {{ currentWater }} ml</h5>
+      </div>
+  
+      <div class="row align-items-center flex-grow-1">
+        <div class="col text-start">
+          <button type="button" class="carousel-control-prev" (click)="decreaseWater()" [disabled]="currentWater <= 0" style="display: inline-block;">
+            <img src="imagenes/menos.png" alt="Botón de imagen" style="width: 50px; height: 50px;">
+          </button>
+        </div>
+        <div class="col text-end">
+          <button class="carousel-control-next" (click)="increaseWater()" [disabled]="currentWater >= maxWater" style="display: inline-block;">
+            <img src="imagenes/mas.png" alt="Botón de imagen" style="width: 50px; height: 50px;">
+          </button>
+        </div>
+      </div>
+  
+      <hr style="border: none; border-top: 1px solid #000000;">
+  
+      <!-- Barra de progreso al final del card -->
+      <div class="progress" role="progressbar" aria-label="Water consumption" [attr.aria-valuenow]="currentWater" aria-valuemin="0" [attr.aria-valuemax]="maxWater" style="width: 100%;">
+        <div class="progress-bar bg-danger text-dark" [style.width]="(currentWater / maxWater) * 100 + '%'">
+          {{ currentWater }} ml
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  
+  
+  <!-- Estilos adicionales -->
+  <style>
+    .carousel-control-prev {
+      top: 0;
+    }
+    .custom-icon {
+      filter: brightness(0) invert(0);
+    }
+    @media (max-width: 768px) {
+      .navbar-brand {
+        font-size: 1.2rem;
+      }
+      .card-body h5 {
+        font-size: 1rem;
+      }
+    }
+  </style>
+  

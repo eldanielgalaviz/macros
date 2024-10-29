@@ -1,0 +1,79 @@
+<nav class="navbar navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand container text-center" >MACROS</a>
+        <button class="carousel-control-prev" (click)="prev()">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+    </div>
+</nav>
+
+<div class="card position-absolute top-50 start-50 translate-middle" style="width: 85rem; background-color: #ffffff; border: none;">
+    <div class="card-body">
+        <h5 class="card-title text-center mb-3">Perfil</h5>
+        <hr style="border: none; border-top: 1px solid #000000;">
+
+        <!-- Cambié checkboxes por botones de radio -->
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center">
+                <h2>Bajo</h2>
+                <p>Poco o nada de ejercicio</p>
+            </div>
+            <div class="col-md-6 text-center">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="actividad" id="actividadBajo" value="bajo" (change)="onActivityChange('Bajo')">
+
+                </div>
+            </div>
+        </div>
+        <hr style="border: none; border-top: 1px solid #000000;">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center">
+                <h2>Moderado</h2>
+                <p>Ejercicio liviano, deporte de 1-3 veces por semana</p>
+            </div>
+            <div class="col-md-6 text-center">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="actividad" id="actividadModerado" value="moderado" (change)="onActivityChange('Moderado')">
+                </div>
+            </div>
+        </div>
+        <hr style="border: none; border-top: 1px solid #000000;">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center">
+                <h2>Alto</h2>
+                <p>Ejercicio moderado, deporte de 3-5 veces por semana</p>
+            </div>
+            <div class="col-md-6 text-center">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="actividad" id="actividadAlto" value="alto" (change)="onActivityChange('Alto')">
+
+                </div>
+            </div>
+        </div>
+        <hr style="border: none; border-top: 1px solid #000000;">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center">
+                <h2>Muy alto</h2>
+                <p>Ejercicio intenso, deporte de 6-7 veces por semana</p>
+            </div>
+            <div class="col-md-6 text-center">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="actividad" id="actividadMuyAlto" value="muyalto" (change)="onActivityChange('Muy alto')">
+                </div>
+            </div>
+        </div>
+        <hr style="border: none; border-top: 1px solid #000000;">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center">
+                <h2>Hiperactivo</h2>
+                <p>Ejercicio muy intensos, trabajo físico, 2 horas diarias o más de deporte</p>
+            </div>
+            <div class="col-md-6 text-center">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="actividad" id="actividadHiperactivo" value="hiperactivo" (change)="onActivityChange('Hiperactivo')">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

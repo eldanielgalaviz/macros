@@ -1,0 +1,170 @@
+<nav class="navbar navbar-dark bg-dark fixed-top mb-5">
+  <div class="container-fluid">
+    <a class="navbar-brand container text-center">MACROS</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Doctor</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body">
+        <form class="d-flex mt-3" role="search">
+          <input class="form-control me-2" type="search" placeholder="Nombre del Paciente" aria-label="Search">
+          <button class="btn btn-success" type="submit">Buscar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</nav>
+<div class="container mt-5"></div>
+
+<div class="card position-absolute top-50 start-50 translate-middle mt-5" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
+  <div class="mt-5"></div>
+  <div class="card-body mt-5">
+    <h5 class="card-title text-center mb-3 mt-5">Perfil</h5>
+    <hr style="border: none; border-top: 1px solid #000000;">
+
+    <div class="row align-items-center">
+      <!-- Primera columna: Título -->
+      <div class="col-md-6 text-center">
+          <h5>Altura (cm)</h5>
+      </div>
+      <!-- Segunda columna: Input -->
+      <div class="col-md-6 text-center">
+          <input type="text" class="form-control text-center" placeholder="Ingrese la altura">
+      </div>
+    </div>
+    <hr style="border: none; border-top: 1px solid #000000;">
+    <div class="row align-items-center">
+      <!-- Primera columna: Título -->
+      <div class="col-md-6 text-center">
+          <h5>Peso (kg)</h5>
+      </div>
+      <!-- Segunda columna: Input -->
+      <div class="col-md-6 text-center">
+          <input type="text" class="form-control text-center" placeholder="Ingrese el peso">
+      </div>
+    </div>
+    <hr style="border: none; border-top: 1px solid #000000;">
+    <div class="row align-items-center">
+      <!-- Primera columna: Título -->
+      <div class="col-md-6 text-center">
+          <h5>Sexo</h5>
+      </div>
+      <!-- Segunda columna: Input -->
+      <div class="col-md-6 text-center">
+          <select class="form-select" aria-label="Default select example">
+              <option selected>Hombre</option>
+              <option value="1">Mujer</option>
+            </select>
+      </div>
+    </div>
+    <hr style="border: none; border-top: 1px solid #000000;">
+    <div class="row align-items-center">
+    <!-- Primera columna: Título -->
+    <div class="col-md-6 text-center">
+        <h5>Actividad</h5>
+    </div>
+    <!-- Segunda columna: Input y botón -->
+    <div class="col-md-6 text-end">
+        <div class="input-group">
+
+            <input type="text" class="form-control" placeholder="Tipo de Actividad" [value]="activity" aria-label="Input group example" aria-describedby="btnGroupAddon2" disabled>
+            <button class="btn btn-outline-secondary" type="button" id="btnGroupAddon2" (click)="actividad()">></button>
+        </div>
+    </div>
+    </div>
+    <hr style="border: none; border-top: 1px solid #000000;">
+    <div class="row align-items-center">
+      <!-- Primera columna: Título -->
+      <div class="col-md-6 text-center">
+          <h5>Objetivo</h5>
+      </div>
+      <!-- Segunda columna: Input y botón -->
+      <div class="col-md-6 text-end">
+          <div class="input-group">
+
+              <input type="text" class="form-control" placeholder="Selecione su Objetivo" [value]="objetivo" aria-label="Input group example" aria-describedby="btnGroupAddon2" disabled>
+              <button class="btn btn-outline-secondary" type="button" id="btnGroupAddon2" (click)="objetivos()">></button>
+          </div>
+      </div>
+    </div>
+    <hr style="border: none; border-top: 1px solid #000000;">
+    <h5 class="card-title text-center mb-3" >Resultados</h5>
+    <hr style="border: none; border-top: 1px solid #000000;">
+    <div class="row align-items-center">
+    <!-- Primera columna: Título -->
+    <div class="col-md-6 text-center">
+        <h5>Metabolismo Basal</h5>
+    </div>
+    <!-- Segunda columna: Input y botón -->
+    <div class="col-md-6 text-end">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Aqui vamos a mostrar el Metabolismo Basal (calculo)" [value]="objetivo" aria-label="Input group example" aria-describedby="btnGroupAddon2" disabled>
+        </div>
+    </div>
+    </div>
+    <hr style="border: none; border-top: 1px solid #000000;">
+    <div class="row align-items-center">
+    <!-- Primera columna: Título -->
+    <div class="col-md-6 text-center">
+        <h5>Indice de Masa Corporal</h5>
+    </div>
+    <!-- Segunda columna: Input y botón -->
+    <div class="col-md-6 text-end">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Aqui vamos a mostrar el Indice de Masa Corporal (calculo)" [value]="objetivo" aria-label="Input group example" aria-describedby="btnGroupAddon2" disabled>
+        </div>
+    </div>
+    </div>
+    <hr style="border: none; border-top: 1px solid #000000;">
+    <div class="row align-items-center">
+    <!-- Primera columna: Título -->
+    <div class="col-md-6 text-center">
+        <h5>Requerimiento de Agua (ml)</h5>
+    </div>
+    <!-- Segunda columna: Input y botón -->
+    <div class="col-md-6 text-end">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Aqui vamos a mostrar el Requerimiento de Agua (ml) (calculo)" [value]="objetivo" aria-label="Input group example" aria-describedby="btnGroupAddon2" disabled>
+        </div>
+    </div>
+    </div>
+    <hr style="border: none; border-top: 1px solid #000000;">
+    <div class="row align-items-center">
+    <!-- Primera columna: Título -->
+    <div class="col-md-6 text-center">
+        <h5>Requerimiento Calorico Diario</h5>
+    </div>
+    <!-- Segunda columna: Input y botón -->
+    <div class="col-md-6 text-end">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Aqui vamos a mostrar el Requerimiento Calorico Diario (calculo)" [value]="objetivo" aria-label="Input group example" aria-describedby="btnGroupAddon2" disabled>
+        </div>
+    </div>
+    </div>
+    <hr style="border: none; border-top: 1px solid #000000;">
+
+    <h5 class="card-title text-center mb-3">Mi Contenido</h5>
+    <hr style="border: none; border-top: 1px solid #000000;">
+    <button class="btn btn-outline-secondary w-100 mb-2" type="button" (click)="alimentos()">Mis Alimentos</button>
+    <button class="btn btn-outline-secondary w-100 mb-2" type="button" (click)="recetas()">Mis Recetas</button>
+    <button class="btn btn-outline-secondary w-100 mb-2" type="button" (click)="actividad()">Mis Ejercicios</button>
+  </div>
+</div>
+
+<style>
+  /* Ajustes adicionales */
+  @media (max-width: 768px) {
+    .navbar-brand {
+      font-size: 1.2rem;
+    }
+    .card-body h5 {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+
