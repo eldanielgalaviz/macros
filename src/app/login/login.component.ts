@@ -21,6 +21,6 @@ export class LoginComponent {
   }
 
   singup() {
-    this.router.navigate(['/singup']);
+    this.router.navigate(['/signup']);
   }
 }
