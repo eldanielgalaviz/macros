@@ -2,15 +2,11 @@
     <div class="col">
       <div class="row justify-content-center">
         <div class="col-md-4">
-          <h3 class="text-center">Recuperacion de Contraseña </h3>
+          <h3 class="text-center">Recuperación de Contraseña </h3>
           <form #form="ngForm" (ngSubmit)="login(form)">
             <div class="mb-3 mt-5">
-              <label for="password" class="form-label">Nueva Contraseña</label>
-              <input type="password" class="form-control" id="password" placeholder="Ingrese su contraseña" required>
-            </div>
-            <div class="mb-3">
-              <label for="password2" class="form-label">Confirmar Contraseña</label>
-              <input type="password2" class="form-control" id="password2" placeholder="Ingrese su contraseña" required>
+              <label for="password" class="form-label">Proporcione un correo para enviar link de recuperación de contraseña</label>
+              <input type="password" class="form-control" id="password" placeholder="Correo" required>
             </div>
             <button type="submit"  class="btn btn-secondary w-100">Guardar</button>
           </form>
