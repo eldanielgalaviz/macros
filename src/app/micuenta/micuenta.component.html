@@ -1,0 +1,188 @@
+
+
+
+
+<div id="header2">
+  <nav class="navbar navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand container text-center" >MACROS</a>
+        <button class="carousel-control-prev" (click)="prev()">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+    </div>
+</nav>
+   
+
+    </div>
+    
+    <div class="container vh-100 d-flex flex-column justify-content-center align-items-center mt-5">
+      <div class="row w-100 justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+          <div class="card mb-3">
+            <div class="card-body text-center">
+              
+              <h2>Mis Datos</h2>
+              <div class="accordion accordion-flush " id="accordionFlushExample">
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                      Datos Personales
+                    </button>
+                  </h2>
+                  <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">       
+                      <div class="accordion-item">
+                        <h2 class="accordion-header">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapsedatos" aria-expanded="false" aria-controls="flush-collapsedatos">
+                            Editar Datos 
+                          </button>
+                        </h2>
+                        <div id="flush-collapsedatos" class="accordion-collapse collapse">
+                          <div class="accordion-body">    <form #form="ngForm" (ngSubmit)="actualizar(form)">
+                            <div class="mb-3 ">
+                              <h2>Mis Datos</h2>
+                              <label for="username1" class="form-label">Nombre</label>
+                              <input type="text" class="form-control" id="username1" placeholder="Ingrese su nombre" required>
+                            </div>
+                            <div class="mb-3">
+                              <label for="email" class="form-label">Correo</label>
+                              <input type="text" class="form-control" id="correo" placeholder="Ingrese su correo" required>
+                            </div>
+                            <div class="mb-3">
+                              <label for="edad" class="form-label">Edad</label>
+                              <input type="text" class="form-control" id="edad" placeholder="Ingrese su edad" required>
+                            </div>
+                            <div class="mb-3 ">
+                              <label for="username" class="form-label">Usuario</label>
+                              <input type="text" class="form-control" id="username" placeholder="Ingrese su usuario" required>
+                            </div>
+                            <div class="mb-3">
+                              <label for="password" class="form-label"> Contraseña</label>
+                              <input type="password" class="form-control" id="password" placeholder="Ingrese su contraseña" required>
+                            </div>
+                            <div class="mb-3">
+                              <label for="password2" class="form-label"> Confirmar Contraseña</label>
+                              <input type="password" class="form-control" id="password2" placeholder="Ingrese su contraseña" required>
+                            </div>
+                                <button type="submit"  class="btn btn-secondary w-100">Guardar</button>
+
+                          </form>
+                        </div>
+                      </div>
+              </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                      Accordion Item #2
+                    </button>
+                  </h2>
+                  <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the <code>.accordion-flush</code> class. This is the second item's accordion body. Let's imagine this being filled with some actual content.</div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+                      Accordion Item #3
+                    </button>
+                  </h2>
+                  <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the <code>.accordion-flush</code> class. This is the third item's accordion body. Nothing more exciting happening here in terms of content, but just filling up the space to make it look, at least at first glance, a bit more representative of how this would look in a real-world application.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      /* Estilo global para asegurar que el body y html ocupen el 100% del alto */
+      body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+    
+      /* Contenedor del footer */
+      #container2 {
+        text-align: center;
+        padding: 0;
+        background-color: black;
+        color: white;
+        display: flex;
+        justify-content: center; /* Centra el contenido horizontalmente */
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;     /* Asegura que el footer abarque todo el ancho */
+        z-index: 1000;
+      }
+    
+      /* Estilo para el contenido del footer */
+      .content {
+        display: flex;
+        justify-content: space-around; /* Distribuye los botones equitativamente */
+        align-items: center;
+        width: 100%;
+        padding: 5px;
+      }
+    
+      /* Estilo para los botones */
+      .button2 {
+        background-color: black;
+        border: none;
+        width: auto;
+        height: 50px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: white;
+        font-size: 14px;
+        padding: 5px;
+      }
+    
+      /* Estilo para las imágenes dentro de los botones */
+      .button2 img {
+        width: 30px;
+        height: auto;
+      }
+    
+      /* Estilo para el texto dentro de los botones */
+      .button2 span {
+        margin-top: 5px;
+        color: white;
+        font-size: 12px;
+      }
+    </style>
+    
+    <!-- Contenedor del footer -->
+    <div id="container2">
+      <div class="content">
+        <button type="button" routerLink="/home" class="button2" (click)="home()">
+          <img src="imagenes/111.png" alt="Botón de imagen">
+        </button>
+        <button type="button" routerLink="/añadir" class="button2" (click)="anadir()">
+          <img src="imagenes/111.png" alt="Botón de imagen">
+        </button>
+        <button type="button" routerLink="/cuenta" class="button2" (click)="cuenta()">
+          <img src="imagenes/user.png" alt="Botón de imagen">
+        </button>
+      </div>
+    </div>
+    
+    
+      
+    
+    
+   
+
+
+    

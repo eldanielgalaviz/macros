@@ -10,7 +10,8 @@ import { ObjetivosComponent } from './objetivos/objetivos.component';
 import { AlimentosComponent } from './alimentos/alimentos.component';
 import { RecetaComponent } from './receta/receta.component';
 import { CalendarComponent } from './calendar/calendar.component';
-
+import { MicuentaComponent } from './micuenta/micuenta.component';
+import { FooterComponent } from './footer/footer.component';
 
 
 
@@ -26,6 +27,8 @@ export const routes: Routes = [
   { path: 'alimentos', component: AlimentosComponent },
   { path: 'recetas', component: RecetaComponent },
   { path: 'calendar', component: CalendarComponent },
+  { path: 'cuenta', component: MicuentaComponent },
+  { path: 'footer', component: FooterComponent },
 
 
 

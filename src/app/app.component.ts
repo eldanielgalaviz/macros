@@ -10,12 +10,24 @@ import { ObjetivosComponent } from './objetivos/objetivos.component';
 import { AlimentosComponent } from './alimentos/alimentos.component';
 import { RecetaComponent } from './receta/receta.component';
 import { CalendarComponent } from './calendar/calendar.component';
-
+import { FooterComponent } from './footer/footer.component';
+import { MicuentaComponent } from './micuenta/micuenta.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, LoginComponent, RecuperarcComponent,HomeComponent,PacienteComponent, HomeclientComponent, ActividadComponent, ObjetivosComponent, AlimentosComponent,RecetaComponent, CalendarComponent],
+  imports: [RouterOutlet, LoginComponent, 
+  RecuperarcComponent,
+  HomeComponent,
+  PacienteComponent,
+  HomeclientComponent,
+  ActividadComponent,
+  ObjetivosComponent,
+  AlimentosComponent,
+  RecetaComponent,
+  CalendarComponent,
+  FooterComponent,
+  MicuentaComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

@@ -1,0 +1,47 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Se asegura que la altura mínima cubra toda la pantalla */
+  }
+  
+  
+  /* Estilo para el footer */
+  app-footer {
+    text-align: center;
+    padding: 0px;
+    background-color: black;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centra el contenido verticalmente */
+    position: fixed; /* Fija el footer al fondo */
+    bottom: 0;       /* Alinea el footer al borde inferior de la página */
+    left: 0;
+    width: 100%;     /* Hace que el footer ocupe todo el ancho */
+    z-index: 1000;   /* Asegura que el footer esté por encima de otros elementos */
+  }
+  
+  /* Estilo para el header */
+
+  
+  #header2 h1 {
+    margin: 0; 
+  }
+  
+  .btn-primary {
+    font-size: 0.75rem;  /* Opcional: Ajustar tamaño de fuente */
+    padding: 4px 8px;    /* Opcional: Ajustar el padding */
+  }
+  
+  .badge-custom {
+    font-size: 0.6rem;  /* Reducir tamaño del badge */
+    padding: 3px 6px;   /* Ajustar el padding del badge */
+  }
+  

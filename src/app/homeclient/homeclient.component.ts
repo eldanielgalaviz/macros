@@ -3,11 +3,12 @@ import { Router } from '@angular/router';
 import { NgForm, FormsModule } from '@angular/forms';
 import { ActivityService } from '../activity.service';
 import { ObjetivoService } from '../objetivo.service';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
   selector: 'app-homeclient',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule,FooterComponent],
   templateUrl: './homeclient.component.html',
   styleUrls: ['./homeclient.component.css']
 })
@@ -47,5 +48,16 @@ export class HomeclientComponent implements OnInit {
   }
   recetas() {
     this.router.navigate(['/recetas']); // Ajuste de la ruta para objetivo
+  }
+  home() {
+    this.router.navigate(['/macros']);
+  }
+
+  anadir() {
+    this.router.navigate(['/añadir']);
+  }
+
+  cuenta() {
+    this.router.navigate(['/cuenta']);
   }
 }
