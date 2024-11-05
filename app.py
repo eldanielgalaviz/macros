@@ -4,9 +4,18 @@ from routes import usuarios_bp, alimentos_bp, registro_comidas_bp, auth_bp, pers
 from config import Config
 from flask_mail import Mail
 from flask_migrate import Migrate
+from flask_cors import CORS
 
 
 app = Flask(__name__)
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://localhost:4200"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization", "Access-Control-Allow-Credentials"],
+        "supports_credentials": True
+    }
+})
 
 app.config['SECRET_KEY'] = 'mysecretkey'  # Cambia 'mysecretkey' por una cadena más segura
 app.config.from_object(Config)

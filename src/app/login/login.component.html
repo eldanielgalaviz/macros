@@ -1,25 +1,47 @@
 <div class="container mt-5">
-  <div class="col">
-    <div class="row justify-content-center">
-      <div class="col-md-4">
-        <h3 class="text-center">Iniciar Sesión </h3>
-        <form #form="ngForm" (ngSubmit)="login(form)">
-          <div class="mb-3 mt-5">
-            <label for="username" class="form-label">Usuario</label>
-            <input type="text" class="form-control" id="username" placeholder="Ingrese su usuario" required>
-          </div>
-          <div class="mb-3">
-            <label for="password" class="form-label">Contraseña</label>
-            <input type="password" class="form-control" id="password" placeholder="Ingrese su contraseña" required>
-          </div>
-          <div class="mb-3 text-center">
-            <a (click)="recuperar()" class="link-secondary d-block text-center mt-3">Olvidé mi contraseña</a>
-          </div>
-          <button type="submit"  class="btn btn-secondary w-100">Ingresar</button>
+  <div class="row justify-content-center">
+    <div class="col-md-4">
+      <h3 class="text-center">Iniciar Sesión</h3>
+      
+      <form (ngSubmit)="login(loginForm)" #loginForm="ngForm" class="mt-4">
+        <div class="mb-3">
+          <label for="usuario" class="form-label">Usuario</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="usuario" 
+            name="usuario"
+            [(ngModel)]="credentials.usuario"
+            required>
+        </div>
+        
+        <div class="mb-3">
+          <label for="password" class="form-label">Contraseña</label>
+          <input 
+            type="password" 
+            class="form-control" 
+            id="password"
+            name="password" 
+            [(ngModel)]="credentials.password"
+            required>
+        </div>
 
-          <a (click)="singup()" class="link-secondary d-block text-center mt-5">Registrarse</a>
-        </form>
-      </div>
+        <div class="text-danger mb-3" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100" [disabled]="!loginForm.valid || isLoading">
+          {{ isLoading ? 'Cargando...' : 'Ingresar' }}
+        </button>
+        
+        <a class="link-secondary d-block text-center mt-3" (click)="recuperar()">
+          Olvidé mi contraseña
+        </a>
+        
+        <a class="link-secondary d-block text-center mt-5" (click)="singup()">
+          Registrarse
+        </a>
+      </form>
     </div>
   </div>
 </div>

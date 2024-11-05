@@ -44,25 +44,31 @@ auth_bp = Blueprint('auth', __name__)
 usuarios_bp = Blueprint('usuarios', __name__)
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    data = request.json
-    user = classusuarios.query.filter_by(usuario=data['usuario']).first()
+    try:
 
-    if not user.verificado:
-        return jsonify ({'message' : 'Por favor verifica tu cuenta antes de iniciar sesión'}), 403
-    
-    elif not user or not user.check_password(data['password']):
-        return jsonify ({'message' : 'Credenciales inválidas'}), 401
-    
-    #if user and check_password_hash(user.password_hash, data['password']):
-    token = jwt.encode({
-        'id': user.id,
-        'usuario':user.usuario,
-        'correo':user.correo,
-        'rol': user.rol,
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
-    }, current_app.config['SECRET_KEY'], algorithm='HS256')
+        data = request.json
+        user = classusuarios.query.filter_by(usuario=data['usuario']).first()
 
-    return jsonify ({'token':token}),200
+        if not user.verificado:
+            return jsonify ({'message' : 'Por favor verifica tu cuenta antes de iniciar sesión'}), 403
+        
+        elif not user or not user.check_password(data['password']):
+            return jsonify ({'message' : 'Credenciales inválidas'}), 401
+        
+        #if user and check_password_hash(user.password_hash, data['password']):
+        token = jwt.encode({
+            'id': user.id,
+            'usuario':user.usuario,
+            'correo':user.correo,
+            'rol': user.rol,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+        }, current_app.config['SECRET_KEY'], algorithm='HS256')
+
+        return jsonify ({'token':token}),200
+    
+    except Exception as e:
+        print(f"Error en login: {str(e)}")
+        return jsonify({'message': 'Error interno del servidor'}), 500
 
     #else:
         #return jsonify ({'message': 'Credenciales invalidas'})

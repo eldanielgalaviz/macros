@@ -1,19 +1,52 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgForm, FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
+import { AuthService } from '../auth/services/auth.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule], // Removido HttpClientModule
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  constructor(private router: Router) {}
+  credentials = {
+    usuario: '',
+    password: ''
+  };
+  
+  errorMessage = '';
+  isLoading = false;
+
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   login(form: NgForm) {
-    this.router.navigate(['/home']);
+    if (form.valid) {
+      this.isLoading = true;
+      this.errorMessage = '';
+
+      this.authService.login(this.credentials.usuario, this.credentials.password)
+        .subscribe({
+          next: () => {
+            this.router.navigate(['/home']);
+          },
+          error: (error) => {
+            this.isLoading = false;
+            if (error.status === 401) {
+              this.errorMessage = 'Usuario o contraseña incorrectos';
+            } else if (error.status === 403) {
+              this.errorMessage = 'Por favor verifica tu cuenta antes de iniciar sesión';
+            } else {
+              this.errorMessage = 'Error al iniciar sesión. Por favor intenta más tarde';
+            }
+          }
+        });
+    }
   }
 
   recuperar() {

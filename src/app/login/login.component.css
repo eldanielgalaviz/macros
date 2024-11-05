@@ -1,0 +1,8 @@
+.link-secondary {
+    cursor: pointer;
+    text-decoration: none;
+  }
+  
+  .link-secondary:hover {
+    text-decoration: underline;
+  }

@@ -28,7 +28,6 @@ export const routes: Routes = [
   { path: 'recetas', component: RecetaComponent },
   { path: 'calendar', component: CalendarComponent },
   { path: 'cuenta', component: MicuentaComponent },
-  { path: 'footer', component: FooterComponent },
 
 
 
