@@ -10,6 +10,10 @@ interface LoginResponse {
   message?: string;
 }
 
+interface RegisterResponse {
+  message: string;
+}
+
 interface User {
   id: number;
   usuario: string;
@@ -120,4 +124,61 @@ export class AuthService {
         catchError(this.handleError)
       );
   }
+
+  register(userData: {
+    nombre: string;
+    apellidopaterno: string;
+    apellidomaterno: string;
+    correo: string;
+    edad: number;
+    usuario: string;
+    password: string;
+    rol?: number; // Opcional, podría tener un valor por defecto en el backend
+  }): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.apiUrl}/register`, {
+      ...userData,
+      rol: userData.rol || 1, // Valor por defecto para usuarios normales
+      verificado: false
+    }).pipe(
+      catchError(this.handleErrorRegister)
+    );
+  }
+
+  private handleErrorRegister(error: HttpErrorResponse) {
+    console.error('Error completo:', error);
+    
+    if (error.error instanceof ErrorEvent) {
+      return throwError(() => new Error('Error de conexión. Por favor, intenta de nuevo.'));
+    } else {
+      switch (error.status) {
+        case 400:
+          if (error.error.message.includes('correo')) {
+            return throwError(() => ({
+              status: 400,
+              message: 'El correo ya está en uso'
+            }));
+          } else if (error.error.message.includes('usuario')) {
+            return throwError(() => ({
+              status: 400,
+              message: 'El nombre de usuario ya está en uso'
+            }));
+          }
+          return throwError(() => ({
+            status: 400,
+            message: error.error.message
+          }));
+        case 500:
+          return throwError(() => ({
+            status: 500,
+            message: 'Error en el servidor. Por favor intenta más tarde'
+          }));
+        default:
+          return throwError(() => ({
+            status: error.status,
+            message: 'Error en el registro. Por favor intenta más tarde'
+          }));
+      }
+    }
+  }
 }
+

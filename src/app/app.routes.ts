@@ -11,7 +11,6 @@ import { AlimentosComponent } from './alimentos/alimentos.component';
 import { RecetaComponent } from './receta/receta.component';
 import { CalendarComponent } from './calendar/calendar.component';
 import { MicuentaComponent } from './micuenta/micuenta.component';
-import { FooterComponent } from './footer/footer.component';
 
 
 
