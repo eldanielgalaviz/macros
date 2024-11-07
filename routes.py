@@ -141,7 +141,7 @@ def forgot_password():
     reset_url = url_for('auth.reset_password', token=token, _external=True)
     msg = Message ('Recuperación de contraseña',
                 recipients=[user.correo])
-    msg.body = f'Para restablecer tu contraseña, visita el siguiente link: {reset_url}'
+    msg.body = f'Para restablecer tu contraseña, visita el siguiente link: {reset_url} /n si no has solicitado esto, simplemente ignoralo :)'
     mail = Mail(current_app)
     mail.send(msg)
 
