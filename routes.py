@@ -138,24 +138,35 @@ def forgot_password():
     s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
     token = s.dumps(user.correo, salt='password-reset-salt')
 
-    reset_url = url_for('auth.reset_password', token=token, _external=True)
+    reset_url = f'http://localhost:4200/resetpassword/{token}'
+
     msg = Message ('Recuperación de contraseña',
                 recipients=[user.correo])
-    msg.body = f'Para restablecer tu contraseña, visita el siguiente link: {reset_url} /n si no has solicitado esto, simplemente ignoralo :)'
+    msg.body = f'Para restablecer tu contraseña, visita el siguiente link: {reset_url}. Si no has solicitado esto, simplemente ignoralo :)'
     mail = Mail(current_app)
     mail.send(msg)
 
     return jsonify ({'message' : 'Se ha enviado un correo con instrucciones para restablecer tu contraseña'})
     
-@auth_bp.route('/reset_password/<token>', methods = ['POST'])
+@auth_bp.route('/reset_password/<token>', methods = ['GET', 'POST'])
 def reset_password(token):
+    if request.method == 'GET':
+        s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        try:
+            email = s.loads(token, salt='password-reset-salt', max_age=3600)
+            return jsonify({'message': 'Token válido', 'email': email}), 200
+        except SignatureExpired:
+            return jsonify ({'message': 'token expirado'}), 400
+        except BadSignature:
+            return jsonify ({'message': 'token inválido'}), 400
+        
     s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
     try:
         email = s.loads(token, salt='password-reset-salt', max_age=3600)
     except SignatureExpired:
-        return jsonify ({'message': 'token expirado'}), 400
+        return jsonify({'message': 'token expirado'}), 400
     except BadSignature:
-        return jsonify ({'message': 'token inválido'}), 400
+        return jsonify({'message': 'token inválido'}), 400
 
     user= classusuarios.query.filter_by(correo=email).first()
     if not user:

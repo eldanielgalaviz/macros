@@ -11,8 +11,8 @@ import { AlimentosComponent } from './alimentos/alimentos.component';
 import { RecetaComponent } from './receta/receta.component';
 import { CalendarComponent } from './calendar/calendar.component';
 import { MicuentaComponent } from './micuenta/micuenta.component';
-
-
+import { ResetPasswordComponent } from './resetpassword/resetpassword.component';
+import { VerifyTokenComponent } from './verifytoken/verifytoken.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -21,12 +21,14 @@ export const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'paciente', component: PacienteComponent },
   { path: 'macros', component: HomeclientComponent },
-  { path: 'actividad', component: ActividadComponent },
+  { path: 'actividad', component: ActividadComponent },   
   { path: 'objetivo', component: ObjetivosComponent },
   { path: 'alimentos', component: AlimentosComponent },
   { path: 'recetas', component: RecetaComponent },
   { path: 'calendar', component: CalendarComponent },
   { path: 'cuenta', component: MicuentaComponent },
+  { path: 'resetpassword/:token', component: ResetPasswordComponent},
+  //{ path: 'reset_password/:token', component: VerifyTokenComponent },
 
 
 

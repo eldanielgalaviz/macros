@@ -180,5 +180,26 @@ export class AuthService {
       }
     }
   }
+
+  forgotPassword(correo: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/forgot_password`, { correo })
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  
+  validateResetToken(token: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/reset_password/${token}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  
+  resetPassword(token: string, passwords: { new_password: string, confirm_password: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reset_password/${token}`, passwords)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
 }
 
