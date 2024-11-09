@@ -25,6 +25,7 @@ interface User {
 })
 export class AuthService {
   private apiUrl = 'http://localhost:5000/auth';
+  private apiUrlnoPrefix = 'http://localhost:5000'
   private tokenKey = 'auth_token';
   private userSubject = new BehaviorSubject<User | null>(null);
   public user$ = this.userSubject.asObservable();
@@ -200,6 +201,10 @@ export class AuthService {
       .pipe(
         catchError(this.handleError)
       );
+  }
+  
+  validateTokenUsuarios(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrlnoPrefix}/validar-token`);
   }
 }
 

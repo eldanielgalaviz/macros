@@ -12,13 +12,17 @@ import { RecetaComponent } from './receta/receta.component';
 import { CalendarComponent } from './calendar/calendar.component';
 import { MicuentaComponent } from './micuenta/micuenta.component';
 import { ResetPasswordComponent } from './resetpassword/resetpassword.component';
-import { VerifyTokenComponent } from './verifytoken/verifytoken.component';
+import { DoctorGuard } from './guards/doctor.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'recuperar', component: RecuperarcComponent },
   { path: 'signup', component: SingupComponent },
-  { path: 'home', component: HomeComponent },
+  { 
+    path: 'home', 
+    component: HomeComponent,
+    canActivate: [DoctorGuard]  // Aquí se aplica el guard
+  },
   { path: 'paciente', component: PacienteComponent },
   { path: 'macros', component: HomeclientComponent },
   { path: 'actividad', component: ActividadComponent },   
@@ -32,5 +36,5 @@ export const routes: Routes = [
 
 
 
-  { path: '**', redirectTo: 'login' } // Ruta por defecto
+  { path: '**', redirectTo: 'login' } // Ruta por defeto
 ];
