@@ -236,7 +236,6 @@ def validar_token(current_user):
     }), 200
 
 #--------------------------------------------------Rutas para gestión de usuarios.--------------------------------------------------
-"""
 
 @usuarios_bp.route('/usuarios', methods=['GET'])
 @token_required
@@ -251,7 +250,7 @@ def get_users(current_user):
 def get_user(id):
     user = classusuarios.query.get_or_404(id)
     return jsonify(user.to_dict())
-
+"""
 @usuarios_bp.route('/usuarios', methods=['POST'])
 @token_required
 def create_user(current_user):
