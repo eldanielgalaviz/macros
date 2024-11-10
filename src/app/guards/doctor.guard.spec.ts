@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { CanActivateFn } from '@angular/router';
 
-import { doctorGuard } from './doctor.guard';
+import { DoctorGuard } from './doctor.guard';
 
 describe('doctorGuard', () => {
   const executeGuard: CanActivateFn = (...guardParameters) => 
