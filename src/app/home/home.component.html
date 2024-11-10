@@ -1,114 +1,201 @@
-<nav class="navbar navbar-dark bg-dark fixed-top">
+<div class="container-fluid">
+  <nav class="navbar navbar-dark bg-dark mb-4">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">Nutricion</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
-        <div class="offcanvas-header">
-          <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Doctor</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <form class="d-flex mt-3" role="search">
-                <input class="form-control me-2" type="search" placeholder="Nombre del Paciente" aria-label="Search">
-                <button class="btn btn-success" type="submit">Buscar</button>
-              </form>
-
-
-          <!-- <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Dropdown
-              </a>
-              <ul class="dropdown-menu dropdown-menu-dark">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li>
-                  <hr class="dropdown-divider">
-                </li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-              </ul>
-            </li>
-          </ul> -->
-        </div>
+      <a class="navbar-brand">Nutrición</a>
+      <div class="d-flex align-items-center">
+        <span class="text-light me-3">Dr. {{ currentUser?.usuario }}</span>
+        <button class="btn btn-outline-light" (click)="logout()">Cerrar Sesión</button>
       </div>
     </div>
   </nav>
-  <div class="card position-absolute top-50 start-50 translate-middle" style="width: 18rem;">
-    <div class="card-body text-center"> 
-      <h5 class="card-title">Bienvenido User</h5>
-      <p class="card-text">Que tu alimento sea tu medicina y tu medicina sea tu alimento.</p>
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Agregar un Paciente</button>
+
+  <div class="container">
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col">
+            <h5 class="card-title mb-0">Panel de Control</h5>
+          </div>
+          <div class="col">
+            <div class="input-group">
+              <input 
+                type="text" 
+                class="form-control" 
+                placeholder="Buscar paciente..." 
+                [(ngModel)]="searchTerm"
+                (input)="searchPatients()">
+              <button class="btn btn-outline-secondary" type="button">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+          </div>
+          <div class="col text-end">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+              Agregar Paciente
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
 
-
-
-  <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-    Launch static backdrop modal
-  </button>
-  
-  <!-- Modal -->
-  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5 text-center" id="staticBackdropLabel">Registrar Paciente</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Lista de Pacientes -->
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Lista de Pacientes</h5>
+      </div>
+      <div class="card-body">
+        <div *ngIf="errorMessage" class="alert alert-danger">
+          {{ errorMessage }}
         </div>
-        <div class="modal-body">
-            <div class="container ">
-                <div class="row justify-content-center">
-                  <div class="col-md-6">
-                     <form #form="ngForm" (ngSubmit)="singup(form)">
-                      <div class="mb-3 ">
-                        <label for="username1" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="username1" placeholder="Ingrese su nombre" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="AP" class="form-label">Apellido Paterno</label>
-                        <input type="text" class="form-control" id="AP" placeholder="Ingrese su Apellido Paterno" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="AM" class="form-label">Apellido Materno</label>
-                        <input type="text" class="form-control" id="AM" placeholder="Ingrese su Apellido Materno" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="email" class="form-label">Correo</label>
-                        <input type="email" class="form-control" id="correo" placeholder="Ingrese su correo" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="edad" class="form-label">Edad</label>
-                        <input type="number" class="form-control" id="edad" placeholder="Ingrese su edad" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="username" class="form-label">Usuario</label>
-                        <input type="text" class="form-control" id="username" placeholder="Ingrese su usuario" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="password" class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" id="password" placeholder="Ingrese su contraseña" required>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-              
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" id="liveAlertBtn">Guardar</button>
+        
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Nombre Completo</th>
+                <th>Edad</th>
+                <th>Peso (kg)</th>
+                <th>Estatura (cm)</th>
+                <th>Objetivo</th>
+                <th>Comidas por día</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let patient of filteredPatients">
+                <td>{{ patient.nombre }} {{ patient.apellidopaterno }} {{ patient.apellidomaterno }}</td>
+                <td>{{ patient.edad }}</td>
+                <td>{{ patient.peso }}</td>
+                <td>{{ patient.estatura }}</td>
+                <td>{{ patient.objetivo }}</td>
+                <td>{{ patient.cantidad_comidas }}</td>
+                <td>
+                  <button class="btn btn-sm btn-info me-2" title="Ver detalles del paciente">
+                    <i class="bi bi-eye-fill"></i> Detalles
+                  </button>
+                  <button class="btn btn-sm btn-primary" title="Ver registro de comidas">
+                    <i class="bi bi-calendar3"></i> Registro
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="filteredPatients.length === 0">
+                <td colspan="7" class="text-center">
+                  {{ searchTerm ? 'No se encontraron pacientes con ese criterio de búsqueda' : 'No hay pacientes registrados' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
   </div>
-  
+</div>
 
+<!-- Modal para agregar paciente -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Registrar Paciente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form (ngSubmit)="onSubmit(patientForm)" #patientForm="ngForm">
+        <div class="modal-body">
+          <div *ngIf="errorMessage" class="alert alert-danger">
+            {{ errorMessage }}
+          </div>
+          <div *ngIf="successMessage" class="alert alert-success">
+            {{ successMessage }}
+          </div>
+
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="nombre" 
+              name="nombre"
+              [(ngModel)]="newPatient.nombre"
+              required>
+          </div>
+
+          <div class="mb-3">
+            <label for="apellidopaterno" class="form-label">Apellido Paterno</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="apellidopaterno" 
+              name="apellidopaterno"
+              [(ngModel)]="newPatient.apellidopaterno"
+              required>
+          </div>
+
+          <div class="mb-3">
+            <label for="apellidomaterno" class="form-label">Apellido Materno</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="apellidomaterno" 
+              name="apellidomaterno"
+              [(ngModel)]="newPatient.apellidomaterno"
+              required>
+          </div>
+
+          <div class="mb-3">
+            <label for="correo" class="form-label">Correo</label>
+            <input 
+              type="email" 
+              class="form-control" 
+              id="correo" 
+              name="correo"
+              [(ngModel)]="newPatient.correo"
+              required
+              email>
+          </div>
+
+          <div class="mb-3">
+            <label for="edad" class="form-label">Edad</label>
+            <input 
+              type="number" 
+              class="form-control" 
+              id="edad" 
+              name="edad"
+              [(ngModel)]="newPatient.edad"
+              required>
+          </div>
+
+          <div class="mb-3">
+            <label for="usuario" class="form-label">Usuario</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="usuario" 
+              name="usuario"
+              [(ngModel)]="newPatient.usuario"
+              required>
+          </div>
+
+          <div class="mb-3">
+            <label for="password" class="form-label">Contraseña</label>
+            <input 
+              type="password" 
+              class="form-control" 
+              id="password" 
+              name="password"
+              [(ngModel)]="newPatient.password"
+              required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="!patientForm.valid || isLoading">
+            {{ isLoading ? 'Guardando...' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

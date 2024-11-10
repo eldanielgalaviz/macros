@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -18,7 +18,20 @@ interface User {
   id: number;
   usuario: string;
   rol: number;
+  correo : string;
 }
+
+interface Patient {
+  id: number;
+  nombre: string;
+  apellidopaterno: string;
+  apellidomaterno: string;
+  usuario: string;
+  correo: string;
+  edad: number;
+  rol: number;
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -32,10 +45,13 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private router: Router
+    private router: Router,
   ) {
+    
     this.checkToken();
   }
+
+  
 
   login(usuario: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { usuario, password })
@@ -49,6 +65,7 @@ export class AuthService {
         catchError(this.handleError)
       );
   }
+
 
   private handleError(error: HttpErrorResponse) {
     console.error('Error completo:', error);
@@ -111,6 +128,10 @@ export class AuthService {
     }
   }
 
+  getCurrentUser(): Observable<User | null> {
+    return this.userSubject.asObservable();
+  }
+
   validateToken(): Observable<any> {
     return this.http.get<any>('http://localhost:5000/usuarios/validar-token')
       .pipe(
@@ -118,7 +139,8 @@ export class AuthService {
           const user: User = {
             id: response.id,
             usuario: response.usuario,
-            rol: response.rol
+            rol: response.rol,
+            correo: response.correo
           };
           this.userSubject.next(user);
         }),
@@ -205,6 +227,19 @@ export class AuthService {
   
   validateTokenUsuarios(): Observable<any> {
     return this.http.get<any>(`${this.apiUrlnoPrefix}/validar-token`);
+  }
+
+  getPatients(): Observable<Patient[]> {
+    return this.http.get<Patient[]>(`${this.apiUrlnoPrefix}/usuarios`);
+  }
+
+  registerPatient(patientData: any): Observable<any> {
+    const data = {
+      ...patientData,
+      rol: 3, // Asegurarnos que se registra como paciente
+      verificado: true // Los pacientes registrados por el médico no necesitan verificación
+    };
+    return this.http.post(`${this.apiUrlnoPrefix}/auth/register`, data);
   }
 }
 
