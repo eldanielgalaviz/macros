@@ -16,24 +16,27 @@ def token_required(f):
     def decorated(*args, **kwargs):
         token = None
         
-        # Obtener el token de los encabezados
         if 'Authorization' in request.headers:
-            token = request.headers['Authorization'].split(" ")[1]  # Extraer el token del formato Bearer
+            token = request.headers['Authorization'].split(" ")[1]
 
         if not token:
             return jsonify({'message': 'Token no proporcionado'}), 401
 
         try:
-            # Decodificar el token
             data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
             current_user = classusuarios.query.filter_by(id=data['id']).first()
+
+            # Verificar que el usuario existe y tiene los campos necesarios
+            if not current_user:
+                return jsonify({'message': 'Usuario no válido'}), 401
 
         except jwt.ExpiredSignatureError:
             return jsonify({'message': 'Token expirado'}), 401
         except jwt.InvalidTokenError:
             return jsonify({'message': 'Token inválido'}), 401
+        except Exception as e:
+            return jsonify({'message': f'Error: {str(e)}'}), 401
 
-        # Llamar a la función decorada sin pasar el current_user_id
         return f(current_user, *args, **kwargs)
 
     return decorated
@@ -61,6 +64,9 @@ def login():
             'usuario':user.usuario,
             'correo':user.correo,
             'rol': user.rol,
+            'nombre': user.nombre,
+            'apellidopaterno': user.apellidopaterno,
+            'apellidomaterno': user.apellidomaterno,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
         }, current_app.config['SECRET_KEY'], algorithm='HS256')
 
@@ -184,40 +190,46 @@ def reset_password(token):
     return jsonify ({'message' : 'Contraseña actualizada exitosamente'}), 200
 
 personal_info_bp = Blueprint('personal_info_bp', __name__)
-@personal_info_bp.route('/update', methods =['PUT'])
+@personal_info_bp.route('/update/<int:patient_id>', methods =['PUT'])
 @token_required
-def update_personal_info(current_user):
+def update_patient_info(current_user, patient_id):
+
+    if current_user.rol != 2:
+        return jsonify({'message': 'No autorizado'}), 403
+    
     data=request.json
-    current_user.peso=data['peso']
-    current_user.estatura = data['estatura']
-    current_user.edad = data['edad']
-    current_user.sexo = data['sexo']
-    current_user.actividad = data['actividad']
-    current_user.objetivo = data['objetivo']
-    current_user.cantidad_comidas = data['cantidad_comidas']
+    patient = classusuarios.query.get_or_404(patient_id)
 
-    altura_metros = current_user.estatura / 100
-    current_user.imc = current_user.peso / (altura_metros ** 2)
+    patient.peso=data['peso']
+    patient.estatura = data['estatura']
+    patient.edad = data['edad']
+    patient.sexo = data['sexo']
+    patient.actividad = data['actividad']
+    patient.objetivo = data['objetivo']
+    patient.cantidad_comidas = data['cantidad_comidas']
 
-    if current_user.sexo.lower() == 'm':
-        current_user.metabolismobasal = 88.362 + (13.397 * current_user.peso) + (4.799 * current_user.estatura) - (5.677 * current_user.edad)
+    altura_metros = patient.estatura / 100
+    patient.imc = patient.peso / (altura_metros ** 2)
+
+    if patient.sexo.lower() == 'm':
+        patient.metabolismobasal = 88.362 + (13.397 * patient.peso) + (4.799 * patient.estatura) - (5.677 * patient.edad)
     else:
-        current_user.metabolismobasal = 447.593 + (9.247 * current_user.peso) + (3.098 * current_user.estatura) - (4.330 * current_user.edad)
+        patient.metabolismobasal = 447.593 + (9.247 * patient.peso) + (3.098 * patient.estatura) - (4.330 * patient.edad)
 
-    current_user.requerimentoagua = current_user.peso * 35
+    patient.requerimentoagua = patient.peso * 35
 
     actividad_factor = {
         "baja": 1.2,
         "moderada": 1.55,
         "alta": 1.9
-    }.get(current_user.actividad.lower(), 1.2)
+    }.get(patient.actividad.lower(), 1.2)
 
-    if current_user.objetivo == 'mantener':
-        current_user.requerimientocalorico = current_user.metabolismobasal * actividad_factor
-    elif current_user.objetivo == 'aumentar':
-        current_user.requerimientocalorico = current_user.metabolismobasal * actividad_factor * 1.15
-    elif current_user.objetivo == 'disminuir':
-        current_user.requerimientocalorico = current_user.metabolismobasal * actividad_factor * 0.85
+    if patient.objetivo == 'mantener':
+        patient.requerimientocalorico = patient.metabolismobasal * actividad_factor
+    elif patient.objetivo == 'aumentar':
+        patient.requerimientocalorico = patient.metabolismobasal * actividad_factor * 1.15
+    elif patient.objetivo == 'disminuir':
+        patient.requerimientocalorico = patient.metabolismobasal * actividad_factor * 0.85
     else:
         return jsonify({"error": "Objetivo no válido"}), 400
 
@@ -228,13 +240,21 @@ def update_personal_info(current_user):
 @usuarios_bp.route('/validar-token', methods=['GET'])
 @token_required
 def validar_token(current_user):
+    print("Datos del usuario actual:", {
+        'nombre': current_user.nombre,
+        'apellidopaterno': current_user.apellidopaterno,
+        'apellidomaterno': current_user.apellidomaterno
+    })
     return jsonify({
         'message': 'Token válido',
         'usuario': current_user.usuario,
         'rol': current_user.rol,
-        'id': current_user.id
+        'id': current_user.id,
+        'correo': current_user.correo,
+        'nombre': current_user.nombre,
+        'apellidopaterno': current_user.apellidopaterno,
+        'apellidomaterno': current_user.apellidomaterno
     }), 200
-
 #--------------------------------------------------Rutas para gestión de usuarios.--------------------------------------------------
 
 @usuarios_bp.route('/usuarios', methods=['GET'])

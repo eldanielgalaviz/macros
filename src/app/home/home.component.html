@@ -1,42 +1,35 @@
-<div class="container-fluid">
-  <nav class="navbar navbar-dark bg-dark mb-4">
-    <div class="container-fluid">
-      <a class="navbar-brand">Nutrición</a>
-      <div class="d-flex align-items-center">
-        <span class="text-light me-3">Dr. {{ currentUser?.usuario }}</span>
-        <button class="btn btn-outline-light" (click)="logout()">Cerrar Sesión</button>
-      </div>
+<!-- Navbar que ocupa todo el ancho -->
+<div class="navbar bg-primary text-white w-100 px-4 py-3">
+  <div class="container-fluid d-flex justify-content-between align-items-center">
+    <span class="navbar-brand mb-0 h1">Nutrición</span>
+    <div class="d-flex align-items-center gap-3">
+      <span class="h5 mb-0">{{ currentUser?.nombre }} {{ currentUser?.apellidopaterno }} {{ currentUser?.apellidomaterno }}</span>
+      <button class="btn btn-outline-light" (click)="logout()">Cerrar Sesión</button>
     </div>
-  </nav>
+  </div>
+</div>
 
-  <div class="container">
-    <div class="card mb-4">
-      <div class="card-body">
-        <div class="row align-items-center">
-          <div class="col">
-            <h5 class="card-title mb-0">Panel de Control</h5>
+<!-- Contenido principal con margen superior -->
+<div class="container mt-4">
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row align-items-center">
+        <div class="col">
+          <h5 class="card-title mb-0">Panel de Control - Dr. {{ currentUser?.nombre }} {{ currentUser?.apellidopaterno }}</h5>
+        </div>
+        <div class="col">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Buscar paciente..." [(ngModel)]="searchTerm" (ngModelChange)="searchPatients()">
           </div>
-          <div class="col">
-            <div class="input-group">
-              <input 
-                type="text" 
-                class="form-control" 
-                placeholder="Buscar paciente..." 
-                [(ngModel)]="searchTerm"
-                (input)="searchPatients()">
-              <button class="btn btn-outline-secondary" type="button">
-                <i class="bi bi-search"></i>
-              </button>
-            </div>
-          </div>
-          <div class="col text-end">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-              Agregar Paciente
-            </button>
-          </div>
+        </div>
+        <div class="col text-end">
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+            Agregar Paciente
+          </button>
         </div>
       </div>
     </div>
+  </div>
 
     <!-- Lista de Pacientes -->
     <div class="card">
@@ -70,7 +63,7 @@
                 <td>{{ patient.objetivo }}</td>
                 <td>{{ patient.cantidad_comidas }}</td>
                 <td>
-                  <button class="btn btn-sm btn-info me-2" title="Ver detalles del paciente">
+                  <button class="btn btn-sm btn-info me-2" title="Ver detalles del paciente" (click)="viewPatientDetails(patient.id)">
                     <i class="bi bi-eye-fill"></i> Detalles
                   </button>
                   <button class="btn btn-sm btn-primary" title="Ver registro de comidas">
@@ -89,7 +82,7 @@
       </div>
     </div>
   </div>
-</div>
+
 
 <!-- Modal para agregar paciente -->
 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">

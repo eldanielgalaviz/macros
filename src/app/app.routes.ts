@@ -13,6 +13,7 @@ import { CalendarComponent } from './calendar/calendar.component';
 import { MicuentaComponent } from './micuenta/micuenta.component';
 import { ResetPasswordComponent } from './resetpassword/resetpassword.component';
 import { DoctorGuard } from './guards/doctor.guard';
+import { authGuard } from './auth/guards/auth.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -24,7 +25,11 @@ export const routes: Routes = [
     canActivate: [DoctorGuard]  // Aquí se aplica el guard
   },
   { path: 'paciente', component: PacienteComponent },
-  { path: 'macros', component: HomeclientComponent },
+  { 
+    path: 'edit-profile/:id', 
+    component: HomeclientComponent,
+    canActivate: [authGuard]
+  },
   { path: 'actividad', component: ActividadComponent },   
   { path: 'objetivo', component: ObjetivosComponent },
   { path: 'alimentos', component: AlimentosComponent },

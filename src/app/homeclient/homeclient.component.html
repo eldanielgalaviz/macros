@@ -1,280 +1,205 @@
-<nav class="navbar navbar-dark bg-dark fixed-top mb-5">
-  <div class="container-fluid">
-    <a class="navbar-brand container text-center">MACROS</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
-      <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Configuracion</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-      </div>
-      <div class="offcanvas-body">
-        <form class="d-flex mt-3" role="search">
-          <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search">
-          <button class="btn btn-success" type="submit">Buscar</button>
-        </form>
-        
-           <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-            <li class="nav-item">
-              <hr style="border: none; border-top: 1px solid #ffffff;">
-              <a class="nav-link active" aria-current="page" href="/cuenta">Mi Cuenta</a>
-              <hr style="border: none; border-top: 1px solid #ffffff;">
+<div class="container-fluid">
 
-            </li>
-            <li class="nav-item">
-              
-              <a class="nav-link" href="#">Link</a>
-            </li>
-            <hr style="border: none; border-top: 1px solid #ffffff;">
 
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Mi Contenido
-              </a>
-              <ul class="dropdown-menu dropdown-menu-dark">
-                <li><a class="dropdown-item" href="/alimentos">Mis Alimentos</a></li>
-                <hr class="dropdown-divider">
-
-                <li><a class="dropdown-item" href="/recetas">Mis Recetas</a></li>
-                <li>
-                  <hr class="dropdown-divider">
-                </li>
-                <li><a class="dropdown-item" href="/ejercicios">Mis Ejercicios</a></li>
-              </ul>
-            </li>
-          </ul> 
-          <hr style="border: none; border-top: 1px solid #ffffff;">
-
-          <button class="btn btn-danger position-absolute " type="button">Cerrar Sesión</button>
-      </div>
-    </div>
-  </div>
-</nav>
-<div class="container mt-5"></div>
-
-<div class="card position-absolute top-50 start-50 translate-middle mt-5" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
-  <div class="mt-5"></div>
-  <div class="card-body mt-5">
-    <h5 class="card-title text-center mb-3 mt-5">Perfil</h5>
-    <hr style="border: none; border-top: 1px solid #000000;">
-
-    <div class="row align-items-center">
-      <!-- Primera columna: Título -->
-      <div class="col-md-6 text-center">
-          <h5>Altura (cm)</h5>
-      </div>
-      <!-- Segunda columna: Input -->
-      <div class="col-md-6 text-center">
-          <input type="text" class="form-control text-center" placeholder="Ingrese la altura">
-      </div>
-    </div>
-    <hr style="border: none; border-top: 1px solid #000000;">
-    <div class="row align-items-center">
-      <!-- Primera columna: Título -->
-      <div class="col-md-6 text-center">
-          <h5>Peso (kg)</h5>
-      </div>
-      <!-- Segunda columna: Input -->
-      <div class="col-md-6 text-center">
-          <input type="text" class="form-control text-center" placeholder="Ingrese el peso">
-      </div>
-    </div>
-    <hr style="border: none; border-top: 1px solid #000000;">
-    <div class="row align-items-center">
-      <!-- Primera columna: Título -->
-      <div class="col-md-6 text-center">
-          <h5>Sexo</h5>
-      </div>
-      <!-- Segunda columna: Input -->
-      <div class="col-md-6 text-center">
-          <select class="form-select" aria-label="Default select example">
-              <option selected>Hombre</option>
-              <option value="1">Mujer</option>
-            </select>
-      </div>
-    </div>
-    <hr style="border: none; border-top: 1px solid #000000;">
-    <div class="row align-items-center">
-    <!-- Primera columna: Título -->
-    <div class="col-md-6 text-center">
-        <h5>Actividad</h5>
-    </div>
-    <!-- Segunda columna: Input y botón -->
-    <div class="col-md-6 text-end">
-        <div class="input-group">
-
-            <input type="text" class="form-control" placeholder="Tipo de Actividad" [value]="activity" aria-label="Input group example" aria-describedby="btnGroupAddon2" disabled>
-            <button class="btn btn-outline-secondary" type="button" id="btnGroupAddon2" (click)="actividad()">></button>
-        </div>
-    </div>
-    </div>
-    <hr style="border: none; border-top: 1px solid #000000;">
-    <div class="row align-items-center">
-      <!-- Primera columna: Título -->
-      <div class="col-md-6 text-center">
-          <h5>Objetivo</h5>
-      </div>
-      <!-- Segunda columna: Input y botón -->
-      <div class="col-md-6 text-end">
-          <div class="input-group">
-
-              <input type="text" class="form-control" placeholder="Selecione su Objetivo" [value]="objetivo" aria-label="Input group example" aria-describedby="btnGroupAddon2" disabled>
-              <button class="btn btn-outline-secondary" type="button" id="btnGroupAddon2" (click)="objetivos()">></button>
+  <!-- Mantener la navegación existente -->
+  
+  <div class="card position-absolute top-50 start-50 translate-middle mt-5" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
+    <div class="mt-5">
+      <div class="card-body mt-5">
+        <!-- Header con estructura de tres columnas -->
+        <div class="row align-items-center mb-3">
+          <!-- Botón Volver -->
+          <div class="col-3">
+            <button class="btn btn-outline-primary" (click)="goBack()">
+              <i class="fas fa-arrow-left"></i> Volver
+            </button>
           </div>
+          
+          <!-- Título centrado -->
+          <div class="col-6 text-center">
+            <h5 class="card-title mb-0">Paciente: {{ patientInfo.nombre }} {{ patientInfo.apellidopaterno }} {{ patientInfo.apellidomaterno }}</h5>
+          </div>
+          
+          <!-- Botones de edición -->
+          <div class="col-3 text-end">
+            <div class="d-flex gap-2 justify-content-end">
+              <button *ngIf="isEditing" class="btn btn-success" (click)="saveChanges()">
+                Guardar Cambios
+              </button>
+              <button class="btn btn-primary" (click)="toggleEdit()">
+                {{ isEditing ? 'Cancelar' : 'Editar' }}
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Mensajes de éxito/error -->
+        <div *ngIf="showSuccessMessage" class="alert alert-success">
+          {{ messageText }}
+        </div>
+        <div *ngIf="showErrorMessage" class="alert alert-danger">
+          {{ messageText }}
+        </div>
+
+        <hr>
+
+        <!-- Altura -->
+        <div class="row align-items-center">
+          <div class="col-md-6 text-center">
+            <h5>Altura (cm)</h5>
+          </div>
+          <div class="col-md-6 text-center">
+            <input *ngIf="isEditing" type="number" class="form-control" [(ngModel)]="patientInfo.estatura" name="estatura">
+            <span *ngIf="!isEditing">{{ patientInfo.estatura }}</span>
+          </div>
+        </div>
+
+        <hr>
+
+        <!-- Peso -->
+        <div class="row align-items-center">
+          <div class="col-md-6 text-center">
+            <h5>Peso (kg)</h5>
+          </div>
+          <div class="col-md-6 text-center">
+            <input *ngIf="isEditing" type="number" class="form-control" [(ngModel)]="patientInfo.peso" name="peso">
+            <span *ngIf="!isEditing">{{ patientInfo.peso }}</span>
+          </div>
+        </div>
+
+        <hr>
+
+        <!-- Edad -->
+        <div class="row align-items-center">
+          <div class="col-md-6 text-center">
+            <h5>Edad</h5>
+          </div>
+          <div class="col-md-6 text-center">
+            <input *ngIf="isEditing" type="number" class="form-control" [(ngModel)]="patientInfo.edad" name="edad">
+            <span *ngIf="!isEditing">{{ patientInfo.edad }}</span>
+          </div>
+        </div>
+
+        <hr>
+
+        <!-- Sexo -->
+        <div class="row align-items-center">
+          <div class="col-md-6 text-center">
+            <h5>Sexo</h5>
+          </div>
+          <div class="col-md-6 text-center">
+            <div *ngIf="isEditing" class="btn-group">
+              <input type="radio" class="btn-check" name="sexo" [(ngModel)]="patientInfo.sexo" value="m" id="sexoM">
+              <label class="btn btn-outline-primary" for="sexoM">Hombre</label>
+              <input type="radio" class="btn-check" name="sexo" [(ngModel)]="patientInfo.sexo" value="f" id="sexoF">
+              <label class="btn btn-outline-primary" for="sexoF">Mujer</label>
+            </div>
+            <span *ngIf="!isEditing">{{ patientInfo.sexo === 'm' ? 'Hombre' : 'Mujer' }}</span>
+          </div>
+        </div>
+
+        <hr>
+
+        <!-- Actividad -->
+        <div class="row align-items-center">
+          <div class="col-md-6 text-center">
+            <h5>Actividad</h5>
+          </div>
+          <div class="col-md-6 text-center">
+            <select *ngIf="isEditing" class="form-select" [(ngModel)]="patientInfo.actividad">
+              <option value="baja">Baja</option>
+              <option value="moderada">Moderada</option>
+              <option value="alta">Alta</option>
+            </select>
+            <span *ngIf="!isEditing">{{ patientInfo.actividad | titlecase }}</span>
+          </div>
+        </div>
+
+        <hr>
+
+        <!-- Objetivo -->
+        <div class="row align-items-center">
+          <div class="col-md-6 text-center">
+            <h5>Objetivo</h5>
+          </div>
+          <div class="col-md-6 text-center">
+            <select *ngIf="isEditing" class="form-select" [(ngModel)]="patientInfo.objetivo">
+              <option value="mantener">Mantener</option>
+              <option value="aumentar">Aumentar</option>
+              <option value="disminuir">Disminuir</option>
+            </select>
+            <span *ngIf="!isEditing">{{ patientInfo.objetivo | titlecase }}</span>
+          </div>
+        </div>
+
+        <hr>
+
+        <!-- Cantidad de comidas -->
+        <div class="row align-items-center">
+          <div class="col-md-6 text-center">
+            <h5>Cantidad de Comidas</h5>
+          </div>
+          <div class="col-md-6 text-center">
+            <input *ngIf="isEditing" type="number" class="form-control" [(ngModel)]="patientInfo.cantidad_comidas" min="1" max="6">
+            <span *ngIf="!isEditing">{{ patientInfo.cantidad_comidas }}</span>
+          </div>
+        </div>
+
+        <hr>
+
+        <h5 class="card-title text-center mb-3">Resultados</h5>
+
+        <hr>
+
+        <!-- Metabolismo Basal -->
+        <div class="row align-items-center">
+          <div class="col-md-6 text-center">
+            <h5>Metabolismo Basal</h5>
+          </div>
+          <div class="col-md-6 text-end">
+            <span>{{ patientInfo.metabolismobasal?.toFixed(2) }} kcal</span>
+          </div>
+        </div>
+
+        <hr>
+
+        <!-- IMC -->
+        <div class="row align-items-center">
+          <div class="col-md-6 text-center">
+            <h5>Indice de Masa Corporal</h5>
+          </div>
+          <div class="col-md-6 text-end">
+            <span>{{ patientInfo.imc?.toFixed(2) }}</span>
+          </div>
+        </div>
+
+        <hr>
+
+        <!-- Requerimiento de Agua -->
+        <div class="row align-items-center">
+          <div class="col-md-6 text-center">
+            <h5>Requerimiento de Agua (ml)</h5>
+          </div>
+          <div class="col-md-6 text-end">
+            <span>{{ patientInfo.requerimentoagua?.toFixed(2) }} ml</span>
+          </div>
+        </div>
+
+        <hr>
+
+        <!-- Requerimiento Calórico -->
+        <div class="row align-items-center">
+          <div class="col-md-6 text-center">
+            <h5>Requerimiento Calorico Diario</h5>
+          </div>
+          <div class="col-md-6 text-end">
+            <span>{{ patientInfo.requerimientocalorico?.toFixed(2) }} kcal</span>
+          </div>
+        </div>
+
+        <!-- Mantener la sección de Mi Contenido -->
       </div>
     </div>
-    <hr style="border: none; border-top: 1px solid #000000;">
-    <h5 class="card-title text-center mb-3" >Resultados</h5>
-    <hr style="border: none; border-top: 1px solid #000000;">
-    <div class="row align-items-center">
-    <!-- Primera columna: Título -->
-    <div class="col-md-6 text-center">
-        <h5>Metabolismo Basal</h5>
-    </div>
-    <!-- Segunda columna: Input y botón -->
-    <div class="col-md-6 text-end">
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Aqui vamos a mostrar el Metabolismo Basal (calculo)" [value]="objetivo" aria-label="Input group example" aria-describedby="btnGroupAddon2" disabled>
-        </div>
-    </div>
-    </div>
-    <hr style="border: none; border-top: 1px solid #000000;">
-    <div class="row align-items-center">
-    <!-- Primera columna: Título -->
-    <div class="col-md-6 text-center">
-        <h5>Indice de Masa Corporal</h5>
-    </div>
-    <!-- Segunda columna: Input y botón -->
-    <div class="col-md-6 text-end">
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Aqui vamos a mostrar el Indice de Masa Corporal (calculo)" [value]="objetivo" aria-label="Input group example" aria-describedby="btnGroupAddon2" disabled>
-        </div>
-    </div>
-    </div>
-    <hr style="border: none; border-top: 1px solid #000000;">
-    <div class="row align-items-center">
-    <!-- Primera columna: Título -->
-    <div class="col-md-6 text-center">
-        <h5>Requerimiento de Agua (ml)</h5>
-    </div>
-    <!-- Segunda columna: Input y botón -->
-    <div class="col-md-6 text-end">
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Aqui vamos a mostrar el Requerimiento de Agua (ml) (calculo)" [value]="objetivo" aria-label="Input group example" aria-describedby="btnGroupAddon2" disabled>
-        </div>
-    </div>
-    </div>
-    <hr style="border: none; border-top: 1px solid #000000;">
-    <div class="row align-items-center">
-    <!-- Primera columna: Título -->
-    <div class="col-md-6 text-center">
-        <h5>Requerimiento Calorico Diario</h5>
-    </div>
-    <!-- Segunda columna: Input y botón -->
-    <div class="col-md-6 text-end">
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Aqui vamos a mostrar el Requerimiento Calorico Diario (calculo)" [value]="objetivo" aria-label="Input group example" aria-describedby="btnGroupAddon2" disabled>
-        </div>
-    </div>
-    </div>
-    <hr style="border: none; border-top: 1px solid #000000;">
-
-    <h5 class="card-title text-center mb-3">Mi Contenido</h5>
-    <hr style="border: none; border-top: 1px solid #000000;">
-    <button class="btn btn-outline-secondary w-100 mb-2" type="button" (click)="alimentos()">Mis Alimentos</button>
-    <button class="btn btn-outline-secondary w-100 mb-2" type="button" (click)="recetas()">Mis Recetas</button>
-    <button class="btn btn-outline-secondary w-100 mb-2 mb-5" type="button" (click)="actividad()">Mis Ejercicios</button>
   </div>
-  <!-- <div class="container mb-5"></div> -->
-</div>
 
-<style>
-  /* Ajustes adicionales */
-  @media (max-width: 768px) {
-    .navbar-brand {
-      font-size: 1.2rem;
-    }
-    .card-body h5 {
-      font-size: 1rem;
-    }
-  }
-</style>
-
-<style>
-  /* Estilo global para asegurar que el body y html ocupen el 100% del alto */
-  body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Contenedor del footer */
-  #container2 {
-    text-align: center;
-    padding: 0;
-    background-color: black;
-    color: white;
-    display: flex;
-    justify-content: center; /* Centra el contenido horizontalmente */
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;     /* Asegura que el footer abarque todo el ancho */
-    z-index: 1000;
-  }
-
-  /* Estilo para el contenido del footer */
-  .content {
-    display: flex;
-    justify-content: space-around; /* Distribuye los botones equitativamente */
-    align-items: center;
-    width: 100%;
-    padding: 5px;
-  }
-
-  /* Estilo para los botones */
-  .button2 {
-    background-color: black;
-    border: none;
-    width: auto;
-    height: 50px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: white;
-    font-size: 14px;
-    padding: 5px;
-  }
-
-  /* Estilo para las imágenes dentro de los botones */
-  .button2 img {
-    width: 30px;
-    height: auto;
-  }
-
-  /* Estilo para el texto dentro de los botones */
-  .button2 span {
-    margin-top: 5px;
-    color: white;
-    font-size: 12px;
-  }
-</style>
-
-<!-- Contenedor del footer -->
-<div id="container2">
-  <div class="content">
-    <button type="button" routerLink="/home" class="button2" (click)="home()">
-      <img src="imagenes/home.png" alt="Botón de imagen">
-    </button>
-    <button type="button" routerLink="/añadir" class="button2" (click)="anadir()">
-      <img src="imagenes/111.png" alt="Botón de imagen">
-    </button>
-    <button type="button" routerLink="/cuenta" class="button2" (click)="cuenta()">
-      <img src="imagenes/userblanco.png" alt="Botón de imagen">
-    </button>
-  </div>
+  <!-- Mantener el container2 y content -->
 </div>

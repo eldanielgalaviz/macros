@@ -10,6 +10,9 @@ interface User {
   usuario: string;
   rol: number;
   correo: string;
+  nombre: string;
+  apellidopaterno: string;
+  apellidomaterno: string;
 }
 
 interface Patient {
@@ -60,6 +63,7 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.loadPatients();
     this.authService.getCurrentUser().subscribe(user => {
+      console.log('Current user data:', user); // Para debug
       this.currentUser = user;
     });
   }
@@ -126,8 +130,8 @@ export class HomeComponent implements OnInit {
 
   // Método para ver detalles del paciente
   viewPatientDetails(patientId: number) {
-    // Aquí implementarás la navegación a la vista de detalles
-    this.router.navigate(['/patient', patientId]);
+    console.log('Navegando a detalles del paciente:', patientId); // Para debug
+    this.router.navigate(['/edit-profile', patientId]);
   }
 
   // Método para ver registro de comidas

@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { jwtDecode } from 'jwt-decode';
 
 
 interface LoginResponse {
@@ -19,6 +20,9 @@ interface User {
   usuario: string;
   rol: number;
   correo : string;
+  nombre: string;
+  apellidopaterno: string;
+  apellidomaterno: string;
 }
 
 interface Patient {
@@ -32,6 +36,16 @@ interface Patient {
   rol: number;
 }
 
+interface DecodedToken {
+  id: number;
+  usuario: string;
+  rol: number;
+  correo: string;
+  nombre: string;
+  apellidopaterno: string;
+  apellidomaterno: string;
+  exp: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -59,13 +73,22 @@ export class AuthService {
         tap(response => {
           if (response.token) {
             localStorage.setItem(this.tokenKey, response.token);
-            this.validateToken();
+            const decodedToken = jwtDecode<DecodedToken>(response.token);
+            const user: User = {
+              id: decodedToken.id,
+              usuario: decodedToken.usuario,
+              correo: decodedToken.correo,
+              rol: decodedToken.rol,
+              nombre: decodedToken.nombre,
+              apellidopaterno: decodedToken.apellidopaterno,
+              apellidomaterno: decodedToken.apellidomaterno
+            };
+            this.userSubject.next(user);
           }
         }),
         catchError(this.handleError)
       );
   }
-
 
   private handleError(error: HttpErrorResponse) {
     console.error('Error completo:', error);
@@ -137,10 +160,13 @@ export class AuthService {
       .pipe(
         tap(response => {
           const user: User = {
-            id: response.id,
-            usuario: response.usuario,
-            rol: response.rol,
-            correo: response.correo
+          id: response.id,
+          usuario: response.usuario,
+          rol: response.rol,
+          correo: response.correo,
+          nombre: response.nombre,
+          apellidopaterno: response.apellidopaterno,
+          apellidomaterno: response.apellidomaterno
           };
           this.userSubject.next(user);
         }),
