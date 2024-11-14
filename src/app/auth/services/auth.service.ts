@@ -63,10 +63,38 @@ export class AuthService {
   ) {
     
     this.checkToken();
+    this.loadUserFromToken();
   }
 
   
-
+  private loadUserFromToken() {
+    const token = this.getToken();
+    if (token) {
+      try {
+        const decodedToken = jwtDecode<DecodedToken>(token);
+        // Verificar si el token ha expirado
+        const currentTime = Date.now() / 1000;
+        if (decodedToken.exp && decodedToken.exp > currentTime) {
+          const user: User = {
+            id: decodedToken.id,
+            usuario: decodedToken.usuario,
+            correo: decodedToken.correo,
+            rol: decodedToken.rol,
+            nombre: decodedToken.nombre,
+            apellidopaterno: decodedToken.apellidopaterno,
+            apellidomaterno: decodedToken.apellidomaterno
+          };
+          this.userSubject.next(user);
+        } else {
+          // Token expirado, hacer logout
+          this.logout();
+        }
+      } catch (error) {
+        console.error('Error decodificando token:', error);
+        this.logout();
+      }
+    }
+  }
   login(usuario: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { usuario, password })
       .pipe(
@@ -147,7 +175,12 @@ export class AuthService {
   private checkToken(): void {
     const token = this.getToken();
     if (token) {
-      this.validateToken();
+      this.validateToken().subscribe({
+        next: () => {
+          this.loadUserFromToken(); // Recargar información del usuario
+        },
+
+      });
     }
   }
 
