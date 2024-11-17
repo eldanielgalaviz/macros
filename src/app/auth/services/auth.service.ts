@@ -219,7 +219,7 @@ export class AuthService {
   }): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(`${this.apiUrl}/register`, {
       ...userData,
-      rol: userData.rol || 1, // Valor por defecto para usuarios normales
+      rol: userData.rol || 3, // Valor por defecto para usuarios normales
       verificado: false
     }).pipe(
       catchError(this.handleErrorRegister)
