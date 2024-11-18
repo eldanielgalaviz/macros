@@ -88,191 +88,98 @@
         <div class="progress-bar bg-danger text-dark" style="width: 65%">65%</div>
       </div>
       
+
   </div>
+
+                          <!-- En este card se debe de mostrar dinamicamente dependiendo la cantidad de comidas del usuario -->
     <!-- tercer Card -->
-    <div class="card mt-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
-        <h5 class="card-title text-center mb-3 mt-3">Desayuno</h5>
-        <hr style="border: none; border-top: 1px solid #000000;">
+<!-- Genera un card por cada comida -->
+<div class="card mt-5 mx-auto" *ngFor="let comida of comidas; let i = index" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
+  <h5 class="card-title text-center mb-3 mt-3">{{ comida }}</h5>
+  <hr style="border: none; border-top: 1px solid #000000;">
 
-        <div class="card-body">
+  <!-- Mostrar nombre del alimento seleccionado o un texto por defecto -->
+  <h5 class="card-title text-center mb-3 mt-3">
+    {{ nombreComidaPorCard[i] || 'Seleccionar Alimento' }}
+  </h5>
 
-          <hr style="border: none; border-top: 1px solid #000000;">
-      
-          <!-- Carbohidratos -->
-          <div class=" text-center">
+  <!-- Lista de alimentos seleccionados para este card -->
+  <div class="list-group mb-3">
+    <div *ngFor="let alimento of alimentosPorCard[i]; let j = index" class="list-group-item d-flex justify-content-between align-items-center">
+      {{ alimento }}
+      <button type="button" class="btn btn-danger btn-sm" (click)="eliminarAlimento(i, j)">
+        Eliminar
+      </button>
+    </div>
+  </div>
+  
+  
+  <hr style="border: none; border-top: 1px solid #000000;">
+  <div class="card-body">
+  
+    <hr style="border: none; border-top: 1px solid #000000;">
+  
+    <div class="text-center form-control text-center mb-2">
+      <h5>Proteínas: {{ calcularTotal(proteinasPorCard[i]) }}</h5>
+    </div>
+    <div class="text-center form-control text-center mb-2">
+      <h5>Carbohidratos: {{ calcularTotal(carbohidratosPorCard[i]) }}</h5>
+    </div>
+    <div class="text-center form-control text-center mb-2">
+      <h5>Grasas: {{ calcularTotal(grasasPorCard[i]) }}</h5>
+    </div>
+    <div class="text-center form-control text-center mb-2">
+      <h5>Calorías: {{ calcularTotal(caloriasPorCard[i]) }}</h5>
+    </div>
+  </div>
+  
 
-            <input type="text" class="form-control text-center mb-2" placeholder="0">
-            <h5>Carbohidratos</h5>
+  <div class="text-center mb-2">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="abrirModal(i)">Añadir Alimento</button>
+  </div>
+</div>
 
-          </div>
-      
-          <hr style="border: none; border-top: 1px solid #000000;">
-          <div class=" text-center">
 
-            <input type="text" class="form-control text-center mb-2  ms-2" placeholder="0">
-            <h5>Proteinas</h5>
 
-          </div>
-      
-          <hr style="border: none; border-top: 1px solid #000000;">
-          <div class=" text-center">
 
-            <input type="text" class="form-control text-center mb-2  ms-2" placeholder="0">
-            <h5>Grasas</h5>
-
-          </div>
-      
-          <hr style="border: none; border-top: 1px solid #000000;">
-          <div class=" text-center">
-
-            <input type="text" class="form-control text-center mb-2  ms-2" placeholder="0">
-            <h5>Calorias</h5>
-
-          </div>
-      
-          <hr style="border: none; border-top: 1px solid #000000;">
-      
-         
-          
-      
-          <hr style="border: none; border-top: 1px solid #000000;">
-          
-        </div>
-        <hr style="border: none; border-top: 1px solid #000000;">
-        <div class="text-center">
-            <button type="button" class="btn btn-primary" id="liveAlertBtn">Añadir Alimento</button>
-          </div>
-          
-        <hr style="border: none; border-top: 1px solid #000000;">
-          
-
-        
+  
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 text-center" id="staticBackdropLabel">Seleccionar Alimento</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-
-
-          <!-- cuarto Card -->
-    <div class="card mt-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
-        <h5 class="card-title text-center mb-3 mt-3">Comida</h5>
-        <hr style="border: none; border-top: 1px solid #000000;">
-
-        <div class="card-body">
-
-          <hr style="border: none; border-top: 1px solid #000000;">
-      
-          <!-- Carbohidratos -->
-          <div class=" text-center">
-
-            <input type="text" class="form-control text-center mb-2" placeholder="0">
-            <h5>Carbohidratos</h5>
-
+      <div class="modal-body">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-md-6">
+              <ul class="list-group">
+                <!-- Lista de alimentos disponibles para seleccionar -->
+                <li *ngFor="let alimento of consultarAlimentos; let i = index" 
+                class="list-group-item" 
+                (click)="seleccionarAlimento(alimento, i)">
+              {{ alimento }}
+            </li>
+            
+              </ul>
+            </div>
           </div>
-      
-          <hr style="border: none; border-top: 1px solid #000000;">
-          <div class=" text-center">
-
-            <input type="text" class="form-control text-center mb-2  ms-2" placeholder="0">
-            <h5>Proteinas</h5>
-
-          </div>
-      
-          <hr style="border: none; border-top: 1px solid #000000;">
-          <div class=" text-center">
-
-            <input type="text" class="form-control text-center mb-2  ms-2" placeholder="0">
-            <h5>Grasas</h5>
-
-          </div>
-      
-          <hr style="border: none; border-top: 1px solid #000000;">
-          <div class=" text-center">
-
-            <input type="text" class="form-control text-center mb-2  ms-2" placeholder="0">
-            <h5>Calorias</h5>
-
-          </div>
-      
-          <hr style="border: none; border-top: 1px solid #000000;">
-      
-         
-          
-      
-          <hr style="border: none; border-top: 1px solid #000000;">
-          
         </div>
-        <hr style="border: none; border-top: 1px solid #000000;">
-        <div class="text-center">
-            <button type="button" class="btn btn-primary" id="liveAlertBtn">Añadir Alimento</button>
-          </div>
-          
-        <hr style="border: none; border-top: 1px solid #000000;">
-          
-
-        
       </div>
-
-
-
-          <!-- quinto Card -->
-    <div class="card mt-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
-        <h5 class="card-title text-center mb-3 mt-3">Cena</h5>
-        <hr style="border: none; border-top: 1px solid #000000;">
-
-        <div class="card-body">
-
-          <hr style="border: none; border-top: 1px solid #000000;">
-      
-          <!-- Carbohidratos -->
-          <div class=" text-center">
-
-            <input type="text" class="form-control text-center mb-2" placeholder="0">
-            <h5>Carbohidratos</h5>
-
-          </div>
-      
-          <hr style="border: none; border-top: 1px solid #000000;">
-          <div class=" text-center">
-
-            <input type="text" class="form-control text-center mb-2  ms-2" placeholder="0">
-            <h5>Proteinas</h5>
-
-          </div>
-      
-          <hr style="border: none; border-top: 1px solid #000000;">
-          <div class=" text-center">
-
-            <input type="text" class="form-control text-center mb-2  ms-2" placeholder="0">
-            <h5>Grasas</h5>
-
-          </div>
-      
-          <hr style="border: none; border-top: 1px solid #000000;">
-          <div class=" text-center">
-
-            <input type="text" class="form-control text-center mb-2  ms-2" placeholder="0">
-            <h5>Calorias</h5>
-
-          </div>
-      
-          <hr style="border: none; border-top: 1px solid #000000;">
-      
-         
-          
-      
-          <hr style="border: none; border-top: 1px solid #000000;">
-          
-        </div>
-        <hr style="border: none; border-top: 1px solid #000000;">
-        <div class="text-center">
-            <button type="button" class="btn btn-primary" id="liveAlertBtn">Añadir Alimento</button>
-          </div>
-          
-        <hr style="border: none; border-top: 1px solid #000000;">
-          
-
-        
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
       </div>
-      
-<!-- Segundo Card -->
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
 <!-- Segundo Card -->
 <div class="card mt-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
     <div class="card-body d-flex flex-column" style="height: 100%;">
@@ -306,6 +213,7 @@
     </div>
   </div>
   
+
   
   
   
