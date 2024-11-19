@@ -243,7 +243,8 @@ def validar_token(current_user):
     print("Datos del usuario actual:", {
         'nombre': current_user.nombre,
         'apellidopaterno': current_user.apellidopaterno,
-        'apellidomaterno': current_user.apellidomaterno
+        'apellidomaterno': current_user.apellidomaterno,
+        'cantidad_comidas': current_user.cantidad_comidas,
     })
     return jsonify({
         'message': 'Token válido',
@@ -253,7 +254,8 @@ def validar_token(current_user):
         'correo': current_user.correo,
         'nombre': current_user.nombre,
         'apellidopaterno': current_user.apellidopaterno,
-        'apellidomaterno': current_user.apellidomaterno
+        'cantidad_comidas': current_user.cantidad_comidas,
+        'apellidomaterno': current_user.apellidomaterno,
     }), 200
 #--------------------------------------------------Rutas para gestión de usuarios.--------------------------------------------------
 
@@ -270,6 +272,17 @@ def get_users(current_user):
 def get_user(id):
     user = classusuarios.query.get_or_404(id)
     return jsonify(user.to_dict())
+
+@usuarios_bp.route('/usuarios/<int:id>/comidas', methods=['GET'])
+@token_required
+def get_comidas(current_user, id):
+    if current_user.id != id and current_user.rol != 2:  # Verifica que el usuario actual es el mismo o un admin
+        return jsonify({'message': 'No tienes permiso para acceder a esta información'}), 403
+
+    user = classusuarios.query.get_or_404(id)
+    return jsonify({'cantidad_comidas': user.cantidad_comidas}), 200
+
+
 """
 @usuarios_bp.route('/usuarios', methods=['POST'])
 @token_required

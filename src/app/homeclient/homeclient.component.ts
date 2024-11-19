@@ -59,15 +59,17 @@ export class HomeclientComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Obtener el ID del paciente de la URL
     this.route.params.subscribe(params => {
-      this.patientId = +params['id']; // El + convierte el string a número
-      console.log('ID del paciente:', this.patientId); // Para debug
+      this.patientId = +params['id'];
+      console.log('ID del paciente:', this.patientId); // Verifica que no sea 0 o un valor incorrecto
       if (this.patientId) {
         this.loadPatientInfo();
+      } else {
+        console.error('El ID del paciente es inválido:', this.patientId);
       }
     });
   }
+  
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('auth_token');

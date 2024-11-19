@@ -95,28 +95,52 @@ export class AuthService {
       }
     }
   }
-  login(usuario: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { usuario, password })
-      .pipe(
-        tap(response => {
-          if (response.token) {
-            localStorage.setItem(this.tokenKey, response.token);
-            const decodedToken = jwtDecode<DecodedToken>(response.token);
-            const user: User = {
-              id: decodedToken.id,
-              usuario: decodedToken.usuario,
-              correo: decodedToken.correo,
-              rol: decodedToken.rol,
-              nombre: decodedToken.nombre,
-              apellidopaterno: decodedToken.apellidopaterno,
-              apellidomaterno: decodedToken.apellidomaterno
-            };
-            this.userSubject.next(user);
-          }
-        }),
-        catchError(this.handleError)
-      );
-  }
+    // Función para obtener la cantidad de comidas del paciente
+    getCantidadComidas(): Observable<any> {
+      const token = this.getToken();
+      if (token) {
+        const decodedToken = jwtDecode<DecodedToken>(token);
+        const userId = decodedToken.id;  // Obtener el ID del paciente desde el token
+        return this.http.get<any>(`${this.apiUrlnoPrefix}/pacientes/${userId}/cantidad_comidas`)
+          .pipe(
+            tap(response => {
+              console.log('Cantidad de comidas:', response.cantidad_comidas);
+            }),
+            catchError(this.handleError)
+          );
+      } else {
+        return throwError(() => new Error('No se encontró el token.'));
+      }
+    }
+ // Método para obtener el usuario desde el Subject
+ getUser(): User | null {
+  return this.userSubject.value; // Retorna el valor actual del usuario
+}
+
+// Método para login, que decodifica el token y actualiza el usuario
+login(usuario: string, password: string): Observable<LoginResponse> {
+  return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { usuario, password })
+    .pipe(
+      tap(response => {
+        if (response.token) {
+          localStorage.setItem(this.tokenKey, response.token);
+          const decodedToken = jwtDecode<DecodedToken>(response.token);
+          const user: User = {
+            id: decodedToken.id,
+            usuario: decodedToken.usuario,
+            correo: decodedToken.correo,
+            rol: decodedToken.rol,
+            nombre: decodedToken.nombre,
+            apellidopaterno: decodedToken.apellidopaterno,
+            apellidomaterno: decodedToken.apellidomaterno
+          };
+          this.userSubject.next(user);  // Actualiza el valor del usuario en el Subject
+        }
+      }),
+      catchError(this.handleError)
+    );
+}
+  
 
   private handleError(error: HttpErrorResponse) {
     console.error('Error completo:', error);
