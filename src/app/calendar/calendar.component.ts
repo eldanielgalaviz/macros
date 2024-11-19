@@ -9,6 +9,16 @@ import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth/services/auth.service';
 import { CommonModule } from '@angular/common';
 
+interface User {
+  id: number;
+  usuario: string;
+  rol: number;
+  correo: string;
+  nombre: string;
+  apellidopaterno: string;
+  apellidomaterno: string;
+}
+
 @Component({
   selector: 'app-calendar',
   standalone: true,
@@ -44,6 +54,7 @@ export class CalendarComponent implements OnInit {
   consultarAlimentos: string[] = [];
   alimentosPorCard: string[][] = [];
   cardSeleccionado: number = -1;
+  currentUser: User | null = null;
 
   // Arrays para almacenar más de un alimento por card y sus detalles
   proteinasPorCard: number[][] = [];
@@ -58,6 +69,15 @@ export class CalendarComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+
+    this.authService.getCurrentUser().subscribe(user => {
+      this.currentUser = user;
+      if (user && user.id) {
+        this.getCantidadComidas(user.id);
+        this.getCantidadAgua(user.id);
+      }
+    });
+
     this.user = this.authService.getUser();
     console.log('Detalles del usuario:', this.user);
 
@@ -73,21 +93,21 @@ export class CalendarComponent implements OnInit {
     }
   }
 
+  logout() {
+    this.authService.logout();
+  }
+
   getCantidadComidas(userId: number): void {
     const url = 'http://localhost:5000/get_cantidad_comidas';
     const data = { id: userId };
-
+  
     this.http.post<any>(url, data).subscribe(
       (response) => {
         console.log('Cantidad de comidas recibida:', response.cantidad_comidas);
         this.cantidadComidas = response.cantidad_comidas;
-
-        this.comidas = Array.from({ length: this.cantidadComidas }, (_, i) => {
-          if (i === 0) return 'Desayuno';
-          if (i === 1) return 'Comida';
-          if (i === 2) return 'Cena';
-          return 'Snack';
-        });
+  
+        // Modificamos esta parte para numerar las comidas
+        this.comidas = Array.from({ length: this.cantidadComidas }, (_, i) => `Comida ${i + 1}`);
       },
       (error) => {
         console.error('Error al obtener la cantidad de comidas', error);

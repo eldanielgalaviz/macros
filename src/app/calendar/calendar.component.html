@@ -1,24 +1,26 @@
 <!-- Barra de navegación -->
-<nav class="navbar navbar-dark bg-dark fixed-top mb-5">
-    <div class="container-fluid">
-      <a class="navbar-brand container text-center">MACROS</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
-        <div class="offcanvas-header">
-          <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Doctor</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-          <form class="d-flex mt-3" role="search">
-            <input class="form-control me-2" type="search" placeholder="Nombre del Paciente" aria-label="Search">
-            <button class="btn btn-success" type="submit">Buscar</button>
-          </form>
-        </div>
+<!-- Navbar que ocupa todo el ancho -->
+<div class="navbar text-bg-dark text-white w-100 px-4 py-3">
+  <div class="container-fluid">
+    <div class="row w-100 align-items-center">
+      <!-- Columna izquierda vacía para balance -->
+      <div class="col"></div>
+      
+      <!-- Columna central con el título -->
+      <div class="col text-center">
+        <span class="navbar-brand mb-0 h1 text-white">MACROS</span>
+      </div>
+      
+      <!-- Columna derecha con el nombre de usuario y botón -->
+      <div class="col d-flex justify-content-end align-items-center gap-3">
+        <span class="h5 mb-0 text-white">{{ currentUser?.usuario }}</span>
+        <button class="btn btn-outline-light btn-sm" (click)="logout()">
+          <i class="bi bi-box-arrow-right fs-5"></i>
+        </button>
       </div>
     </div>
-  </nav>
+  </div>
+</div>
   
   <!-- Espaciado para compensar la barra de navegación fija -->
   <div class="container mt-5 pt-5"></div>
