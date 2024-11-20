@@ -282,6 +282,62 @@ def get_comidas(current_user, id):
     user = classusuarios.query.get_or_404(id)
     return jsonify({'cantidad_comidas': user.cantidad_comidas}), 200
 
+@usuarios_bp.route('/usuarios/<int:id>/requerimientos', methods=['GET'])
+@token_required
+def get_requerimientos_nutricionales(current_user, id):
+    if current_user.id != id and current_user.rol != 2:
+        return jsonify({'message': 'No autorizado'}), 403
+    
+    user = classusuarios.query.get_or_404(id)
+    
+    # Obtener requerimiento calórico
+    calorias_diarias = user.requerimientocalorico
+
+    # Calcular macronutrientes según el objetivo del usuario
+    if user.objetivo == 'aumentar':
+        # Para aumentar masa muscular: más proteínas
+        proteinas_porcentaje = 0.30  # 30%
+        grasas_porcentaje = 0.25     # 25%
+        carbos_porcentaje = 0.45     # 45%
+    elif user.objetivo == 'disminuir':
+        # Para pérdida de peso: proteínas altas, carbos bajos
+        proteinas_porcentaje = 0.35  # 35%
+        grasas_porcentaje = 0.30     # 30%
+        carbos_porcentaje = 0.35     # 35%
+    else:  # mantener
+        # Distribución equilibrada
+        proteinas_porcentaje = 0.25  # 25%
+        grasas_porcentaje = 0.30     # 30%
+        carbos_porcentaje = 0.45     # 45%
+
+    # Calcular gramos de cada macronutriente
+    # Proteínas y carbohidratos: 4 calorías por gramo
+    # Grasas: 9 calorías por gramo
+    proteinas_calorias = calorias_diarias * proteinas_porcentaje
+    grasas_calorias = calorias_diarias * grasas_porcentaje
+    carbos_calorias = calorias_diarias * carbos_porcentaje
+
+    requerimientos = {
+        'calorias_totales': round(calorias_diarias, 2),
+        'proteinas': {
+            'gramos': round(proteinas_calorias / 4, 2),
+            'calorias': round(proteinas_calorias, 2),
+            'porcentaje': round(proteinas_porcentaje * 100, 1)
+        },
+        'grasas': {
+            'gramos': round(grasas_calorias / 9, 2),
+            'calorias': round(grasas_calorias, 2),
+            'porcentaje': round(grasas_porcentaje * 100, 1)
+        },
+        'carbohidratos': {
+            'gramos': round(carbos_calorias / 4, 2),
+            'calorias': round(carbos_calorias, 2),
+            'porcentaje': round(carbos_porcentaje * 100, 1)
+        }
+    }
+
+    return jsonify(requerimientos), 200
+
 
 """
 @usuarios_bp.route('/usuarios', methods=['POST'])
@@ -578,7 +634,6 @@ def resumen_diario(current_user, fecha):
     
     return jsonify(resumen), 200
 
-# ... (resto del código existente)
 @registro_comidas_bp.route('/macronutrientes-diarios/<string:fecha>', methods=['GET'])
 @token_required
 def obtener_macronutrientes_diarios(current_user, fecha):

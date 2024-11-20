@@ -1,240 +1,285 @@
-<!-- Barra de navegación -->
-<!-- Navbar que ocupa todo el ancho -->
 <div class="navbar text-bg-dark text-white w-100 px-4 py-3">
   <div class="container-fluid">
     <div class="row w-100 align-items-center">
-      <!-- Columna izquierda vacía para balance -->
       <div class="col"></div>
-      
-      <!-- Columna central con el título -->
       <div class="col text-center">
         <span class="navbar-brand mb-0 h1 text-white">MACROS</span>
       </div>
-      
-      <!-- Columna derecha con el nombre de usuario y botón -->
       <div class="col d-flex justify-content-end align-items-center gap-3">
         <span class="h5 mb-0 text-white">{{ currentUser?.usuario }}</span>
-        <button class="btn btn-outline-light btn-sm" (click)="logout()">
-          <i class="bi bi-box-arrow-right fs-5"></i>
+        <button class="btn btn-outline-light" (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i>
         </button>
       </div>
     </div>
   </div>
 </div>
-  
-  <!-- Espaciado para compensar la barra de navegación fija -->
-  <div class="container mt-5 pt-5"></div>
-  
-  <!-- Primer Card -->
-  <div class="card mt-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
-    <div class="card-body row align-items-center">
-      <div class="col text-start">
-        <button class="carousel-control-prev" style="display: inline-block;" (click)="prev()">
-          <span class="carousel-control-prev-icon custom-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Previous</span>
-        </button>
-      </div>
-      <div class="col text-center">
-        <h5 class="mt-2">{{ selectedDay }}</h5>
-      </div>
-      <div class="col text-end">
-        <button class="carousel-control-next" style="display: inline-block;" (click)="next()">
-          <span class="carousel-control-next-icon custom-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Next</span>
-        </button>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Segundo Card -->
-  <div class="card mt-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
-    <div class="card-body">
-      <hr style="border: none; border-top: 1px solid #000000;">
-  
-      <!-- Carbohidratos -->
-      <div class=" text-center">
-        <h5>Carbohidratos</h5>
-        <div class="progress mb-2" role="progressbar" aria-label="Info example" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
-            <div class="progress-bar bg-info text-dark" style="width: 50%">50%</div>
-          </div>
-        <input type="text" class="form-control text-center" placeholder="Se mostraran carbohidratos">
-      </div>
-  
-      <hr style="border: none; border-top: 1px solid #000000;">
-  
-      <!-- Proteínas -->
-      <div class="ms-4 text-center">
-        <h5>Proteínas</h5>
-        <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100">
-            <div class="progress-bar bg-success text-dark" style="width: 30%">30%</div>
-          </div>
-        <input type="text" class="form-control text-center" placeholder="0 / 256 g">
-      </div>
-  
-      <hr style="border: none; border-top: 1px solid #000000;">
-  
-      <!-- Grasas -->
-      <div class="ms-4 text-center">
-        <h5>Grasas</h5>
-        <div class="progress mb-2" role="progressbar" aria-label="Warning example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
-            <div class="progress-bar bg-warning text-dark" style="width: 75%">75%</div>
-          </div>
-        <input type="text" class="form-control text-center" placeholder="Ingrese la cantidad de grasas">
-      </div>
-      
-  
-      <hr style="border: none; border-top: 1px solid #000000;">
-      
-    </div>
-    <div class="progress mb-2 me-5 ms-5" role="progressbar" aria-label="Danger example" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100">
-        <div class="progress-bar bg-danger text-dark" style="width: 65%">65%</div>
-      </div>
-      
 
-  </div>
-
-                          <!-- En este card se debe de mostrar dinamicamente dependiendo la cantidad de comidas del usuario -->
-    <!-- tercer Card -->
-<!-- Genera un card por cada comida -->
-<div class="card mt-5 mx-auto" *ngFor="let comida of comidas; let i = index" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
-  <h5 class="card-title text-center mb-3 mt-3">{{ comida }}</h5>
-  <hr style="border: none; border-top: 1px solid #000000;">
-
-  <!-- Mostrar nombre del alimento seleccionado o un texto por defecto -->
-  <h5 class="card-title text-center mb-3 mt-3">
-    {{ nombreComidaPorCard[i] || 'Seleccionar Alimento' }}
-  </h5>
-
-  <!-- Lista de alimentos seleccionados para este card -->
-  <div class="list-group mb-3">
-    <div *ngFor="let alimento of alimentosPorCard[i]; let j = index" class="list-group-item d-flex justify-content-between align-items-center">
-      {{ alimento }}
-      <button type="button" class="btn btn-danger btn-sm" (click)="eliminarAlimento(i, j)">
-        Eliminar
+<div class="card mt-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
+  <div class="card-body row align-items-center">
+    <div class="col text-start">
+      <button class="btn" (click)="prev()">
+        <i class="fas fa-chevron-left"></i>
       </button>
     </div>
-  </div>
-  
-  
-  <hr style="border: none; border-top: 1px solid #000000;">
-  <div class="card-body">
-  
-    <hr style="border: none; border-top: 1px solid #000000;">
-  
-    <div class="text-center form-control text-center mb-2">
-      <h5>Proteínas: {{ calcularTotal(proteinasPorCard[i]) }}</h5>
+    <div class="col text-center">
+      <h5 class="mt-2">{{ selectedDay }}</h5>
     </div>
-    <div class="text-center form-control text-center mb-2">
-      <h5>Carbohidratos: {{ calcularTotal(carbohidratosPorCard[i]) }}</h5>
+    <div class="col text-end">
+      <button class="btn" (click)="next()">
+        <i class="fas fa-chevron-right"></i>
+      </button>
     </div>
-    <div class="text-center form-control text-center mb-2">
-      <h5>Grasas: {{ calcularTotal(grasasPorCard[i]) }}</h5>
-    </div>
-    <div class="text-center form-control text-center mb-2">
-      <h5>Calorías: {{ calcularTotal(caloriasPorCard[i]) }}</h5>
-    </div>
-  </div>
-  
+    <!-- Modal de Selección de Alimentos -->
+<div class="modal" [class.show]="modalVisible" [style.display]="modalVisible ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Añadir Alimento - Comida {{comidaSeleccionada}}</h5>
+        <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Buscador -->
+        <div class="mb-3">
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Buscar alimento..." 
+            [(ngModel)]="busquedaAlimento"
+            (input)="filtrarAlimentos()">
+        </div>
 
-  <div class="text-center mb-2">
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="abrirModal(i)">Añadir Alimento</button>
+        <!-- Tabla de Alimentos -->
+        <div class="table-responsive">
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Porción</th>
+                <th>Cantidad</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let alimento of alimentosFiltrados">
+                <td>{{alimento.nombre}}</td>
+                <td>{{alimento.porcion}} {{alimento.tipo_porcion}}</td>
+                <td style="width: 120px;">
+                  <input 
+                    type="number" 
+                    class="form-control form-control-sm" 
+                    [(ngModel)]="cantidades[alimento.id]" 
+                    min="0.1" 
+                    step="0.1">
+                </td>
+                <td>
+                  <button 
+                    class="btn btn-primary btn-sm"
+                    [disabled]="!cantidades[alimento.id]"
+                    (click)="agregarAlimento(alimento)">
+                    Agregar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mensaje si no hay resultados -->
+        <div *ngIf="alimentosFiltrados.length === 0" class="text-center p-3">
+          No se encontraron alimentos
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
+      </div>
+    </div>
   </div>
 </div>
 
+<div *ngIf="showAlert" 
+     class="alert position-fixed top-0 end-0 m-3" 
+     [ngClass]="{'alert-success': alertType === 'success', 'alert-danger': alertType === 'error'}"
+     style="z-index: 1060;">
+  {{ alertMessage }}
+</div>
+<!-- Overlay para el modal -->
+<div class="modal-backdrop fade show" *ngIf="modalVisible"></div>
+    
+    <!-- Overlay para el modal -->
+    <div class="modal-backdrop fade show" *ngIf="modalVisible"></div>
+  </div>
+</div>
 
+ <!-- Macros Totales -->
+<div class="card mt-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
+  <div class="card-body">
+    <h5 class="card-title text-center mb-4">Macronutrientes Totales del Día</h5>
 
-
-  
-<!-- Modal -->
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5 text-center" id="staticBackdropLabel">Seleccionar Alimento</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="px-3"> <!-- Agregado padding horizontal -->
+      <!-- Carbohidratos -->
+      <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0 fw-bold">Carbohidratos</h6>
+          <span class="ms-2 fw-bold">{{ macroTotals.carbohidratos_totales.toFixed(1) }}g</span>
+        </div>
+        <div class="progress" style="height: 25px; background-color: #f0f0f0;">
+          <div class="progress-bar bg-info" 
+               role="progressbar" 
+               [style.width.%]="calculateMacroPercentage(macroTotals.carbohidratos_totales, getTotalMacros())"
+               style="font-size: 0.9rem;">
+            {{ calculateMacroPercentage(macroTotals.carbohidratos_totales, getTotalMacros()).toFixed(1) }}%
+          </div>
+        </div>
       </div>
-      <div class="modal-body">
-        <div class="container">
-          <div class="row justify-content-center">
-            <div class="col-md-6">
-              <ul class="list-group">
-                <!-- Lista de alimentos disponibles para seleccionar -->
-                <li *ngFor="let alimento of consultarAlimentos; let i = index" 
-                class="list-group-item" 
-                (click)="seleccionarAlimento(alimento, i)">
-              {{ alimento }}
-            </li>
-            
-              </ul>
+
+      <!-- Proteínas -->
+      <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0 fw-bold">Proteínas</h6>
+          <span class="ms-2 fw-bold">{{ macroTotals.proteinas_totales.toFixed(1) }}g</span>
+        </div>
+        <div class="progress" style="height: 25px; background-color: #f0f0f0;">
+          <div class="progress-bar bg-success" 
+               role="progressbar" 
+               [style.width.%]="calculateMacroPercentage(macroTotals.proteinas_totales, getTotalMacros())"
+               style="font-size: 0.9rem;">
+            {{ calculateMacroPercentage(macroTotals.proteinas_totales, getTotalMacros()).toFixed(1) }}%
+          </div>
+        </div>
+      </div>
+
+      <!-- Grasas -->
+      <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0 fw-bold">Grasas</h6>
+          <span class="ms-2 fw-bold">{{ macroTotals.grasas_totales.toFixed(1) }}g</span>
+        </div>
+        <div class="progress" style="height: 25px; background-color: #f0f0f0;">
+          <div class="progress-bar bg-warning" 
+               role="progressbar" 
+               [style.width.%]="calculateMacroPercentage(macroTotals.grasas_totales, getTotalMacros())"
+               style="font-size: 0.9rem;">
+            {{ calculateMacroPercentage(macroTotals.grasas_totales, getTotalMacros()).toFixed(1) }}%
+          </div>
+        </div>
+      </div>
+
+      <!-- Calorías -->
+      <div class="mb-2">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0 fw-bold">Calorías Totales</h6>
+          <span class="ms-2 fw-bold">{{ macroTotals.calorias_totales.toFixed(1) }} / {{ userRequerimentoCalorico.toFixed(1) }} kcal</span>
+        </div>
+        <div class="progress" style="height: 25px; background-color: #f0f0f0;">
+          <div class="progress-bar bg-danger" 
+               role="progressbar" 
+               [style.width.%]="calculateCaloriePercentage()"
+               style="font-size: 0.9rem;">
+            {{ calculateCaloriePercentage().toFixed(1) }}%
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Secciones de Comidas -->
+  <div *ngFor="let numeroComida of [].constructor(cantidadComidas); let i = index" 
+       class="card mt-5 mx-auto" 
+       style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
+    <div class="card-body">
+      <h5 class="card-title text-center mb-3">{{ getNombreComida(i + 1) }}</h5>
+      <hr>
+
+      <!-- Lista de alimentos -->
+      <div *ngIf="tieneAlimentos(i + 1)">
+        <div *ngFor="let registro of comidas[i + 1]" class="mb-3">
+          <div class="row align-items-center">
+            <div class="col">
+              <strong>{{ registro.alimento }}</strong>
+              <div class="small text-muted">
+                Cantidad: {{ registro.cantidad }}
+                <br>
+                P: {{ registro.proteinas.toFixed(1) }}g | 
+                C: {{ registro.carbohidratos.toFixed(1) }}g | 
+                G: {{ registro.grasas.toFixed(1) }}g | 
+                Cal: {{ registro.calorias.toFixed(1) }}kcal
+              </div>
+            </div>
+            <div class="col-auto">
+              <button class="btn btn-sm btn-outline-primary me-2" (click)="editarCantidad(registro)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger" (click)="eliminarAlimento(registro.id)">
+                <i class="fas fa-trash"></i>
+              </button>
             </div>
           </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+
+        <!-- Totales por comida -->
+        <div class="mt-3 pt-3 border-top">
+          <div class="row">
+            <div class="col-6">
+              <small class="text-muted">Proteínas: {{ getMacrosPorComida(i + 1).proteinas_totales.toFixed(1) }}g</small>
+            </div>
+            <div class="col-6">
+              <small class="text-muted">Carbohidratos: {{ getMacrosPorComida(i + 1).carbohidratos_totales.toFixed(1) }}g</small>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-6">
+              <small class="text-muted">Grasas: {{ getMacrosPorComida(i + 1).grasas_totales.toFixed(1) }}g</small>
+            </div>
+            <div class="col-6">
+              <small class="text-muted">Calorías: {{ getMacrosPorComida(i + 1).calorias_totales.toFixed(1) }}kcal</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensaje cuando no hay alimentos -->
+      <div *ngIf="!tieneAlimentos(i + 1)" class="text-center text-muted">
+        No hay alimentos registrados
+      </div>
+
+      <div class="text-center mt-3">
+        <button class="btn btn-primary" (click)="abrirModalAlimentos(i + 1)">
+          Añadir Alimento
+        </button>
       </div>
     </div>
-  </div>
-</div>
 
-
-
-
-
-
-<!-- Segundo Card -->
-<div class="card mt-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
+  <!-- Control de Agua -->
+  <div class="card mt-5 mb-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
     <div class="card-body d-flex flex-column" style="height: 100%;">
-      <hr style="border: none; border-top: 1px solid #000000;">
-  
+      <hr>
       <div class="text-center">
         <h5 class="mt-2">Agua: {{ currentWater }} ml</h5>
       </div>
-  
+
       <div class="row align-items-center flex-grow-1">
         <div class="col text-start">
-          <button type="button" class="carousel-control-prev" (click)="decreaseWater()" [disabled]="currentWater <= 0" style="display: inline-block;">
-            <img src="imagenes/menos.png" alt="Botón de imagen" style="width: 50px; height: 50px;">
+          <button class="btn btn-link" (click)="decreaseWater()">
+            <img src="assets/imagenes/menos.png" alt="Menos agua" style="width: 50px; height: 50px;">
           </button>
         </div>
         <div class="col text-end">
-          <button class="carousel-control-next" (click)="increaseWater()" [disabled]="currentWater >= maxWater" style="display: inline-block;">
-            <img src="imagenes/mas.png" alt="Botón de imagen" style="width: 50px; height: 50px;">
+          <button class="btn btn-link" (click)="increaseWater()">
+            <img src="assets/imagenes/mas.png" alt="Más agua" style="width: 50px; height: 50px;">
           </button>
         </div>
       </div>
-  
-      <hr style="border: none; border-top: 1px solid #000000;">
-  
-      <!-- Barra de progreso al final del card -->
-      <div class="progress" role="progressbar" aria-label="Water consumption" [attr.aria-valuenow]="currentWater" aria-valuemin="0" [attr.aria-valuemax]="maxWater" style="width: 100%;">
-        <div class="progress-bar bg-danger text-dark" [style.width]="(currentWater / maxWater) * 100 + '%'">
+
+      <hr>
+      <div class="progress">
+        <div class="progress-bar bg-info text-dark" 
+             role="progressbar" 
+             [style.width.%]="getWaterPercentage()">
           {{ currentWater }} ml
         </div>
       </div>
     </div>
   </div>
-  
-
-  
-  
-  
-  
-  <!-- Estilos adicionales -->
-  <style>
-    .carousel-control-prev {
-      top: 0;
-    }
-    .custom-icon {
-      filter: brightness(0) invert(0);
-    }
-    @media (max-width: 768px) {
-      .navbar-brand {
-        font-size: 1.2rem;
-      }
-      .card-body h5 {
-        font-size: 1rem;
-      }
-    }
-  </style>
-  
