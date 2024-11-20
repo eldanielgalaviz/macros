@@ -30,6 +30,7 @@
         <i class="fas fa-chevron-right"></i>
       </button>
     </div>
+    
     <!-- Modal de Selección de Alimentos -->
 <div class="modal" [class.show]="modalVisible" [style.display]="modalVisible ? 'block' : 'none'" tabindex="-1">
   <div class="modal-dialog modal-lg">
@@ -184,102 +185,115 @@
   </div>
 </div>
 
-  <!-- Secciones de Comidas -->
-  <div *ngFor="let numeroComida of [].constructor(cantidadComidas); let i = index" 
-       class="card mt-5 mx-auto" 
-       style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
-    <div class="card-body">
-      <h5 class="card-title text-center mb-3">{{ getNombreComida(i + 1) }}</h5>
-      <hr>
+ <!-- Cards de Comidas -->
+<div *ngFor="let numeroComida of [].constructor(cantidadComidas); let i = index" 
+class="card mt-5 mx-auto" 
+style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
+<!-- Título de la comida centrado -->
+<h5 class="card-title text-center pt-4 mb-0">{{ getNombreComida(i + 1) }}</h5>
 
-      <!-- Lista de alimentos -->
-      <div *ngIf="tieneAlimentos(i + 1)">
-        <div *ngFor="let registro of comidas[i + 1]" class="mb-3">
-          <div class="row align-items-center">
-            <div class="col">
-              <strong>{{ registro.alimento }}</strong>
-              <div class="small text-muted">
-                Cantidad: {{ registro.cantidad }}
-                <br>
-                P: {{ registro.proteinas.toFixed(1) }}g | 
-                C: {{ registro.carbohidratos.toFixed(1) }}g | 
-                G: {{ registro.grasas.toFixed(1) }}g | 
-                Cal: {{ registro.calorias.toFixed(1) }}kcal
-              </div>
-            </div>
-            <div class="col-auto">
-              <button class="btn btn-sm btn-outline-primary me-2" (click)="editarCantidad(registro)">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger" (click)="eliminarAlimento(registro.id)">
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
-          </div>
-        </div>
+<div class="card-body pt-2">
+<hr class="mb-4">
+
+<!-- Lista de alimentos -->
+<div *ngIf="tieneAlimentos(i + 1)">
+ <div *ngFor="let registro of comidas[i + 1]" class="mb-3">
+   <div class="d-flex justify-content-between align-items-center p-3 border rounded">
+     <div class="flex-grow-1">
+       <h6 class="mb-2">{{ registro.alimento }}</h6>
+       <div class="text-muted mb-2">Cantidad: {{ registro.cantidad }}</div>
+       <div class="row g-2">
+         <div class="col-12">
+           <span class="me-4">Proteínas: {{ registro.proteinas.toFixed(1) }}g</span>
+           <span>Carbohidratos: {{ registro.carbohidratos.toFixed(1) }}g</span>
+         </div>
+         <div class="col-12">
+           <span class="me-4">Grasas: {{ registro.grasas.toFixed(1) }}g</span>
+           <span>Calorías: {{ registro.calorias.toFixed(1) }} kcal</span>
+         </div>
+       </div>
+     </div>
+     <div class="ms-3">
+       <button class="btn btn-sm btn-outline-primary d-block mb-2" (click)="editarCantidad(registro)">
+         <i class="fas fa-edit"></i>
+       </button>
+       <button class="btn btn-sm btn-outline-danger d-block" (click)="eliminarAlimento(registro.id)">
+         <i class="fas fa-trash"></i>
+       </button>
+     </div>
+   </div>
+ </div>
+</div>
+ 
+<div *ngIf="!tieneAlimentos(i + 1)" class="text-center text-muted mb-4">
+ No hay alimentos registrados
+</div>
+
+<!-- Totales de la comida -->
+<div class="row mt-4">
+ <div class="col">
+   <div class="bg-light p-4 rounded">
+     <div class="d-flex flex-column gap-3">
+       <div class="d-flex justify-content-between">
+         <span class="fw-bold">Proteínas:</span>
+         <span>{{ getMacrosPorComida(i + 1).proteinas_totales.toFixed(1) }}g</span>
+       </div>
+       <div class="d-flex justify-content-between">
+         <span class="fw-bold">Carbohidratos:</span>
+         <span>{{ getMacrosPorComida(i + 1).carbohidratos_totales.toFixed(1) }}g</span>
+       </div>
+       <div class="d-flex justify-content-between">
+         <span class="fw-bold">Grasas:</span>
+         <span>{{ getMacrosPorComida(i + 1).grasas_totales.toFixed(1) }}g</span>
+       </div>
+       <div class="d-flex justify-content-between">
+         <span class="fw-bold">Calorías:</span>
+         <span>{{ getMacrosPorComida(i + 1).calorias_totales.toFixed(1) }} kcal</span>
+       </div>
+     </div>
+   </div>
+ </div>
+</div>
+
+<!-- Botón agregar -->
+<div class="text-center mt-4">
+ <button class="btn btn-primary" (click)="abrirModalAlimentos(i + 1)">
+   Añadir Alimento
+ </button>
+</div>
+</div>
+</div>
+
+
+  <!-- Control de agua -->
+<!-- Control de agua -->
+<div class="card mt-5 mb-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
+  <div class="card-body d-flex flex-column" style="height: 100%;">
+    <hr>
+    <div class="text-center">
+      <h5 class="mt-2">Agua: {{ currentWater }} ml</h5>
+    </div>
+
+    <div class="row align-items-center flex-grow-1">
+      <div class="col text-start">
+        <button class="btn btn-link" (click)="decreaseWater()">
+          <i class="fas fa-minus-circle fa-2x text-primary"></i>
+        </button>
       </div>
-
-        <!-- Totales por comida -->
-        <div class="mt-3 pt-3 border-top">
-          <div class="row">
-            <div class="col-6">
-              <small class="text-muted">Proteínas: {{ getMacrosPorComida(i + 1).proteinas_totales.toFixed(1) }}g</small>
-            </div>
-            <div class="col-6">
-              <small class="text-muted">Carbohidratos: {{ getMacrosPorComida(i + 1).carbohidratos_totales.toFixed(1) }}g</small>
-            </div>
-          </div>
-          <div class="row mt-2">
-            <div class="col-6">
-              <small class="text-muted">Grasas: {{ getMacrosPorComida(i + 1).grasas_totales.toFixed(1) }}g</small>
-            </div>
-            <div class="col-6">
-              <small class="text-muted">Calorías: {{ getMacrosPorComida(i + 1).calorias_totales.toFixed(1) }}kcal</small>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Mensaje cuando no hay alimentos -->
-      <div *ngIf="!tieneAlimentos(i + 1)" class="text-center text-muted">
-        No hay alimentos registrados
-      </div>
-
-      <div class="text-center mt-3">
-        <button class="btn btn-primary" (click)="abrirModalAlimentos(i + 1)">
-          Añadir Alimento
+      <div class="col text-end">
+        <button class="btn btn-link" (click)="increaseWater()">
+          <i class="fas fa-plus-circle fa-2x text-primary"></i>
         </button>
       </div>
     </div>
 
-  <!-- Control de Agua -->
-  <div class="card mt-5 mb-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
-    <div class="card-body d-flex flex-column" style="height: 100%;">
-      <hr>
-      <div class="text-center">
-        <h5 class="mt-2">Agua: {{ currentWater }} ml</h5>
-      </div>
-
-      <div class="row align-items-center flex-grow-1">
-        <div class="col text-start">
-          <button class="btn btn-link" (click)="decreaseWater()">
-            <img src="assets/imagenes/menos.png" alt="Menos agua" style="width: 50px; height: 50px;">
-          </button>
-        </div>
-        <div class="col text-end">
-          <button class="btn btn-link" (click)="increaseWater()">
-            <img src="assets/imagenes/mas.png" alt="Más agua" style="width: 50px; height: 50px;">
-          </button>
-        </div>
-      </div>
-
-      <hr>
-      <div class="progress">
-        <div class="progress-bar bg-info text-dark" 
-             role="progressbar" 
-             [style.width.%]="getWaterPercentage()">
-          {{ currentWater }} ml
-        </div>
+    <hr>
+    <div class="progress" style="height: 30px;" style="width: 100%">
+      <div class="progress-bar bg-info text-dark" 
+           role="progressbar" 
+           [style.width.%]="getWaterPercentage()">
+           {{ currentWater }} ml
       </div>
     </div>
   </div>
+</div>

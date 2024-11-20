@@ -410,11 +410,15 @@ export class CalendarComponent implements OnInit {
   }
 
   increaseWater(): void {
-    this.currentWater = Math.min(this.currentWater + this.increment, this.maxWater);
+    this.currentWater += this.increment;
   }
 
   decreaseWater(): void {
-    this.currentWater = Math.max(this.currentWater - this.increment, 0);
+    if (this.currentWater - this.increment >= 0) {
+      this.currentWater -= this.increment;
+    } else {
+      this.currentWater = 0;
+    }
   }
 
   getWaterPercentage(): number {
