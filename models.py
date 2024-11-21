@@ -95,3 +95,16 @@ class classusuarios(db.Model):
             'cantidad_comidas':self.cantidad_comidas
         }
     
+class RegistroAgua(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('classusuarios.id'), nullable=False)
+    fecha = db.Column(db.Date, nullable=False, default=date.today)
+    cantidad = db.Column(db.Integer, nullable=False)  # cantidad en ml
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'usuario_id': self.usuario_id,
+            'fecha': self.fecha,
+            'cantidad': self.cantidad
+        }

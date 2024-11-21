@@ -1,7 +1,7 @@
 import jwt
 import datetime
 from flask import Blueprint, jsonify, request, current_app, url_for, render_template
-from models import db, classusuarios, classalimentos, RegistroComidas
+from models import db, classusuarios, classalimentos, RegistroComidas, RegistroAgua
 from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
 from sqlalchemy import func
@@ -701,5 +701,49 @@ def eliminar_comida(current_user, registro_id):
     db.session.commit()
     
     return jsonify({'message': 'Registro eliminado correctamente'}), 200
+
+# Añade esto en routes.py
+@registro_comidas_bp.route('/registrar-agua', methods=['POST'])
+@token_required
+def registrar_agua(current_user):
+    data = request.json
+    fecha = datetime.datetime.strptime(data['fecha'], '%Y-%m-%d').date()
+    
+    # Buscar si ya existe un registro para esta fecha
+    registro_existente = RegistroAgua.query.filter_by(
+        usuario_id=current_user.id,
+        fecha=fecha
+    ).first()
+
+    if registro_existente:
+        # Actualizar registro existente
+        registro_existente.cantidad = data['cantidad']
+        db.session.commit()
+        return jsonify(registro_existente.to_dict()), 200
+    else:
+        # Crear nuevo registro
+        nuevo_registro = RegistroAgua(
+            usuario_id=current_user.id,
+            fecha=fecha,
+            cantidad=data['cantidad']
+        )
+        db.session.add(nuevo_registro)
+        db.session.commit()
+        return jsonify(nuevo_registro.to_dict()), 201
+
+@registro_comidas_bp.route('/agua-diaria/<string:fecha>', methods=['GET'])
+@token_required
+def obtener_agua_diaria(current_user, fecha):
+    fecha_obj = datetime.datetime.strptime(fecha, '%Y-%m-%d').date()
+    
+    registro = RegistroAgua.query.filter_by(
+        usuario_id=current_user.id,
+        fecha=fecha_obj
+    ).first()
+    
+    if registro:
+        return jsonify(registro.to_dict()), 200
+    else:
+        return jsonify({'cantidad': 0}), 200
 
 

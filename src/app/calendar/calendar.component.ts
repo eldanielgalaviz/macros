@@ -134,9 +134,36 @@ export class CalendarComponent implements OnInit {
         this.loadUserSettings(user.id);
         this.loadRegistrosComidas(this.formatDateForApi(this.selectedDate));
         this.loadMacroRequirements(user.id);
+        this.loadWaterRecord(this.formatDateForApi(this.selectedDate));
       }
     });
   }
+
+  loadWaterRecord(fecha: string) {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    this.http.get<any>(`http://localhost:5000/agua-diaria/${fecha}`, { headers })
+      .subscribe({
+        next: (data) => {
+          this.currentWater = data.cantidad;
+        },
+        error: (error) => console.error('Error loading water record:', error)
+      });
+  }
+  
+  saveWaterRecord() {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    const data = {
+      fecha: this.formatDateForApi(this.selectedDate),
+      cantidad: this.currentWater
+    };
+  
+    this.http.post('http://localhost:5000/registrar-agua', data, { headers })
+      .subscribe({
+        error: (error) => console.error('Error saving water record:', error)
+      });
+  }
+  
+ 
 
   private loadMacroRequirements(userId: number) {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
@@ -374,12 +401,14 @@ export class CalendarComponent implements OnInit {
     this.selectedDate.setDate(this.selectedDate.getDate() - 1);
     this.selectedDay = this.formatDate(this.selectedDate);
     this.loadRegistrosComidas(this.formatDateForApi(this.selectedDate));
+    this.loadWaterRecord(this.formatDateForApi(this.selectedDate));
   }
-
+  
   next(): void {
     this.selectedDate.setDate(this.selectedDate.getDate() + 1);
     this.selectedDay = this.formatDate(this.selectedDate);
     this.loadRegistrosComidas(this.formatDateForApi(this.selectedDate));
+    this.loadWaterRecord(this.formatDateForApi(this.selectedDate));
   }
 
   private formatDate(date: Date): string {
@@ -411,6 +440,7 @@ export class CalendarComponent implements OnInit {
 
   increaseWater(): void {
     this.currentWater += this.increment;
+    this.saveWaterRecord();
   }
 
   decreaseWater(): void {
@@ -419,6 +449,7 @@ export class CalendarComponent implements OnInit {
     } else {
       this.currentWater = 0;
     }
+    this.saveWaterRecord();
   }
 
   getWaterPercentage(): number {
