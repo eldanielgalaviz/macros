@@ -745,5 +745,41 @@ def obtener_agua_diaria(current_user, fecha):
         return jsonify(registro.to_dict()), 200
     else:
         return jsonify({'cantidad': 0}), 200
+    
 
 
+
+#-------------------------------------------------- Gestión de información personal por parte del usuraio.--------------------------------------------------#
+
+
+@usuarios_bp.route('/settings', methods=['GET'])
+@token_required
+def get_settings(current_user):
+    user_data = {
+        'nombre': current_user.nombre,
+        'apellidopaterno': current_user.apellidopaterno,
+        'apellidomaterno': current_user.apellidomaterno,
+        'edad': current_user.edad,
+        'usuario': current_user.usuario
+    }
+    return jsonify(user_data), 200
+
+@usuarios_bp.route('/settings', methods=['PUT'])
+@token_required
+def update_personal_settings(current_user):
+    data = request.json
+    
+    # Verificar si el usuario ya existe y es diferente al actual
+    if data['usuario'] != current_user.usuario:
+        existing_user = classusuarios.query.filter_by(usuario=data['usuario']).first()
+        if existing_user:
+            return jsonify({'message': 'El nombre de usuario ya está en uso'}), 400
+
+    current_user.nombre = data['nombre']
+    current_user.apellidopaterno = data['apellidopaterno']
+    current_user.apellidomaterno = data['apellidomaterno']
+    current_user.edad = data['edad']
+    current_user.usuario = data['usuario']
+    
+    db.session.commit()
+    return jsonify({'message': 'Información actualizada correctamente'})

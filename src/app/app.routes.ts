@@ -14,6 +14,7 @@ import { MicuentaComponent } from './micuenta/micuenta.component';
 import { ResetPasswordComponent } from './resetpassword/resetpassword.component';
 import { DoctorGuard } from './guards/doctor.guard';
 import { authGuard } from './auth/guards/auth.guard';
+import { SettingsComponent } from './settings/settings.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -34,9 +35,12 @@ export const routes: Routes = [
   { path: 'objetivo', component: ObjetivosComponent },
   { path: 'alimentos', component: AlimentosComponent },
   { path: 'recetas', component: RecetaComponent },
-  { path: 'calendar', component: CalendarComponent },
+  { path: 'calendar', component: CalendarComponent, canActivate: [authGuard] },
   { path: 'cuenta', component: MicuentaComponent },
   { path: 'resetpassword/:token', component: ResetPasswordComponent},
+  { path: 'calendar', component: CalendarComponent, canActivate: [authGuard] },
+  { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
+  
   //{ path: 'reset_password/:token', component: VerifyTokenComponent },
 
 

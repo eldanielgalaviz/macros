@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from models import db, classusuarios ,classalimentos # Asegúrate de que `classusuarios` esté correctamente definido en `models.py`
+from models import db, classusuarios ,classalimentos 
 from routes import usuarios_bp, alimentos_bp, registro_comidas_bp, auth_bp, personal_info_bp
 from config import Config
 from flask_mail import Mail
