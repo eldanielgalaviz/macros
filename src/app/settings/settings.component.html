@@ -1,0 +1,71 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <!-- Alertas -->
+      <div *ngIf="showAlert" class="alert" [ngClass]="{'alert-success': alertType === 'success', 'alert-danger': alertType === 'error'}" role="alert">
+        {{ alertMessage }}
+      </div>
+
+      <!-- Datos Personales -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Datos Personales</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Nombre</label>
+              <input type="text" class="form-control" [(ngModel)]="settings.nombre">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Apellido Paterno</label>
+              <input type="text" class="form-control" [(ngModel)]="settings.apellidopaterno">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Apellido Materno</label>
+              <input type="text" class="form-control" [(ngModel)]="settings.apellidomaterno">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Edad</label>
+              <input type="number" class="form-control" [(ngModel)]="settings.edad">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Usuario</label>
+            <input type="text" class="form-control" [(ngModel)]="settings.usuario">
+          </div>
+          <button class="btn btn-primary" (click)="updatePersonalInfo()" [disabled]="loading">
+            {{ loading ? 'Guardando...' : 'Guardar Cambios' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Cambio de Contraseña -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Cambiar Contraseña</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label">Contraseña Actual</label>
+            <input type="password" class="form-control" [(ngModel)]="passwordData.currentPassword">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Nueva Contraseña</label>
+            <input type="password" class="form-control" [(ngModel)]="passwordData.newPassword">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Confirmar Nueva Contraseña</label>
+            <input type="password" class="form-control" [(ngModel)]="passwordData.confirmPassword">
+          </div>
+          <button class="btn btn-primary" (click)="updatePassword()" [disabled]="loading">
+            {{ loading ? 'Actualizando...' : 'Cambiar Contraseña' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```

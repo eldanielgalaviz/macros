@@ -5,7 +5,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../auth/services/auth.service';
 import { CommonModule } from '@angular/common'
 
@@ -76,6 +76,7 @@ interface User {
     MatDatepickerModule,
     MatNativeDateModule,
     MatFormFieldModule,
+    RouterModule,
     MatInputModule
   ],
   templateUrl: './calendar.component.html',
@@ -137,6 +138,10 @@ export class CalendarComponent implements OnInit {
         this.loadWaterRecord(this.formatDateForApi(this.selectedDate));
       }
     });
+  }
+
+  navigateToSettings() {
+    this.router.navigate(['/settings']);
   }
 
   loadWaterRecord(fecha: string) {
