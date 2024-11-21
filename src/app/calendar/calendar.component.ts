@@ -234,49 +234,95 @@ export class CalendarComponent implements OnInit {
       });
   }
 
-  editarCantidad(registro: any) {
-    const nuevaCantidad = prompt('Ingrese la nueva cantidad:', registro.cantidad);
-    if (nuevaCantidad === null) return;
-    
-    const cantidad = parseFloat(nuevaCantidad);
-    if (isNaN(cantidad) || cantidad <= 0) {
-      alert('Por favor ingrese una cantidad válida');
-      return;
-    }
-  
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
-    this.http.put(`http://localhost:5000/actualizar-comida/${registro.id}`, 
-      { cantidad: cantidad }, 
-      { headers })
-      .subscribe({
-        next: () => {
-          this.loadRegistrosComidas(this.formatDateForApi(this.selectedDate));
-          this.showSuccessAlert('Cantidad actualizada correctamente');
-        },
-        error: (error) => {
-          console.error('Error al actualizar cantidad:', error);
-          this.showErrorAlert(error.error.message || 'Error al actualizar la cantidad');
-        }
-      });
+// Variables para manejar el estado del modal y la edición
+modalEditarVisible = false;
+registroSeleccionado: any = null;
+cantidadEditada: number | null = null;
+
+// Función para abrir el modal
+editarCantidad(registro: any): void {
+  this.registroSeleccionado = registro; // Asignar el registro actual
+  this.cantidadEditada = registro.cantidad; // Prellenar con la cantidad actual
+  this.modalEditarVisible = true; // Mostrar el modal
+}
+
+// Función para cerrar el modal
+cerrarModalEditar(): void {
+  this.modalEditarVisible = false; // Ocultar el modal
+  this.registroSeleccionado = null; // Limpiar el registro seleccionado
+  this.cantidadEditada = null; // Limpiar la cantidad editada
+}
+
+// Función para guardar la nueva cantidad
+guardarCantidad(): void {
+  if (!this.registroSeleccionado || !this.cantidadEditada || this.cantidadEditada <= 0) {
+    alert('Por favor, ingrese una cantidad válida.');
+    return;
   }
 
-  eliminarAlimento(registroId: number) {
-    if (!confirm('¿Está seguro de eliminar este alimento?')) return;
+  // Preparar los headers para la solicitud HTTP
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
   
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
-    this.http.delete(`http://localhost:5000/eliminar-comida/${registroId}`, 
-      { headers })
-      .subscribe({
-        next: () => {
-          this.loadRegistrosComidas(this.formatDateForApi(this.selectedDate));
-          this.showSuccessAlert('Alimento eliminado correctamente');
-        },
-        error: (error) => {
-          console.error('Error al eliminar alimento:', error);
-          this.showErrorAlert(error.error.message || 'Error al eliminar el alimento');
-        }
-      });
-  }
+  // Realizar la solicitud PUT al backend
+  this.http.put(`http://localhost:5000/actualizar-comida/${this.registroSeleccionado.id}`, 
+    { cantidad: this.cantidadEditada }, 
+    { headers })
+    .subscribe({
+      next: () => {
+        // Recargar los datos después de la actualización
+        this.loadRegistrosComidas(this.formatDateForApi(this.selectedDate));
+        this.showSuccessAlert('Cantidad actualizada correctamente');
+        this.cerrarModalEditar(); // Cerrar el modal
+      },
+      error: (error) => {
+        console.error('Error al actualizar cantidad:', error);
+        this.showErrorAlert(error.error.message || 'Error al actualizar la cantidad');
+      }
+    });
+}
+
+
+// Variables para manejar el estado del modal y el registro seleccionado
+modalEliminarVisible = false;
+registroIdEliminar: number | null = null;
+
+// Función para abrir el modal de confirmación
+eliminarAlimento(registroId: number): void {
+  this.registroIdEliminar = registroId; // Guardar el ID del registro que se quiere eliminar
+  this.modalEliminarVisible = true; // Mostrar el modal de confirmación
+}
+
+// Función para cerrar el modal
+cerrarModalEliminar(): void {
+  this.modalEliminarVisible = false; // Ocultar el modal
+  this.registroIdEliminar = null; // Limpiar el registro seleccionado
+}
+
+// Función para confirmar la eliminación
+confirmarEliminacion(): void {
+  if (!this.registroIdEliminar) return;
+
+  // Preparar los headers para la solicitud HTTP
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+
+  // Realizar la solicitud DELETE al backend
+  this.http.delete(`http://localhost:5000/eliminar-comida/${this.registroIdEliminar}`, 
+    { headers })
+    .subscribe({
+      next: () => {
+        // Recargar los datos después de la eliminación
+        this.loadRegistrosComidas(this.formatDateForApi(this.selectedDate));
+        this.showSuccessAlert('Alimento eliminado correctamente');
+        this.cerrarModalEliminar(); // Cerrar el modal
+      },
+      error: (error) => {
+        console.error('Error al eliminar alimento:', error);
+        this.showErrorAlert(error.error.message || 'Error al eliminar el alimento');
+        this.cerrarModalEliminar(); // Cerrar el modal
+      }
+    });
+}
+
 
 
 

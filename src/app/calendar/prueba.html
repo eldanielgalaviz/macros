@@ -1,0 +1,90 @@
+<!-- tercer Card -->
+<!-- Genera un card por cada comida -->
+<div class="card mt-5 mx-auto" *ngFor="let comida of comidas; let i = index" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
+    <h5 class="card-title text-center mb-3 mt-3">{{ comida }}</h5>
+    <hr style="border: none; border-top: 1px solid #000000;">
+    
+    <h5 class="card-title text-center mb-3 mt-3">
+      {{ nombreComidaPorCard[i] || 'Seleccionar Alimento' }}
+    </h5>
+    <div class="list-group mb-3">
+      <div *ngFor="let alimento of alimentosPorCard[i]; let j = index" class="list-group-item d-flex justify-content-between align-items-center">
+        {{ alimento }}
+        <button type="button" class="btn btn-danger btn-sm" (click)="eliminarAlimento(i, j)">
+          Eliminar
+        </button>
+      </div>
+    </div>
+    
+    
+    <hr style="border: none; border-top: 1px solid #000000;">
+    <div class="card-body">
+      <!-- Mostrar alimentos seleccionados en este card -->
+  
+    
+      <hr style="border: none; border-top: 1px solid #000000;">
+    
+      <div class="text-center">
+        <input type="text" class="form-control text-center mb-2" [(ngModel)]="proteinasPorCard[i][0]" placeholder="Proteínas" readonly>
+        <h5>Proteínas: {{ proteinasPorCard[i][0] || 0 }}</h5>
+      </div>
+      <hr style="border: none; border-top: 1px solid #000000;">
+    
+      <div class="text-center">
+        <input type="text" class="form-control text-center mb-2" [(ngModel)]="carbohidratosPorCard[i][0]" placeholder="Carbohidratos" readonly>
+        <h5>Carbohidratos: {{ carbohidratosPorCard[i][0] || 0 }}</h5>
+      </div>
+      <hr style="border: none; border-top: 1px solid #000000;">
+    
+      <div class="text-center">
+        <input type="text" class="form-control text-center mb-2" [(ngModel)]="grasasPorCard[i][0]" placeholder="Grasas" readonly>
+        <h5>Grasas: {{ grasasPorCard[i][0] || 0 }}</h5>
+      </div>
+      <hr style="border: none; border-top: 1px solid #000000;">
+    
+      <div class="text-center">
+        <input type="text" class="form-control text-center mb-2" [(ngModel)]="caloriasPorCard[i][0]" placeholder="Calorías" readonly>
+        <h5>Calorías: {{ caloriasPorCard[i][0] || 0 }}</h5>
+      </div>
+    </div>
+    
+  
+    <div class="text-center mb-2">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="abrirModal(i)">Añadir Alimento</button>
+    </div>
+    
+  </div>
+  
+  
+  
+  
+    
+  <!-- Modal -->
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5 text-center" id="staticBackdropLabel">Seleccionar Alimento</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+            <div class="row justify-content-center">
+              <div class="col-md-6">
+                <ul class="list-group">
+                  <li *ngFor="let alimento of consultarAlimentos; let i = index" 
+                      class="list-group-item" 
+                      (click)="seleccionarAlimento(alimento, i)"> <!-- Pasamos el índice también -->
+                    {{ alimento }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
