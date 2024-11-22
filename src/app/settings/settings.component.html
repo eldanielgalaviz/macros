@@ -48,24 +48,57 @@
           <h5 class="mb-0">Cambiar Contraseña</h5>
         </div>
         <div class="card-body">
+          <!-- Contraseña Actual -->
           <div class="mb-3">
             <label class="form-label">Contraseña Actual</label>
-            <input type="password" class="form-control" [(ngModel)]="passwordData.currentPassword">
+            <div class="input-group">
+              <input [type]="showCurrentPassword ? 'text' : 'password'"
+                     class="form-control"
+                     [(ngModel)]="passwordData.currentPassword">
+              <button class="btn btn-outline-secondary" 
+                      type="button" 
+                      (click)="showCurrentPassword = !showCurrentPassword">
+                <i class="fas" [ngClass]="{'fa-eye': !showCurrentPassword, 'fa-eye-slash': showCurrentPassword}"></i>
+              </button>
+            </div>
           </div>
+  
+          <!-- Nueva Contraseña -->
           <div class="mb-3">
             <label class="form-label">Nueva Contraseña</label>
-            <input type="password" class="form-control" [(ngModel)]="passwordData.newPassword">
+            <div class="input-group">
+              <input [type]="showNewPassword ? 'text' : 'password'"
+                     class="form-control"
+                     [(ngModel)]="passwordData.newPassword">
+              <button class="btn btn-outline-secondary" 
+                      type="button" 
+                      (click)="showNewPassword = !showNewPassword">
+                <i class="fas" [ngClass]="{'fa-eye': !showNewPassword, 'fa-eye-slash': showNewPassword}"></i>
+              </button>
+            </div>
           </div>
+  
+          <!-- Confirmar Nueva Contraseña -->
           <div class="mb-3">
             <label class="form-label">Confirmar Nueva Contraseña</label>
-            <input type="password" class="form-control" [(ngModel)]="passwordData.confirmPassword">
+            <div class="input-group">
+              <input [type]="showConfirmPassword ? 'text' : 'password'"
+                     class="form-control"
+                     [(ngModel)]="passwordData.confirmPassword">
+              <button class="btn btn-outline-secondary" 
+                      type="button" 
+                      (click)="showConfirmPassword = !showConfirmPassword">
+                <i class="fas" [ngClass]="{'fa-eye': !showConfirmPassword, 'fa-eye-slash': showConfirmPassword}"></i>
+              </button>
+            </div>
           </div>
-          <button class="btn btn-primary" (click)="updatePassword()" [disabled]="loading">
+  
+          <button class="btn btn-primary" 
+                  (click)="updatePassword()" 
+                  [disabled]="loading">
             {{ loading ? 'Actualizando...' : 'Cambiar Contraseña' }}
           </button>
         </div>
       </div>
     </div>
   </div>
-</div>
-```

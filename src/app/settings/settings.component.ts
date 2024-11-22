@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../auth/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 interface UserSettings {
   nombre: string;
@@ -13,7 +13,7 @@ interface UserSettings {
   usuario: string;
 }
 
-@Component({
+@Component({  
   selector: 'app-settings',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
@@ -29,6 +29,10 @@ export class SettingsComponent implements OnInit {
     usuario: ''
   };
 
+  showCurrentPassword = false;
+  showNewPassword = false;
+  showConfirmPassword = false;
+
   passwordData = {
     currentPassword: '',
     newPassword: '',
@@ -42,8 +46,10 @@ export class SettingsComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router  // Añadir Router
   ) {}
+
 
   ngOnInit() {
     this.loadUserSettings();
@@ -61,18 +67,33 @@ export class SettingsComponent implements OnInit {
   updatePersonalInfo() {
     this.loading = true;
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
-    
-    this.http.put('http://localhost:5000/settings', this.settings, { headers })
-      .subscribe({
-        next: () => {
-          this.showMessage('Información actualizada correctamente', 'success');
-          this.loading = false;
-        },
-        error: (error) => {
-          this.showMessage(error.error.message || 'Error al actualizar', 'error');
-          this.loading = false;
-        }
-      });
+    // Obtener el usuario actual del servicio de autenticación
+    const currentUser = this.authService.getCurrentUser().subscribe(user => {
+      const oldUsername = user?.usuario;  // Guardamos el usuario actual
+      
+      this.http.put('http://localhost:5000/settings/personal', this.settings, { headers })
+        .subscribe({
+          next: () => {
+            this.showMessage('Información actualizada correctamente', 'success');
+            this.loading = false;
+            
+            // Si el usuario cambió, cerrar sesión
+            if (oldUsername && oldUsername !== this.settings.usuario) {
+              setTimeout(() => {
+                this.showMessage('El nombre de usuario ha cambiado. Por favor, inicie sesión nuevamente.', 'success');
+                setTimeout(() => {
+                  this.authService.logout();
+                  this.router.navigate(['/login']);
+                }, 2000);
+              }, 1000);
+            }
+          },
+          error: (error) => {
+            this.showMessage(error.error.message || 'Error al actualizar', 'error');
+            this.loading = false;
+          }
+        });
+    });
   }
 
   updatePassword() {
@@ -84,16 +105,20 @@ export class SettingsComponent implements OnInit {
     this.loading = true;
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
     
-    this.http.put('http://localhost:5000/settings', this.passwordData, { headers })
+    this.http.put('http://localhost:5000/settings/password', this.passwordData, { headers })
       .subscribe({
         next: () => {
           this.showMessage('Contraseña actualizada correctamente', 'success');
-          this.passwordData = {
-            currentPassword: '',
-            newPassword: '',
-            confirmPassword: ''
-          };
           this.loading = false;
+          
+          // Cerrar sesión después de cambiar la contraseña
+          setTimeout(() => {
+            this.showMessage('La contraseña ha sido actualizada. Por favor, inicie sesión nuevamente.', 'success');
+            setTimeout(() => {
+              this.authService.logout();
+              this.router.navigate(['/login']);
+            }, 2000);
+          }, 1000);
         },
         error: (error) => {
           this.showMessage(error.error.message || 'Error al actualizar contraseña', 'error');
@@ -102,10 +127,15 @@ export class SettingsComponent implements OnInit {
       });
   }
 
+  // Actualizar el método showMessage para que no se oculte automáticamente si es un mensaje de cierre de sesión
   private showMessage(message: string, type: 'success' | 'error') {
     this.alertMessage = message;
     this.alertType = type;
     this.showAlert = true;
-    setTimeout(() => this.showAlert = false, 3000);
+    
+    // Solo ocultar automáticamente si no es un mensaje de cierre de sesión
+    if (!message.includes('inicie sesión nuevamente')) {
+      setTimeout(() => this.showAlert = false, 3000);
+    }
   }
 }
