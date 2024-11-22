@@ -764,7 +764,7 @@ def get_settings(current_user):
     }
     return jsonify(user_data), 200
 
-@usuarios_bp.route('/settings', methods=['PUT'])
+@usuarios_bp.route('/settings/personal', methods=['PUT'])
 @token_required
 def update_personal_settings(current_user):
     data = request.json
@@ -783,3 +783,23 @@ def update_personal_settings(current_user):
     
     db.session.commit()
     return jsonify({'message': 'Información actualizada correctamente'})
+
+@usuarios_bp.route('/settings/password', methods=['PUT'])
+@token_required
+def update_password(current_user):
+    try:
+        data = request.json
+        
+        if not current_user.check_password(data['currentPassword']):
+            return jsonify({'message': 'La contraseña actual es incorrecta'}), 400
+            
+        if data['newPassword'] != data['confirmPassword']:
+            return jsonify({'message': 'Las contraseñas no coinciden'}), 400
+            
+        current_user.set_password(data['newPassword'])
+        db.session.commit()
+        return jsonify({'message': 'Contraseña actualizada correctamente'})
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': f'Error al actualizar contraseña: {str(e)}'}), 500
