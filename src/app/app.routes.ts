@@ -15,6 +15,7 @@ import { ResetPasswordComponent } from './resetpassword/resetpassword.component'
 import { DoctorGuard } from './guards/doctor.guard';
 import { authGuard } from './auth/guards/auth.guard';
 import { SettingsComponent } from './settings/settings.component';
+import { PatientMealsComponent } from './patientmeals/patientmeals.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -40,6 +41,12 @@ export const routes: Routes = [
   { path: 'resetpassword/:token', component: ResetPasswordComponent},
   { path: 'calendar', component: CalendarComponent, canActivate: [authGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
+
+  {
+    path: 'patient/:id/meals',
+    component: PatientMealsComponent,
+    canActivate: [authGuard]
+  },
   
   //{ path: 'reset_password/:token', component: VerifyTokenComponent },
 
