@@ -64,6 +64,11 @@ export class SettingsComponent implements OnInit {
       });
   }
 
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
   updatePersonalInfo() {
     this.loading = true;
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);

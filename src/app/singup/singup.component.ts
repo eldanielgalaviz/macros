@@ -35,6 +35,9 @@ export class SingupComponent {
     confirmPassword: ''
   };
 
+  showPassword = false;
+  showConfirmPassword = false;
+
   errorMessage: string = '';
   successMessage: string = '';
   isLoading: boolean = false;

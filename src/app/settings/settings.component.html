@@ -1,3 +1,23 @@
+<div class="navbar text-bg-dark text-white w-100 px-4 py-3">
+  <div class="container-fluid">
+    <div class="row w-100 align-items-center">
+      <div class="col d-flex align-items-center">
+        <a routerLink="/calendar" class="text-white me-3" title="Volver">
+          <i class="fas fa-arrow-left fa-lg"></i>
+        </a>
+      </div>
+      <div class="col text-center">
+        <span class="navbar-brand mb-0 h1 text-white">CONFIGURACIÓN</span>
+      </div>
+      <div class="col d-flex justify-content-end align-items-center gap-3">
+        <span class="h5 mb-0 text-white">{{ settings.usuario }}</span>
+        <button class="btn btn-outline-light" (click)="logout()" title="Cerrar sesión">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-md-8">

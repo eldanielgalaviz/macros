@@ -19,6 +19,8 @@ export class LoginComponent {
   
   errorMessage = '';
   isLoading = false;
+  showPassword = false; // Nueva propiedad
+
 
   constructor(
     private authService: AuthService,
