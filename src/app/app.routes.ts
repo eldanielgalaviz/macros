@@ -45,7 +45,7 @@ export const routes: Routes = [
   {
     path: 'patient/:id/meals',
     component: PatientMealsComponent,
-    canActivate: [authGuard]
+    canActivate: [DoctorGuard]
   },
   
   //{ path: 'reset_password/:token', component: VerifyTokenComponent },

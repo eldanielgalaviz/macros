@@ -1,114 +1,142 @@
-<div class="navbar text-bg-dark text-white w-100 px-4 py-3">
+<nav class="navbar bg-primary text-white w-100 px-4 py-3">
     <div class="container-fluid">
-      <div class="row w-100 align-items-center">
-        <div class="col d-flex align-items-center">
-          <a (click)="goBack()" class="text-white me-3" style="cursor: pointer;">
-            <i class="fas fa-arrow-left fa-lg"></i>
-          </a>
+        <div class="row w-100 align-items-center">
+            <div class="col d-flex align-items-center">
+                <i class="bi bi-arrow-left text-white me-3 fs-3" (click)="goBack()" style="cursor: pointer;"></i>
+            </div>
+            <div class="col text-center">
+                <span class="navbar-brand mb-0 h1">Registro de Comidas</span>
+            </div>
+            <div class="col d-flex justify-content-end">
+                <span class="h5 mb-0">{{ patientInfo?.nombre }} {{ patientInfo?.apellidopaterno }}</span>
+            </div>
         </div>
-        <div class="col text-center">
-          <span class="navbar-brand mb-0 h1 text-white">Registro de Comidas</span>
-        </div>
-        <div class="col d-flex justify-content-end">
-          <span class="h5 mb-0 text-white">{{ patientInfo?.nombre }} {{ patientInfo?.apellidopaterno }}</span>
-        </div>
-      </div>
     </div>
-  </div>
+</nav>
 
-  <div class="container mt-5">
-    <!-- Selector de fecha -->
-    <div class="card mb-4">
-      <div class="card-body">
+<div class="container mt-5">
+   <!-- Reemplaza la sección de los botones en el card de navegación -->
+<div class="card mb-4">
+    <div class="card-body">
         <div class="row align-items-center">
-          <div class="col text-start">
-            <button class="btn btn-link" (click)="prevDay()">
-              <i class="fas fa-chevron-left"></i>
-            </button>
-          </div>
-          <div class="col text-center">
-            <h5 class="mb-0">{{ selectedDate | dateEs }}</h5>
-          </div>
-          <div class="col text-end">
-            <button class="btn btn-link" (click)="nextDay()">
-              <i class="fas fa-chevron-right"></i>
-            </button>
-          </div>
+            <div class="col text-start">
+                <button class="btn btn-outline-primary" (click)="prevDay()">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+            </div>
+            <div class="col text-center">
+                <h5 class="mb-0">{{ selectedDate | dateEs }}</h5>
+            </div>
+            <div class="col text-end">
+                <button class="btn btn-outline-primary" (click)="nextDay()">
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </div>
         </div>
-      </div>
     </div>
+</div>
 
-    <!-- Resumen de Macronutrientes -->
-    <div class="card mb-4">
-      <div class="card-header">
+<div class="card mb-4">
+    <div class="card-header">
         <h5 class="mb-0">Macronutrientes Totales del Día</h5>
-      </div>
-      <div class="card-body">
+    </div>
+    <div class="card-body">
         <div class="mb-3">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <strong>Proteínas:</strong>
-            <span>{{ macroTotals.proteinas_totales }}g</span>
-          </div>
-          <div class="progress">
-            <div class="progress-bar bg-success" 
-                 [style.width.%]="getPercentage(macroTotals.proteinas_totales, getTotalMacros())">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong>Carbohidratos: {{ macroTotals.carbohidratos_totales }}g / {{ macroRequirements.carbohidratos.gramos.toFixed(1) }}g</strong>
+                <span>{{ (macroTotals.carbohidratos_totales * 100 / macroRequirements.carbohidratos.gramos).toFixed(1) }}%</span>
             </div>
-          </div>
+            <div class="progress">
+                <div class="progress-bar bg-info" role="progressbar"
+                    [style.width.%]="(macroTotals.carbohidratos_totales * 100 / macroRequirements.carbohidratos.gramos)">
+                </div>
+            </div>
         </div>
+
         <div class="mb-3">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <strong>Carbohidratos:</strong>
-            <span>{{ macroTotals.carbohidratos_totales }}g</span>
-          </div>
-          <div class="progress">
-            <div class="progress-bar bg-info" 
-                 [style.width.%]="getPercentage(macroTotals.carbohidratos_totales, getTotalMacros())">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong>Proteínas: {{ macroTotals.proteinas_totales }}g / {{ macroRequirements.proteinas.gramos.toFixed(1) }}g</strong>
+                <span>{{ (macroTotals.proteinas_totales * 100 / macroRequirements.proteinas.gramos).toFixed(1) }}%</span>
             </div>
-          </div>
+            <div class="progress">
+                <div class="progress-bar bg-success" role="progressbar"
+                    [style.width.%]="(macroTotals.proteinas_totales * 100 / macroRequirements.proteinas.gramos)">
+                </div>
+            </div>
         </div>
+
         <div class="mb-3">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <strong>Grasas:</strong>
-            <span>{{ macroTotals.grasas_totales }}g</span>
-          </div>
-          <div class="progress">
-            <div class="progress-bar bg-warning" 
-                 [style.width.%]="getPercentage(macroTotals.grasas_totales, getTotalMacros())">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong>Grasas: {{ macroTotals.grasas_totales }}g / {{ macroRequirements.grasas.gramos.toFixed(1) }}g</strong>
+                <span>{{ (macroTotals.grasas_totales * 100 / macroRequirements.grasas.gramos).toFixed(1) }}%</span>
             </div>
-          </div>
+            <div class="progress">
+                <div class="progress-bar bg-warning" role="progressbar"
+                    [style.width.%]="(macroTotals.grasas_totales * 100 / macroRequirements.grasas.gramos)">
+                </div>
+            </div>
         </div>
+
         <div class="d-flex justify-content-between align-items-center">
-          <strong>Calorías Totales:</strong>
-          <span>{{ macroTotals.calorias_totales }} kcal</span>
+            <strong>Calorías Totales: {{ macroTotals.calorias_totales }} / {{ macroRequirements.calorias_totales.toFixed(1) }} kcal</strong>
+            <span>{{ (macroTotals.calorias_totales * 100 / macroRequirements.calorias_totales).toFixed(1) }}%</span>
         </div>
-      </div>
+        <div class="progress mt-2">
+            <div class="progress-bar bg-danger" role="progressbar"
+                [style.width.%]="(macroTotals.calorias_totales * 100 / macroRequirements.calorias_totales)">
+            </div>
+        </div>
     </div>
 
-    <!-- Lista de Comidas -->
-    <div *ngFor="let comida of comidas" class="card mb-4">
-      <div class="card-header">
-        <h5 class="mb-0">{{ comida.nombre }}</h5>
-      </div>
-      <div class="card-body">
-        <div *ngIf="comida.alimentos.length > 0">
-          <div *ngFor="let alimento of comida.alimentos" class="mb-3 p-3 border rounded">
-            <div class="d-flex justify-content-between align-items-start">
-              <div>
-                <h6 class="mb-1">{{ alimento.nombre }}</h6>
-                <div class="text-muted small">Cantidad: {{ alimento.cantidad }}</div>
-                <div class="mt-2">
-                  <span class="me-3">P: {{ alimento.proteinas }}g</span>
-                  <span class="me-3">C: {{ alimento.carbohidratos }}g</span>
-                  <span class="me-3">G: {{ alimento.grasas }}g</span>
-                  <span>Cal: {{ alimento.calorias }} kcal</span>
+    <div class="card mb-4" *ngFor="let numeroComida of [].constructor(cantidadComidas); let i = index">
+        <div class="card-header">
+            <h5 class="mb-0">{{ getNombreComida(i + 1) }}</h5>
+        </div>
+
+        <div class="card-body">
+            <div *ngIf="tieneAlimentos(i + 1)">
+                <div class="mb-3" *ngFor="let registro of comidas[i + 1]">
+                    <div class="d-flex flex-column p-3 border rounded">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-2">{{ registro.alimento }}</h6>
+                            <div class="text-muted mb-2">
+                                Cantidad: {{ registro.cantidad }}
+                            </div>
+                            <div>
+                                <span class="me-3">P: {{ registro.proteinas.toFixed(1) }}g</span>
+                                <span class="me-3">C: {{ registro.carbohidratos.toFixed(1) }}g</span>
+                                <span class="me-3">G: {{ registro.grasas.toFixed(1) }}g</span>
+                                <span>Cal: {{ registro.calorias.toFixed(1) }} kcal</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
+
+            <div class="text-center text-muted" *ngIf="!tieneAlimentos(i + 1)">
+                No hay alimentos registrados
+            </div>
+
+            <div class="bg-light p-4 rounded mt-3">
+                <div class="d-flex flex-column gap-3">
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-bold">Proteínas:</span>
+                        {{ getMacrosPorComida(i + 1).proteinas_totales.toFixed(1) }}g
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-bold">Carbohidratos:</span>
+                        {{ getMacrosPorComida(i + 1).carbohidratos_totales.toFixed(1) }}g
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-bold">Grasas:</span>
+                        {{ getMacrosPorComida(i + 1).grasas_totales.toFixed(1) }}g
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-bold">Calorías:</span>
+                        {{ getMacrosPorComida(i + 1).calorias_totales.toFixed(1) }} kcal
+                    </div>
+                </div>
+            </div>
         </div>
-        <div *ngIf="comida.alimentos.length === 0" class="text-center text-muted">
-          No hay alimentos registrados
-        </div>
-      </div>
     </div>
-  </div>
+</div>

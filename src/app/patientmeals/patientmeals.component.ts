@@ -10,6 +10,26 @@ interface PatientInfo {
   nombre: string;
   apellidopaterno: string;
   apellidomaterno: string;
+  cantidad_comidas: number;
+}
+
+interface MacroRequirements {
+  calorias_totales: number;
+  proteinas: {
+    gramos: number;
+    calorias: number;
+    porcentaje: number;
+  };
+  grasas: {
+    gramos: number;
+    calorias: number;
+    porcentaje: number;
+  };
+  carbohidratos: {
+    gramos: number;
+    calorias: number;
+    porcentaje: number;
+  };
 }
 
 interface MacroTotals {
@@ -27,32 +47,37 @@ export class DateEsPipe implements PipeTransform {
   transform(date: Date): string {
     const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
     const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-    
     return `${dias[date.getDay()]}, ${date.getDate()} de ${meses[date.getMonth()]} de ${date.getFullYear()}`;
   }
 }
+
 @Component({
   selector: 'app-patient-meals',
   standalone: true,
   imports: [CommonModule, FormsModule, DateEsPipe],
   templateUrl: './patientmeals.component.html',
-  styleUrls : ['./patientmeals.component.css'],
+  styleUrls: ['./patientmeals.component.css'],
 })
-
-
 export class PatientMealsComponent implements OnInit {
   patientId: number = 0;
-  patientInfo: PatientInfo | null = null;
   selectedDate: Date = new Date();
-  currentWater: number = 0;  // Añadimos esta propiedad
-  maxWater: number = 3250;   // También podemos añadir el máximo
+  cantidadComidas: number = 3;
+  comidas: { [key: number]: any[] } = {};
   macroTotals: MacroTotals = {
     proteinas_totales: 0,
     carbohidratos_totales: 0,
     grasas_totales: 0,
     calorias_totales: 0
   };
-  comidas: any[] = [];
+
+  macroRequirements: MacroRequirements = {
+    calorias_totales: 0,
+    proteinas: { gramos: 0, calorias: 0, porcentaje: 0 },
+    grasas: { gramos: 0, calorias: 0, porcentaje: 0 },
+    carbohidratos: { gramos: 0, calorias: 0, porcentaje: 0 }
+  };
+
+  patientInfo: PatientInfo | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -66,6 +91,7 @@ export class PatientMealsComponent implements OnInit {
       this.patientId = +params['id'];
       this.loadPatientInfo();
       this.loadMealData();
+      this.loadMacroRequirements(); 
     });
   }
 
@@ -73,8 +99,23 @@ export class PatientMealsComponent implements OnInit {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
     this.http.get<PatientInfo>(`http://localhost:5000/usuarios/${this.patientId}`, { headers })
       .subscribe({
-        next: (data) => this.patientInfo = data,
+        next: (data) => {
+          this.patientInfo = data;
+          this.cantidadComidas = data.cantidad_comidas;
+          this.initializeComidas();
+        },
         error: (error) => console.error('Error loading patient info:', error)
+      });
+  }
+
+  loadMacroRequirements() {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    this.http.get<MacroRequirements>(`http://localhost:5000/usuarios/${this.patientId}/requerimientos`, { headers })
+      .subscribe({
+        next: (requirements) => {
+          this.macroRequirements = requirements;
+        },
+        error: (error) => console.error('Error loading macro requirements:', error)
       });
   }
 
@@ -82,53 +123,57 @@ export class PatientMealsComponent implements OnInit {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
     const dateStr = this.formatDateForApi(this.selectedDate);
     
-    // Modificar la URL para incluir el ID del paciente
-    this.http.get<any>(`http://localhost:5000/resumen-diario/${this.patientId}/${dateStr}`, { headers })
+    // Usamos la ruta correcta para obtener los datos
+    this.http.get<any>(`http://localhost:5000/${this.patientId}/resumen-diario/${dateStr}`, { headers })
       .subscribe({
         next: (data) => {
+          console.log('Datos recibidos:', data); // Para debugging
           this.macroTotals = data.totales_del_dia;
           this.organizarComidas(data.desglose_por_alimento);
         },
         error: (error) => console.error('Error loading meal data:', error)
       });
-
-    // Añadir la carga de agua
-    this.http.get<any>(`http://localhost:5000/agua-diaria/${this.patientId}/${dateStr}`, { headers })
-      .subscribe({
-        next: (data) => {
-          this.currentWater = data.cantidad;
-        },
-        error: (error) => console.error('Error loading water data:', error)
-      });
 }
 
-  organizarComidas(desglose: any[]) {
-    // Organizar alimentos por número de comida
-    const comidasMap = new Map();
-    desglose.forEach(registro => {
-      if (!comidasMap.has(registro.numero_comida)) {
-        comidasMap.set(registro.numero_comida, {
-          nombre: `Comida ${registro.numero_comida}`,
-          alimentos: []
-        });
-      }
-      comidasMap.get(registro.numero_comida).alimentos.push(registro);
-    });
-
-    this.comidas = Array.from(comidasMap.values());
+  private initializeComidas() {
+    this.comidas = {};
+    for (let i = 1; i <= this.cantidadComidas; i++) {
+      this.comidas[i] = [];
+    }
   }
 
-  prevDay() {
-    // Crear una nueva instancia de Date
-    this.selectedDate = new Date(this.selectedDate.setDate(this.selectedDate.getDate() - 1));
-    this.loadMealData();
-}
+  organizarComidas(desglose: any[]) {
+    this.initializeComidas();
+    desglose.forEach(registro => {
+      if (!this.comidas[registro.numero_comida]) {
+        this.comidas[registro.numero_comida] = [];
+      }
+      this.comidas[registro.numero_comida].push(registro);
+    });
+  }
 
-nextDay() {
-    // Crear una nueva instancia de Date
-    this.selectedDate = new Date(this.selectedDate.setDate(this.selectedDate.getDate() + 1));
-    this.loadMealData();
-}
+  getNombreComida(numeroComida: number): string {
+    return `Comida ${numeroComida}`;
+  }
+
+  tieneAlimentos(numeroComida: number): boolean {
+    return Array.isArray(this.comidas[numeroComida]) && this.comidas[numeroComida].length > 0;
+  }
+
+  getMacrosPorComida(numeroComida: number): MacroTotals {
+    const registros = this.comidas[numeroComida] || [];
+    return registros.reduce((acc, registro) => ({
+      proteinas_totales: acc.proteinas_totales + registro.proteinas,
+      carbohidratos_totales: acc.carbohidratos_totales + registro.carbohidratos,
+      grasas_totales: acc.grasas_totales + registro.grasas,
+      calorias_totales: acc.calorias_totales + registro.calorias
+    }), {
+      proteinas_totales: 0,
+      carbohidratos_totales: 0,
+      grasas_totales: 0,
+      calorias_totales: 0
+    });
+  }
 
   getPercentage(value: number, total: number): number {
     return total > 0 ? (value / total) * 100 : 0;
@@ -138,6 +183,16 @@ nextDay() {
     return this.macroTotals.proteinas_totales + 
            this.macroTotals.carbohidratos_totales + 
            this.macroTotals.grasas_totales;
+  }
+
+  prevDay() {
+    this.selectedDate = new Date(this.selectedDate.setDate(this.selectedDate.getDate() - 1));
+    this.loadMealData();
+  }
+
+  nextDay() {
+    this.selectedDate = new Date(this.selectedDate.setDate(this.selectedDate.getDate() + 1));
+    this.loadMealData();
   }
 
   formatDateForApi(date: Date): string {
