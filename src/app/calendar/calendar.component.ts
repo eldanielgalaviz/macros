@@ -8,6 +8,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../auth/services/auth.service';
 import { CommonModule } from '@angular/common'
+import { NutritionAssistantComponent } from '../nutrition-assistant/nutrition-assistant.component';
 
 interface MacroTotals {
   proteinas_totales: number;
@@ -77,7 +78,8 @@ interface User {
     MatNativeDateModule,
     MatFormFieldModule,
     RouterModule,
-    MatInputModule
+    MatInputModule,
+    NutritionAssistantComponent
   ],
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.css']

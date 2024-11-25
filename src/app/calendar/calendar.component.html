@@ -17,6 +17,7 @@
       </div>
     </div>
   </div>
+
 </div>
 
 <div class="card mt-5 mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
@@ -123,6 +124,12 @@
     <!-- Overlay para el modal -->
     <div class="modal-backdrop fade show" *ngIf="modalVisible"></div>
   </div>
+  <button class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center" 
+        style="width: 60px; height: 60px; position: fixed; bottom: 30px; right: 30px; z-index: 1000;"
+        data-bs-toggle="modal" 
+        data-bs-target="#chatModal">
+  <i class="bi bi-chat-dots-fill fs-4"></i>
+</button>
 </div>
 
 
@@ -286,6 +293,22 @@
 </div>
 
 
+<!-- Modal de chat -->
+<div class="modal fade" id="chatModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Asistente Nutricional</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <app-nutrition-assistant></app-nutrition-assistant>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
   <!-- Control de agua -->
 <!-- Control de agua -->
@@ -385,6 +408,8 @@
     </div>
   </div>
 </div>
+
+
 
 <!-- Overlay para el modal -->
 <div class="modal-backdrop fade show" *ngIf="modalEliminarVisible"></div>

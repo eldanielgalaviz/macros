@@ -1,0 +1,14 @@
+<div class="chat-container">
+  <div class="messages" #scrollContainer>
+    <div *ngFor="let message of messages" 
+         [ngClass]="{'user-message': message.isUser, 'assistant-message': !message.isUser}">
+      {{ message.text }}
+    </div>
+  </div>
+  <div class="input-container">
+    <input type="text" [(ngModel)]="userInput" 
+           (keyup.enter)="sendMessage()"
+           placeholder="Pregunta algo sobre nutrición...">
+    <button (click)="sendMessage()">Enviar</button>
+  </div>
+</div>
