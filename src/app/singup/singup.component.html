@@ -72,25 +72,35 @@
       </div>
 
       <div class="mb-3">
-        <label for="password" class="form-label">Contraseña</label>
-        <input 
-          type="password" 
-          class="form-control" 
-          id="password"
-          name="password"
-          [(ngModel)]="userData.password"
-          required>
+        <label>Contraseña</label>
+        <div class="input-group">
+          <input [type]="showPassword ? 'text' : 'password'"
+                 class="form-control"
+                 name="password" 
+                 [(ngModel)]="userData.password"
+                 required>
+          <button class="btn btn-outline-secondary"
+                  type="button"
+                  (click)="showPassword = !showPassword">
+            <i class="fas" [ngClass]="{'fa-eye': !showPassword, 'fa-eye-slash': showPassword}"></i>
+          </button>
+        </div>
       </div>
 
       <div class="mb-3">
-        <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
-        <input 
-          type="password" 
-          class="form-control" 
-          id="confirmPassword"
-          name="confirmPassword"
-          [(ngModel)]="userData.confirmPassword"
-          required>
+        <label>Confirmar Contraseña</label>
+        <div class="input-group">
+          <input [type]="showConfirmPassword ? 'text' : 'password'"
+                 class="form-control"
+                 name="confirmPassword"
+                 [(ngModel)]="userData.confirmPassword" 
+                 required>
+          <button class="btn btn-outline-secondary"
+                  type="button"
+                  (click)="showConfirmPassword = !showConfirmPassword">
+            <i class="fas" [ngClass]="{'fa-eye': !showConfirmPassword, 'fa-eye-slash': showConfirmPassword}"></i>
+          </button>
+        </div>
       </div>
 
       <div class="text-danger mb-3" *ngIf="errorMessage">
