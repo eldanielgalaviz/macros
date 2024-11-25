@@ -134,6 +134,10 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/edit-profile', patientId]);
   }
 
+  viewPatientHistory(patientId: number) {
+    this.router.navigate(['/patient-history', patientId]);
+  }
+
   // Método para ver registro de comidas
   viewMealRecord(patientId: number) {
     // Aquí implementarás la navegación al registro de comidas

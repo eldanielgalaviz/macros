@@ -108,3 +108,21 @@ class RegistroAgua(db.Model):
             'fecha': self.fecha,
             'cantidad': self.cantidad
         }
+    
+class RegistroMedico(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('classusuarios.id'), nullable=False)
+    fecha = db.Column(db.Date, nullable=False)
+    peso = db.Column(db.Float)
+    imc = db.Column(db.Float)
+    observaciones = db.Column(db.Text)
+
+    def to_dict(self):
+        return{
+            'id':self.id,
+            'usuario_id':self.usuario_id,
+            'fecha':self.fecha,
+            'peso':self.peso,
+            'imc':self.imc,
+            'obvservaciones':self.observaciones,
+        }
