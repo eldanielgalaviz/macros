@@ -874,113 +874,42 @@ def update_password(current_user):
 @personal_info_bp.route('/historial/<int:patient_id>', methods=['GET'])
 @token_required
 def get_historial(current_user, patient_id):
-   if current_user.rol != 2:
-       return jsonify({'message': 'No autorizado'}), 403
-       
-   # Obtener registros médicos
-   registros = RegistroMedico.query.filter_by(usuario_id=patient_id)\
-       .order_by(RegistroMedico.fecha.desc()).all()
-   
-   # Obtener registros de comidas agrupados por semana
-   resumen_comidas = db.session.query(
-       func.date_trunc('week', RegistroComidas.fecha).label('semana'),
-       func.avg(classalimentos.proteinas * RegistroComidas.cantidad).label('proteinas_promedio'),
-       func.avg(classalimentos.carbohidratos * RegistroComidas.cantidad).label('carbohidratos_promedio'),
-       func.avg(classalimentos.grasas * RegistroComidas.cantidad).label('grasas_promedio'),
-       func.avg(classalimentos.calorias * RegistroComidas.cantidad).label('calorias_promedio')
-   ).join(
-       classalimentos, RegistroComidas.alimento_id == classalimentos.id
-   ).filter(
-       RegistroComidas.usuario_id == patient_id
-   ).group_by(
-       func.date_trunc('week', RegistroComidas.fecha)
-   ).order_by(
-       func.date_trunc('week', RegistroComidas.fecha).desc()
-   ).all()
+    if current_user.rol != 2:
+        return jsonify({'message': 'No autorizado'}), 403
+        
+    # Obtener registros médicos
+    registros = RegistroMedico.query.filter_by(usuario_id=patient_id)\
+        .order_by(RegistroMedico.fecha.desc()).all()
+    
+    # Consulta para obtener el resumen de comidas por semana usando funciones de MySQL
+    resumen_comidas = db.session.query(
+        func.date_format(RegistroComidas.fecha, '%Y-%m-%d').label('semana'),
+        func.avg(classalimentos.proteinas * RegistroComidas.cantidad).label('proteinas_promedio'),
+        func.avg(classalimentos.carbohidratos * RegistroComidas.cantidad).label('carbohidratos_promedio'),
+        func.avg(classalimentos.grasas * RegistroComidas.cantidad).label('grasas_promedio'),
+        func.avg(classalimentos.calorias * RegistroComidas.cantidad).label('calorias_promedio')
+    ).join(
+        classalimentos, RegistroComidas.alimento_id == classalimentos.id
+    ).filter(
+        RegistroComidas.usuario_id == patient_id
+    ).group_by(
+        func.yearweek(RegistroComidas.fecha)
+    ).order_by(
+        func.yearweek(RegistroComidas.fecha).desc()
+    ).all()
 
-   return jsonify({
-       'registros_medicos': [{
-           'fecha': reg.fecha.strftime('%Y-%m-%d'),
-           'peso': reg.peso,
-           'imc': reg.imc,
-           'observaciones': reg.observaciones
-       } for reg in registros],
-       'resumen_comidas': [{
-           'semana': semana.strftime('%Y-%m-%d'),
-           'proteinas_promedio': round(float(prot), 2),
-           'carbohidratos_promedio': round(float(carb), 2), 
-           'grasas_promedio': round(float(gras), 2),
-           'calorias_promedio': round(float(cal), 2)
-       } for semana, prot, carb, gras, cal in resumen_comidas]
-   })
-
-@personal_info_bp.route('/generar-reporte/<int:patient_id>', methods=['POST'])
-@token_required 
-def generar_reporte_pdf(current_user, patient_id):
-   import pdfkit
-   from jinja2 import Template
-   
-   if current_user.rol != 2:
-       return jsonify({'message': 'No autorizado'}), 403
-
-   # Obtener datos del paciente
-   patient = classusuarios.query.get_or_404(patient_id)
-   
-   # Obtener historial del paciente
-   historial = get_historial(current_user, patient_id)
-   
-   # Plantilla HTML para el PDF
-   template = Template("""
-   <h1>Reporte Médico</h1>
-   <h2>{{patient.nombre}} {{patient.apellidopaterno}} {{patient.apellidomaterno}}</h2>
-   <p>Fecha: {{fecha_actual}}</p>
-   
-   <h3>Historial de Mediciones</h3>
-   <table>
-       <tr><th>Fecha</th><th>Peso</th><th>IMC</th></tr>
-       {% for reg in registros %}
-       <tr>
-           <td>{{reg.fecha}}</td>
-           <td>{{reg.peso}}kg</td>
-           <td>{{reg.imc}}</td>
-       </tr>
-       {% endfor %}
-   </table>
-   
-   <h3>Resumen de Alimentación por Semana</h3>
-   <table>
-       <tr>
-           <th>Semana</th>
-           <th>Proteínas</th>
-           <th>Carbohidratos</th>
-           <th>Grasas</th>
-           <th>Calorías</th>
-       </tr>
-       {% for sem in resumen %}
-       <tr>
-           <td>{{sem.semana}}</td>
-           <td>{{sem.proteinas_promedio}}g</td>
-           <td>{{sem.carbohidratos_promedio}}g</td>
-           <td>{{sem.grasas_promedio}}g</td>
-           <td>{{sem.calorias_promedio}}kcal</td>
-       </tr>
-       {% endfor %}
-   </table>
-   """)
-   
-   # Generar HTML
-   html = template.render(
-       patient=patient,
-       fecha_actual=datetime.datetime.now().strftime('%Y-%m-%d'),
-       registros=historial.json['registros_medicos'],
-       resumen=historial.json['resumen_comidas']
-   )
-   
-   # Convertir a PDF
-   pdf = pdfkit.from_string(html, False)
-   
-   response = make_response(pdf)
-   response.headers['Content-Type'] = 'application/pdf'
-   response.headers['Content-Disposition'] = f'attachment; filename=reporte_{patient_id}.pdf'
-   
-   return response
+    return jsonify({
+        'registros_medicos': [{
+            'fecha': reg.fecha.strftime('%Y-%m-%d'),
+            'peso': reg.peso,
+            'imc': reg.imc,
+            'observaciones': reg.observaciones
+        } for reg in registros],
+        'resumen_comidas': [{
+            'semana': semana,
+            'proteinas_promedio': round(float(prot), 2) if prot else 0,
+            'carbohidratos_promedio': round(float(carb), 2) if carb else 0,
+            'grasas_promedio': round(float(gras), 2) if gras else 0,
+            'calorias_promedio': round(float(cal), 2) if cal else 0
+        } for semana, prot, carb, gras, cal in resumen_comidas]
+    })

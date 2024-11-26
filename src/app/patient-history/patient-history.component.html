@@ -1,109 +1,115 @@
-<div class="navbar text-bg-dark text-white w-100 px-4 py-3">
-    <div class="container-fluid">
+<nav class="navbar text-bg-dark text-white w-100 px-4 py-3">
+  <div class="container-fluid">
       <div class="row w-100 align-items-center">
-        <div class="col d-flex align-items-center">
-          <a (click)="goBack()" class="text-white me-3" style="cursor: pointer;">
-            <i class="fas fa-arrow-left fa-lg"></i>
-          </a>
-        </div>
-        <div class="col text-center">
-          <span class="navbar-brand mb-0 h1 text-white">Historial del Paciente</span>
-        </div>
-        <div class="col d-flex justify-content-end">
-          <span class="h5 mb-0 text-white">{{ patientInfo?.nombre }} {{ patientInfo?.apellidopaterno }}</span>
-        </div>
+          <div class="col d-flex align-items-center">
+              <i class="bi bi-arrow-left text-white me-3" (click)="goBack()" style="cursor: pointer;"></i>
+          </div>
+          <div class="col text-center">
+              <span class="navbar-brand mb-0 h1 text-white">Historial del Paciente</span>
+          </div>
+          <div class="col d-flex justify-content-end">
+              <span class="h5 mb-0 text-white">
+                  {{ patientInfo?.nombre }} {{ patientInfo?.apellidopaterno }}
+              </span>
+          </div>
       </div>
-    </div>
   </div>
+</nav>
 
-  <div *ngIf="!patientInfo" class="text-center">
-    <div class="spinner-border" role="status">
+<div class="text-center" *ngIf="!patientInfo">
+  <div class="spinner-border" role="status">
       <span class="visually-hidden">Cargando...</span>
-    </div>
-    <p>Cargando información del paciente...</p>
   </div>
+  <p>Cargando información del paciente...</p>
+</div>
 
-  <!-- Mensaje de error -->
-
-
-  <div class="container mt-4">
-    <div class="row mb-4">
+<div class="container mt-4" *ngIf="patientInfo">
+  <!-- Gráfica de evolución del peso -->
+  <div class="row mb-4">
       <div class="col">
-        <div class="card">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Evolución del Peso</h5>
-            <button class="btn btn-primary" (click)="generateReport()">
-              <i class="fas fa-file-pdf me-2"></i>Generar Reporte
-            </button>
+          <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Evolución del Peso</h5>
+                  <button class="btn btn-primary btn-sm" (click)="generateReport()">
+                    <i class="fas fa-file-pdf me-2"></i>Generar Reporte
+                  </button>
+              </div>
+              <div class="card-body">
+                  <canvas #weightChart></canvas>
+              </div>
           </div>
-          <div class="card-body">
-            <canvas #weightChart></canvas>
-          </div>
-        </div>
       </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-header">
-            <h5 class="mb-0">Registros Médicos</h5>
-          </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Fecha</th>
-                    <th>Peso</th>
-                    <th>IMC</th>
-                    <th>Observaciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let registro of registrosMedicos">
-                    <td>{{ registro.fecha | date }}</td>
-                    <td>{{ registro.peso }}kg</td>
-                    <td>{{ registro.imc }}</td>
-                    <td>{{ registro.observaciones }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-header">
-            <h5 class="mb-0">Resumen Semanal de Alimentación</h5>
-          </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Semana</th>
-                    <th>Proteínas</th>
-                    <th>Carbohidratos</th>
-                    <th>Grasas</th>
-                    <th>Calorías</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let resumen of resumenComidas">
-                    <td>{{ resumen.semana | date:'shortDate' }}</td>
-                    <td>{{ resumen.proteinas_promedio }}g</td>
-                    <td>{{ resumen.carbohidratos_promedio }}g</td>
-                    <td>{{ resumen.grasas_promedio }}g</td>
-                    <td>{{ resumen.calorias_promedio }}kcal</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
+
+  <div class="row">
+      <!-- Registros Médicos -->
+      <div class="col-md-6">
+          <div class="card">
+              <div class="card-header">
+                  <h5 class="mb-0">Registros Médicos</h5>
+              </div>
+              <div class="card-body">
+                  <div class="table-responsive">
+                      <table class="table table-striped">
+                          <thead>
+                              <tr>
+                                  <th>Fecha</th>
+                                  <th>Peso</th>
+                                  <th>IMC</th>
+                                  <th>Observaciones</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <tr *ngFor="let registro of registrosMedicos">
+                                  <td>{{ registro.fecha | date }}</td>
+                                  <td>{{ registro.peso }}kg</td>
+                                  <td>{{ registro.imc }}</td>
+                                  <td>{{ registro.observaciones }}</td>
+                              </tr>
+                              <tr *ngIf="registrosMedicos.length === 0">
+                                  <td colspan="4" class="text-center">No hay registros médicos disponibles</td>
+                              </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Resumen de Alimentación -->
+      <div class="col-md-6">
+          <div class="card">
+              <div class="card-header">
+                  <h5 class="mb-0">Resumen Semanal de Alimentación</h5>
+              </div>
+              <div class="card-body">
+                  <div class="table-responsive">
+                      <table class="table table-striped">
+                          <thead>
+                              <tr>
+                                  <th>Semana</th>
+                                  <th>Proteínas</th>
+                                  <th>Carbohidratos</th>
+                                  <th>Grasas</th>
+                                  <th>Calorías</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <tr *ngFor="let resumen of resumenComidas">
+                                  <td>{{ resumen.semana | date:'shortDate' }}</td>
+                                  <td>{{ resumen.proteinas_promedio }}g</td>
+                                  <td>{{ resumen.carbohidratos_promedio }}g</td>
+                                  <td>{{ resumen.grasas_promedio }}g</td>
+                                  <td>{{ resumen.calorias_promedio }}kcal</td>
+                              </tr>
+                              <tr *ngIf="resumenComidas.length === 0">
+                                  <td colspan="5" class="text-center">No hay registros de alimentación disponibles</td>
+                              </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

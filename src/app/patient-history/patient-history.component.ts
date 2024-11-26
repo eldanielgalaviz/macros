@@ -6,6 +6,27 @@ import { AuthService } from '../auth/services/auth.service';
 import { CommonModule } from '@angular/common';
 import Chart from 'chart.js/auto';
 
+interface RegistroMedico {
+  fecha: string;
+  peso: number;
+  imc: number;
+  observaciones: string;
+}
+
+interface PatientInfo {
+  nombre: string;
+  apellidopaterno: string;
+  apellidomaterno: string;
+  // Agrega otros campos según necesites
+}
+
+interface ResumenComida {
+  semana: string;
+  proteinas_promedio: number;
+  carbohidratos_promedio: number;
+  grasas_promedio: number;
+  calorias_promedio: number;
+}
 @Component({
   selector: 'app-patient-history',
   standalone: true,
@@ -15,11 +36,14 @@ import Chart from 'chart.js/auto';
 })
 export class PatientHistoryComponent implements OnInit {
   @ViewChild('weightChart') weightChartRef!: ElementRef;
+
   patientId: number = 0;
-  patientInfo: any = null;
-  registrosMedicos: any[] = [];
-  resumenComidas: any[] = [];
-  weightChart: any;
+  registrosMedicos: RegistroMedico[] = [];
+  resumenComidas: ResumenComida[] = [];
+  weightChart: Chart | null = null;
+  errorMessage: string = '';
+  patientInfo: PatientInfo | null = null;
+
 
   constructor(
     private route: ActivatedRoute,
@@ -35,6 +59,12 @@ export class PatientHistoryComponent implements OnInit {
       this.loadPatientInfo();
       this.loadHistorial();
     });
+  }
+
+  ngAfterViewInit() {
+    if (this.registrosMedicos.length > 0) {
+      this.initWeightChart();
+    }
   }
 
   loadPatientInfo() {
@@ -55,7 +85,7 @@ export class PatientHistoryComponent implements OnInit {
 
   loadHistorial() {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
-    this.http.get<any>(`http://localhost:5000/historial/${this.patientId}`, { headers })
+    this.http.get<any>(`http://localhost:5000/personal-info/historial/${this.patientId}`, { headers })
       .subscribe({
         next: (data) => {
           console.log('History data received:', data); // Debug
