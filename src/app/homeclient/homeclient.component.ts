@@ -27,7 +27,7 @@ interface PatientInfo {
 @Component({
   selector: 'app-homeclient',
   standalone: true,
-  imports: [FormsModule, FooterComponent, CommonModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './homeclient.component.html',
   styleUrls: ['./homeclient.component.css']
 })
