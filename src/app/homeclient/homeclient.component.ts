@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { FooterComponent } from '../footer/footer.component';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule, Location } from '@angular/common';
 
@@ -23,6 +22,13 @@ interface PatientInfo {
   requerimientocalorico?: number;
 }
 
+interface MedicalRecord {
+  usuario_id: number;
+  fecha: string;
+  peso: number;
+  imc: number;
+  observaciones?: string;
+}
 
 @Component({
   selector: 'app-homeclient',
@@ -50,6 +56,7 @@ export class HomeclientComponent implements OnInit {
   showErrorMessage = false;
   messageText = '';
   patientId: number | null=null
+  observaciones: string = ''; 
 
   constructor(
     private router: Router,
@@ -61,7 +68,7 @@ export class HomeclientComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.patientId = +params['id'];
-      console.log('ID del paciente:', this.patientId); // Verifica que no sea 0 o un valor incorrecto
+      console.log('ID del paciente:', this.patientId);
       if (this.patientId) {
         this.loadPatientInfo();
       } else {
@@ -97,11 +104,12 @@ export class HomeclientComponent implements OnInit {
   toggleEdit() {
     this.isEditing = !this.isEditing;
     if (!this.isEditing) {
-      this.loadPatientInfo(); // Recargar datos si se cancela la edición
+      this.loadPatientInfo();
+      this.observaciones = ''; // Limpiar las observaciones al cancelar
     }
   }
 
-  saveChanges() {
+  async saveChanges() {
     if (!this.patientId) return;
 
     const options = { headers: this.getHeaders() };
@@ -116,17 +124,34 @@ export class HomeclientComponent implements OnInit {
       cantidad_comidas: Number(this.patientInfo.cantidad_comidas)
     };
 
-    this.http.put(`http://localhost:5000/personal-info/update/${this.patientId}`, dataToSend, options).subscribe({
-      next: (response: any) => {
-        this.showMessage('Datos del paciente actualizados correctamente', false);
-        this.isEditing = false;
-        this.loadPatientInfo(); // Recargar datos actualizados
-      },
-      error: (error) => {
-        console.error('Error al actualizar:', error);
-        this.showMessage(error.error?.message || 'Error al actualizar los datos', true);
-      }
-    });
+    try {
+      // 1. Actualizar la información del paciente
+      const response = await this.http.put(`http://localhost:5000/personal-info/update/${this.patientId}`, dataToSend, options).toPromise();
+
+      // 2. Crear el registro médico
+      const altura_metros = this.patientInfo.estatura / 100;
+      const imc = this.patientInfo.peso / (altura_metros * altura_metros);
+      
+      const medicalRecord: MedicalRecord = {
+        usuario_id: this.patientId,
+        fecha: new Date().toISOString().split('T')[0], // Formato YYYY-MM-DD
+        peso: this.patientInfo.peso,
+        imc: imc,
+        observaciones: this.observaciones || 'Actualización rutinaria de datos'
+      };
+
+      // Realizar la petición POST para crear el registro médico
+      await this.http.post(`http://localhost:5000/registros-medicos`, medicalRecord, options).toPromise();
+
+      this.showMessage('Datos del paciente y registro médico actualizados correctamente', false);
+      this.isEditing = false;
+      this.observaciones = ''; // Limpiar las observaciones
+      this.loadPatientInfo();
+
+    } catch (error: any) {
+      console.error('Error al actualizar:', error);
+      this.showMessage(error.error?.message || 'Error al actualizar los datos', true);
+    }
   }
 
   showMessage(message: string, isError: boolean) {
@@ -144,8 +169,8 @@ export class HomeclientComponent implements OnInit {
     }, 3000);
   }
 
-  goBack(){
-    this.location.back()
+  goBack() {
+    this.location.back();
   }
 
   // Métodos de navegación

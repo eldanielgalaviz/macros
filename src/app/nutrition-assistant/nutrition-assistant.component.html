@@ -4,11 +4,31 @@
          [ngClass]="{'user-message': message.isUser, 'assistant-message': !message.isUser}">
       {{ message.text }}
     </div>
+    
+    <!-- Spinner de carga -->
+    <div *ngIf="isLoading" class="assistant-message d-flex align-items-center gap-2">
+      <div class="spinner-grow spinner-grow-sm text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <div class="spinner-grow spinner-grow-sm text-primary" role="status" style="animation-delay: 0.2s;">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <div class="spinner-grow spinner-grow-sm text-primary" role="status" style="animation-delay: 0.4s;">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
   </div>
+
   <div class="input-container">
-    <input type="text" [(ngModel)]="userInput" 
+    <input type="text" 
+           [(ngModel)]="userInput" 
            (keyup.enter)="sendMessage()"
-           placeholder="Pregunta algo sobre nutrición...">
-    <button (click)="sendMessage()">Enviar</button>
+           [disabled]="isLoading"
+           placeholder="Consulta tu duda sobre nutrición...">
+    <button (click)="sendMessage()" 
+            [disabled]="isLoading || !userInput.trim()">
+      <span *ngIf="!isLoading">Enviar</span>
+      <span *ngIf="isLoading">Procesando...</span>
+    </button>
   </div>
 </div>

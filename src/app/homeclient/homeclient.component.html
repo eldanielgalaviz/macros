@@ -145,6 +145,19 @@
         </div>
 
         <hr>
+        <div class="row align-items-center" *ngIf="isEditing">
+  <div class="col-md-6 text-center">
+    <h5>Observaciones Médicas</h5>
+  </div>
+  <div class="col-md-6 text-center">
+    <textarea 
+      class="form-control"
+      [(ngModel)]="observaciones"
+      placeholder="Ingrese observaciones médicas aquí..."
+      rows="3">
+    </textarea>
+  </div>
+</div>
 
         <h5 class="card-title text-center mb-3">Resultados</h5>
 

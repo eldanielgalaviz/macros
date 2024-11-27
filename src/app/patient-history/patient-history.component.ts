@@ -5,45 +5,24 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../auth/services/auth.service';
 import { CommonModule } from '@angular/common';
 import Chart from 'chart.js/auto';
+import { FormsModule } from '@angular/forms';
 
-interface RegistroMedico {
-  fecha: string;
-  peso: number;
-  imc: number;
-  observaciones: string;
-}
-
-interface PatientInfo {
-  nombre: string;
-  apellidopaterno: string;
-  apellidomaterno: string;
-  // Agrega otros campos según necesites
-}
-
-interface ResumenComida {
-  semana: string;
-  proteinas_promedio: number;
-  carbohidratos_promedio: number;
-  grasas_promedio: number;
-  calorias_promedio: number;
-}
 @Component({
   selector: 'app-patient-history',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './patient-history.component.html',
   styleUrls: ['./patient-history.component.css'], 
 })
 export class PatientHistoryComponent implements OnInit {
   @ViewChild('weightChart') weightChartRef!: ElementRef;
-
   patientId: number = 0;
-  registrosMedicos: RegistroMedico[] = [];
-  resumenComidas: ResumenComida[] = [];
-  weightChart: Chart | null = null;
-  errorMessage: string = '';
-  patientInfo: PatientInfo | null = null;
-
+  patientInfo: any = null;
+  registrosMedicos: any[] = [];
+  registrosMedicosFiltrados: any[] = [];
+  resumenComidas: any[] = [];
+  weightChart: any;
+  fechaBusqueda: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -55,16 +34,10 @@ export class PatientHistoryComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.patientId = +params['id'];
-      console.log('Patient ID:', this.patientId); // Debug
+      console.log('Patient ID:', this.patientId);
       this.loadPatientInfo();
       this.loadHistorial();
     });
-  }
-
-  ngAfterViewInit() {
-    if (this.registrosMedicos.length > 0) {
-      this.initWeightChart();
-    }
   }
 
   loadPatientInfo() {
@@ -72,13 +45,11 @@ export class PatientHistoryComponent implements OnInit {
     this.http.get<any>(`http://localhost:5000/usuarios/${this.patientId}`, { headers })
       .subscribe({
         next: (data) => {
-          console.log('Patient data received:', data); // Debug
+          console.log('Patient data received:', data);
           this.patientInfo = data;
         },
         error: (error) => {
-          console.error('Error loading patient info:', error); // Debug
-          // Mostrar mensaje de error al usuario
-          // this.errorMessage = 'Error al cargar la información del paciente';
+          console.error('Error loading patient info:', error);
         }
       });
   } 
@@ -88,22 +59,50 @@ export class PatientHistoryComponent implements OnInit {
     this.http.get<any>(`http://localhost:5000/personal-info/historial/${this.patientId}`, { headers })
       .subscribe({
         next: (data) => {
-          console.log('History data received:', data); // Debug
-          this.registrosMedicos = data.registros_medicos;
+          this.registrosMedicos = data.registros_medicos.sort((a: any, b: any) => {
+            return new Date(b.fecha).getTime() - new Date(a.fecha).getTime();
+          });
+          this.registrosMedicosFiltrados = [...this.registrosMedicos];
           this.resumenComidas = data.resumen_comidas;
           this.initWeightChart();
         },
         error: (error) => {
-          console.error('Error loading historial:', error); // Debug
-          // Mostrar mensaje de error al usuario
-          // this.errorMessage = 'Error al cargar el historial';
+          console.error('Error loading historial:', error);
         }
       });
   }
 
+  filtrarRegistros() {
+    if (!this.fechaBusqueda) {
+      this.registrosMedicosFiltrados = [...this.registrosMedicos];
+      return;
+    }
+
+    const fechaBusqueda = new Date(this.fechaBusqueda);
+    
+    this.registrosMedicosFiltrados = this.registrosMedicos.filter(registro => {
+      const fechaRegistro = new Date(registro.fecha);
+      return fechaRegistro.toISOString().split('T')[0] === fechaBusqueda.toISOString().split('T')[0];
+    });
+  }
+
+  limpiarFiltro() {
+    this.fechaBusqueda = '';
+    this.registrosMedicosFiltrados = [...this.registrosMedicos];
+  }
   initWeightChart() {
     const ctx = this.weightChartRef.nativeElement.getContext('2d');
-    const dates = this.registrosMedicos.map(reg => reg.fecha);
+    
+    // Preparar los datos ordenados cronológicamente
+    const dates = this.registrosMedicos.map(reg => {
+      const fecha = new Date(reg.fecha);
+      return fecha.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: '2-digit'
+      });
+    });
+    
     const weights = this.registrosMedicos.map(reg => reg.peso);
 
     if (this.weightChart) {
@@ -118,14 +117,35 @@ export class PatientHistoryComponent implements OnInit {
           label: 'Peso (kg)',
           data: weights,
           borderColor: 'rgb(75, 192, 192)',
-          tension: 0.1
+          tension: 0.1,
+          fill: false
         }]
       },
       options: {
         responsive: true,
         scales: {
           y: {
-            beginAtZero: false
+            beginAtZero: false,
+            title: {
+              display: true,
+              text: 'Peso (kg)'
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Fecha'
+            }
+          }
+        },
+        plugins: {
+          title: {
+            display: true,
+            text: 'Evolución del Peso'
+          },
+          legend: {
+            display: true,
+            position: 'top'
           }
         }
       }
@@ -135,7 +155,7 @@ export class PatientHistoryComponent implements OnInit {
   generateReport() {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
     this.http.post(
-      `http://localhost:5000/generar-reporte/${this.patientId}`,
+      `http://localhost:5000/personal-info/generar-reporte/${this.patientId}`,
       {},
       { 
         headers,

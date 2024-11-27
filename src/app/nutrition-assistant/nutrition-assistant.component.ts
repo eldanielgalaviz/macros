@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NutritionAssistantService } from '../services/nutrition-assistant.service';
@@ -17,6 +16,7 @@ import { NutritionAssistantService } from '../services/nutrition-assistant.servi
 export class NutritionAssistantComponent {
   messages: {text: string, isUser: boolean}[] = [];
   userInput = '';
+  isLoading = false;
 
   constructor(private nutritionService: NutritionAssistantService) {}
 
@@ -26,6 +26,9 @@ export class NutritionAssistantComponent {
     const userMessage = this.userInput;
     this.messages.push({text: userMessage, isUser: true});
     this.userInput = '';
+    
+    // Activar el spinner
+    this.isLoading = true;
 
     try {
       const response = await this.nutritionService.getResponse(userMessage);
@@ -33,6 +36,9 @@ export class NutritionAssistantComponent {
     } catch (error) {
       console.error('Error:', error);
       this.messages.push({text: 'Lo siento, hubo un error. Por favor intenta de nuevo.', isUser: false});
+    } finally {
+      // Desactivar el spinner sin importar el resultado
+      this.isLoading = false;
     }
   }
 }

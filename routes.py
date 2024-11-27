@@ -913,3 +913,23 @@ def get_historial(current_user, patient_id):
             'calorias_promedio': round(float(cal), 2) if cal else 0
         } for semana, prot, carb, gras, cal in resumen_comidas]
     })
+
+@registro_comidas_bp.route('/registros-medicos', methods=['POST'])
+@token_required
+def crear_registro_medico(current_user):
+    if current_user.rol != 2:  # Asegurarse que solo los médicos pueden crear registros
+        return jsonify({'message': 'No autorizado'}), 403
+        
+    data = request.json
+    nuevo_registro = RegistroMedico(
+        usuario_id=data['usuario_id'],
+        fecha=datetime.datetime.strptime(data['fecha'], '%Y-%m-%d').date(),
+        peso=data['peso'],
+        imc=data['imc'],
+        observaciones=data['observaciones']
+    )
+    
+    db.session.add(nuevo_registro)
+    db.session.commit()
+    
+    return jsonify({'message': 'Registro médico creado exitosamente'}), 201

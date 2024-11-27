@@ -42,39 +42,58 @@
   </div>
 
   <div class="row">
-      <!-- Registros Médicos -->
-      <div class="col-md-6">
-          <div class="card">
-              <div class="card-header">
-                  <h5 class="mb-0">Registros Médicos</h5>
-              </div>
-              <div class="card-body">
-                  <div class="table-responsive">
-                      <table class="table table-striped">
-                          <thead>
-                              <tr>
-                                  <th>Fecha</th>
-                                  <th>Peso</th>
-                                  <th>IMC</th>
-                                  <th>Observaciones</th>
-                              </tr>
-                          </thead>
-                          <tbody>
-                              <tr *ngFor="let registro of registrosMedicos">
-                                  <td>{{ registro.fecha | date }}</td>
-                                  <td>{{ registro.peso }}kg</td>
-                                  <td>{{ registro.imc }}</td>
-                                  <td>{{ registro.observaciones }}</td>
-                              </tr>
-                              <tr *ngIf="registrosMedicos.length === 0">
-                                  <td colspan="4" class="text-center">No hay registros médicos disponibles</td>
-                              </tr>
-                          </tbody>
-                      </table>
-                  </div>
-              </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Registros Médicos</h5>
+            <div class="d-flex gap-2">
+              <input 
+                type="date" 
+                class="form-control form-control-sm" 
+                [(ngModel)]="fechaBusqueda"
+                (change)="filtrarRegistros()"
+              >
+              <button 
+                class="btn btn-outline-secondary btn-sm" 
+                (click)="limpiarFiltro()"
+                [disabled]="!fechaBusqueda"
+              >
+                Limpiar
+              </button>
+            </div>
           </div>
+        </div>
+  
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Peso</th>
+                  <th>IMC</th>
+                  <th>Observaciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let registro of registrosMedicosFiltrados">
+                  <td>{{ registro.fecha | date:'dd/MM/yyyy' }}</td>
+                  <td>{{ registro.peso }}kg</td>
+                  <td>{{ registro.imc }}</td>
+                  <td>{{ registro.observaciones }}</td>
+                </tr>
+                <tr *ngIf="registrosMedicosFiltrados.length === 0">
+                  <td colspan="4" class="text-center">
+                    {{ fechaBusqueda ? 'No se encontraron registros para la fecha seleccionada' : 'No hay registros disponibles' }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
+    </div>
 
       <!-- Resumen de Alimentación -->
       <div class="col-md-6">
