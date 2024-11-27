@@ -1,20 +1,23 @@
-<nav class="navbar text-bg-dark text-white w-100 px-4 py-3">
+<nav class="navbar bg-primary text-white w-100 px-4 py-3">
   <div class="container-fluid">
-      <div class="row w-100 align-items-center">
-          <div class="col d-flex align-items-center">
-              <i class="bi bi-arrow-left text-white me-3" (click)="goBack()" style="cursor: pointer;"></i>
-          </div>
-          <div class="col text-center">
-              <span class="navbar-brand mb-0 h1 text-white">Historial del Paciente</span>
-          </div>
-          <div class="col d-flex justify-content-end">
-              <span class="h5 mb-0 text-white">
-                  {{ patientInfo?.nombre }} {{ patientInfo?.apellidopaterno }}
-              </span>
-          </div>
+    <div class="row w-100 align-items-center">
+      <div class="col d-flex align-items-center">
+        <i class="bi bi-arrow-left text-white me-3" (click)="goBack()" style="cursor: pointer;"></i>
       </div>
+
+      <div class="col text-center">
+        <span class="navbar-brand mb-0 h1 text-white">Historial del Paciente</span>
+      </div>
+
+      <div class="col d-flex justify-content-end">
+        <span class="h5 mb-0 text-white">
+          {{ patientInfo?.nombre }} {{ patientInfo?.apellidopaterno }}
+        </span>
+      </div>
+    </div>
   </div>
 </nav>
+
 
 <div class="text-center" *ngIf="!patientInfo">
   <div class="spinner-border" role="status">
