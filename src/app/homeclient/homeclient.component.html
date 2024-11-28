@@ -1,218 +1,214 @@
-<div class="container-fluid">
+<nav class="navbar bg-primary text-white w-100 px-4 py-3">
+  <div class="container-fluid">
+    <div class="row w-100 align-items-center">
+      <div class="col d-flex align-items-center">
+        <i class="bi bi-arrow-left text-white me-3" (click)="goBack()" style="cursor: pointer;"></i>
+      </div>
 
+      <div class="col text-center">
+        <span class="navbar-brand mb-0 h1 text-white">Información del Paciente</span>
+      </div>
 
-  <!-- Mantener la navegación existente -->
-  
-  <div class="card position-absolute top-50 start-50 translate-middle mt-5" style="width: 90%; max-width: 800px; background-color: #ffffff; border: none;">
-    <div class="mt-5">
-      <div class="card-body mt-5">
-        <!-- Header con estructura de tres columnas -->
-        <div class="row align-items-center mb-3">
-          <!-- Botón Volver -->
-          <div class="col-3">
-            <button class="btn btn-outline-primary" (click)="goBack()">
-              <i class="fas fa-arrow-left"></i> Volver
-            </button>
-          </div>
-          
-          <!-- Título centrado -->
-          <div class="col-6 text-center">
-            <h5 class="card-title mb-0">Paciente: {{ patientInfo.nombre }} {{ patientInfo.apellidopaterno }} {{ patientInfo.apellidomaterno }}</h5>
-          </div>
-          
-          <!-- Botones de edición -->
-          <div class="col-3 text-end">
-            <div class="d-flex gap-2 justify-content-end">
-              <button *ngIf="isEditing" class="btn btn-success" (click)="saveChanges()">
-                Guardar Cambios
-              </button>
-              <button class="btn btn-primary" (click)="toggleEdit()">
-                {{ isEditing ? 'Cancelar' : 'Editar' }}
-              </button>
-            </div>
-          </div>
-        </div>
-        <!-- Mensajes de éxito/error -->
-        <div *ngIf="showSuccessMessage" class="alert alert-success">
-          {{ messageText }}
-        </div>
-        <div *ngIf="showErrorMessage" class="alert alert-danger">
-          {{ messageText }}
-        </div>
-
-        <hr>
-
-        <!-- Altura -->
-        <div class="row align-items-center">
-          <div class="col-md-6 text-center">
-            <h5>Altura (cm)</h5>
-          </div>
-          <div class="col-md-6 text-center">
-            <input *ngIf="isEditing" type="number" class="form-control" [(ngModel)]="patientInfo.estatura" name="estatura">
-            <span *ngIf="!isEditing">{{ patientInfo.estatura }}</span>
-          </div>
-        </div>
-
-        <hr>
-
-        <!-- Peso -->
-        <div class="row align-items-center">
-          <div class="col-md-6 text-center">
-            <h5>Peso (kg)</h5>
-          </div>
-          <div class="col-md-6 text-center">
-            <input *ngIf="isEditing" type="number" class="form-control" [(ngModel)]="patientInfo.peso" name="peso">
-            <span *ngIf="!isEditing">{{ patientInfo.peso }}</span>
-          </div>
-        </div>
-
-        <hr>
-
-        <!-- Edad -->
-        <div class="row align-items-center">
-          <div class="col-md-6 text-center">
-            <h5>Edad</h5>
-          </div>
-          <div class="col-md-6 text-center">
-            <input *ngIf="isEditing" type="number" class="form-control" [(ngModel)]="patientInfo.edad" name="edad">
-            <span *ngIf="!isEditing">{{ patientInfo.edad }}</span>
-          </div>
-        </div>
-
-        <hr>
-
-        <!-- Sexo -->
-        <div class="row align-items-center">
-          <div class="col-md-6 text-center">
-            <h5>Sexo</h5>
-          </div>
-          <div class="col-md-6 text-center">
-            <div *ngIf="isEditing" class="btn-group">
-              <input type="radio" class="btn-check" name="sexo" [(ngModel)]="patientInfo.sexo" value="m" id="sexoM">
-              <label class="btn btn-outline-primary" for="sexoM">Hombre</label>
-              <input type="radio" class="btn-check" name="sexo" [(ngModel)]="patientInfo.sexo" value="f" id="sexoF">
-              <label class="btn btn-outline-primary" for="sexoF">Mujer</label>
-            </div>
-            <span *ngIf="!isEditing">{{ patientInfo.sexo === 'm' ? 'Hombre' : 'Mujer' }}</span>
-          </div>
-        </div>
-
-        <hr>
-
-        <!-- Actividad -->
-        <div class="row align-items-center">
-          <div class="col-md-6 text-center">
-            <h5>Actividad</h5>
-          </div>
-          <div class="col-md-6 text-center">
-            <select *ngIf="isEditing" class="form-select" [(ngModel)]="patientInfo.actividad">
-              <option value="baja">Baja</option>
-              <option value="moderada">Moderada</option>
-              <option value="alta">Alta</option>
-            </select>
-            <span *ngIf="!isEditing">{{ patientInfo.actividad | titlecase }}</span>
-          </div>
-        </div>
-
-        <hr>
-
-        <!-- Objetivo -->
-        <div class="row align-items-center">
-          <div class="col-md-6 text-center">
-            <h5>Objetivo</h5>
-          </div>
-          <div class="col-md-6 text-center">
-            <select *ngIf="isEditing" class="form-select" [(ngModel)]="patientInfo.objetivo">
-              <option value="mantener">Mantener</option>
-              <option value="aumentar">Aumentar</option>
-              <option value="disminuir">Disminuir</option>
-            </select>
-            <span *ngIf="!isEditing">{{ patientInfo.objetivo | titlecase }}</span>
-          </div>
-        </div>
-
-        <hr>
-
-        <!-- Cantidad de comidas -->
-        <div class="row align-items-center">
-          <div class="col-md-6 text-center">
-            <h5>Cantidad de Comidas</h5>
-          </div>
-          <div class="col-md-6 text-center">
-            <input *ngIf="isEditing" type="number" class="form-control" [(ngModel)]="patientInfo.cantidad_comidas" min="1" max="6">
-            <span *ngIf="!isEditing">{{ patientInfo.cantidad_comidas }}</span>
-          </div>
-        </div>
-
-        <hr>
-        <div class="row align-items-center" *ngIf="isEditing">
-  <div class="col-md-6 text-center">
-    <h5>Observaciones Médicas</h5>
-  </div>
-  <div class="col-md-6 text-center">
-    <textarea 
-      class="form-control"
-      [(ngModel)]="observaciones"
-      placeholder="Ingrese observaciones médicas aquí..."
-      rows="3">
-    </textarea>
-  </div>
-</div>
-
-        <h5 class="card-title text-center mb-3">Resultados</h5>
-
-        <hr>
-
-        <!-- Metabolismo Basal -->
-        <div class="row align-items-center">
-          <div class="col-md-6 text-center">
-            <h5>Metabolismo Basal</h5>
-          </div>
-          <div class="col-md-6 text-end">
-            <span>{{ patientInfo.metabolismobasal?.toFixed(2) }} kcal</span>
-          </div>
-        </div>
-
-        <hr>
-
-        <!-- IMC -->
-        <div class="row align-items-center">
-          <div class="col-md-6 text-center">
-            <h5>Indice de Masa Corporal</h5>
-          </div>
-          <div class="col-md-6 text-end">
-            <span>{{ patientInfo.imc?.toFixed(2) }}</span>
-          </div>
-        </div>
-
-        <hr>
-
-        <!-- Requerimiento de Agua -->
-        <div class="row align-items-center">
-          <div class="col-md-6 text-center">
-            <h5>Requerimiento de Agua (ml)</h5>
-          </div>
-          <div class="col-md-6 text-end">
-            <span>{{ patientInfo.requerimentoagua?.toFixed(2) }} ml</span>
-          </div>
-        </div>
-
-        <hr>
-
-        <!-- Requerimiento Calórico -->
-        <div class="row align-items-center">
-          <div class="col-md-6 text-center">
-            <h5>Requerimiento Calorico Diario</h5>
-          </div>
-          <div class="col-md-6 text-end">
-            <span>{{ patientInfo.requerimientocalorico?.toFixed(2) }} kcal</span>
-          </div>
-        </div>
-
-        <!-- Mantener la sección de Mi Contenido -->
+      <div class="col d-flex justify-content-end">
+        <span class="h5 mb-0 text-white">
+          {{ patientInfo.nombre }} {{ patientInfo.apellidopaterno }} {{ patientInfo.apellidomaterno }}
+        </span>
       </div>
     </div>
   </div>
+</nav>
 
-  <!-- Mantener el container2 y content -->
+
+<div class="container-fluid" style="margin-top: 20px;">
+  <div class="card mx-auto" style="width: 90%; max-width: 800px; background-color: #ffffff;">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <button class="btn btn-outline-primary" (click)="goBack()">
+          Volver
+        </button>
+        <button class="btn btn-primary" (click)="toggleEdit()" *ngIf="!isEditing">
+          Editar
+        </button>
+        <div *ngIf="isEditing" class="d-flex gap-2">
+          <button class="btn btn-success" (click)="saveChanges()">
+            Guardar Cambios
+          </button>
+          <button class="btn btn-secondary" (click)="toggleEdit()">
+            Cancelar
+          </button>
+        </div>
+      </div>
+
+      <div class="alert alert-success" *ngIf="showSuccessMessage">
+        {{ messageText }}
+      </div>
+      <div class="alert alert-danger" *ngIf="showErrorMessage">
+        {{ messageText }}
+      </div>
+
+      <hr>
+
+      <div class="row mb-3 align-items-center">
+        <div class="col-md-6 text-center">
+          <h5>Altura (cm)</h5>
+        </div>
+        <div class="col-md-6 text-center">
+          <input *ngIf="isEditing" type="number" class="form-control" [(ngModel)]="patientInfo.estatura">
+          <span *ngIf="!isEditing">{{ patientInfo.estatura }}</span>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row mb-3 align-items-center">
+        <div class="col-md-6 text-center">
+          <h5>Peso (kg)</h5>
+        </div>
+        <div class="col-md-6 text-center">
+          <input *ngIf="isEditing" type="number" class="form-control" [(ngModel)]="patientInfo.peso">
+          <span *ngIf="!isEditing">{{ patientInfo.peso }}</span>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row mb-3 align-items-center">
+        <div class="col-md-6 text-center">
+          <h5>Edad</h5>
+        </div>
+        <div class="col-md-6 text-center">
+          <input *ngIf="isEditing" type="number" class="form-control" [(ngModel)]="patientInfo.edad">
+          <span *ngIf="!isEditing">{{ patientInfo.edad }}</span>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row mb-3 align-items-center">
+        <div class="col-md-6 text-center">
+          <h5>Sexo</h5>
+        </div>
+        <div class="col-md-6 text-center">
+          <div class="btn-group" *ngIf="isEditing">
+            <button class="btn" [class.btn-primary]="patientInfo.sexo === 'm'" 
+                    [class.btn-outline-primary]="patientInfo.sexo !== 'm'"
+                    (click)="patientInfo.sexo = 'm'">
+              Hombre
+            </button>
+            <button class="btn" [class.btn-primary]="patientInfo.sexo === 'f'" 
+                    [class.btn-outline-primary]="patientInfo.sexo !== 'f'"
+                    (click)="patientInfo.sexo = 'f'">
+              Mujer
+            </button>
+          </div>
+          <span *ngIf="!isEditing">{{ patientInfo.sexo === 'm' ? 'Hombre' : 'Mujer' }}</span>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row mb-3 align-items-center">
+        <div class="col-md-6 text-center">
+          <h5>Actividad</h5>
+        </div>
+        <div class="col-md-6 text-center">
+          <select *ngIf="isEditing" class="form-select" [(ngModel)]="patientInfo.actividad">
+            <option value="baja">Baja</option>
+            <option value="moderada">Moderada</option>
+            <option value="alta">Alta</option>
+          </select>
+          <span *ngIf="!isEditing">{{ patientInfo.actividad | titlecase }}</span>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row mb-3 align-items-center">
+        <div class="col-md-6 text-center">
+          <h5>Objetivo</h5>
+        </div>
+        <div class="col-md-6 text-center">
+          <select *ngIf="isEditing" class="form-select" [(ngModel)]="patientInfo.objetivo">
+            <option value="mantener">Mantener</option>
+            <option value="aumentar">Aumentar</option>
+            <option value="disminuir">Disminuir</option>
+          </select>
+          <span *ngIf="!isEditing">{{ patientInfo.objetivo | titlecase }}</span>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row mb-3 align-items-center">
+        <div class="col-md-6 text-center">
+          <h5>Cantidad de Comidas</h5>
+        </div>
+        <div class="col-md-6 text-center">
+          <input *ngIf="isEditing" type="number" class="form-control" [(ngModel)]="patientInfo.cantidad_comidas" min="1" max="6">
+          <span *ngIf="!isEditing">{{ patientInfo.cantidad_comidas }}</span>
+        </div>
+      </div>
+
+      <div class="row mb-3" *ngIf="isEditing">
+        <div class="col-12">
+          <hr>
+          <h5 class="text-center mb-3">Observaciones Médicas</h5>
+          <textarea 
+            class="form-control"
+            [(ngModel)]="observaciones"
+            placeholder="Ingrese las observaciones sobre los cambios realizados..."
+            style="height: 100px; resize: none;">
+          </textarea>
+        </div>
+      </div>
+
+      <hr>
+
+      <h5 class="card-title text-center mb-3">Resultados</h5>
+
+      <hr>
+
+      <div class="row mb-3 align-items-center">
+        <div class="col-md-6 text-center">
+          <h5>Metabolismo Basal</h5>
+        </div>
+        <div class="col-md-6 text-end">
+          {{ patientInfo.metabolismobasal?.toFixed(2) }} kcal
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row mb-3 align-items-center">
+        <div class="col-md-6 text-center">
+          <h5>Indice de Masa Corporal</h5>
+        </div>
+        <div class="col-md-6 text-end">
+          {{ patientInfo.imc?.toFixed(2) }}
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row mb-3 align-items-center">
+        <div class="col-md-6 text-center">
+          <h5>Requerimiento de Agua (ml)</h5>
+        </div>
+        <div class="col-md-6 text-end">
+          {{ patientInfo.requerimentoagua?.toFixed(2) }} ml
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row mb-3 align-items-center">
+        <div class="col-md-6 text-center">
+          <h5>Requerimiento Calorico Diario</h5>
+        </div>
+        <div class="col-md-6 text-end">
+          {{ patientInfo.requerimientocalorico?.toFixed(2) }} kcal
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
