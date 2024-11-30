@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse} from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -132,9 +132,23 @@ login(usuario: string, password: string): Observable<LoginResponse> {
             rol: decodedToken.rol,
             nombre: decodedToken.nombre,
             apellidopaterno: decodedToken.apellidopaterno,
-            apellidomaterno: decodedToken.apellidomaterno
+            apellidomaterno: decodedToken.apellidomaterno,
           };
-          this.userSubject.next(user);  // Actualiza el valor del usuario en el Subject
+          this.userSubject.next(user);
+          switch (user.rol) {
+            case 1:
+              console.log('Redirecting to admin-users');
+              this.router.navigate(['/admin-users']);
+              break;
+            case 2:
+              this.router.navigate(['/home']);
+              break;
+            case 3:
+              this.router.navigate(['/calendar']);
+              break;
+            default:
+              this.router.navigate(['/login']);
+          }  // Actualiza el valor del usuario en el Subject
         }
       }),
       catchError(this.handleError)

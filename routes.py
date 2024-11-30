@@ -8,6 +8,9 @@ from sqlalchemy import func
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from flask_mail import Mail, Message
 from sqlalchemy import func
+import random
+import string
+
 
 mail = Mail()
 #--------------------------------------------------Proteger rutas ------------------------------------------------------------
@@ -933,3 +936,155 @@ def crear_registro_medico(current_user):
     db.session.commit()
     
     return jsonify({'message': 'Registro médico creado exitosamente'}), 201
+
+admin_bp = Blueprint('admin', __name__)
+@admin_bp.route('/admin/users', methods=['GET'])
+@token_required
+def get_all_users(current_user):
+    if current_user.rol != 1:
+        return jsonify({'message': 'No autorizado'}), 403
+    
+    users = classusuarios.query.all()
+    return jsonify([{
+        'id': user.id,
+        'nombre': user.nombre,
+        'apellidopaterno': user.apellidopaterno,
+        'apellidomaterno': user.apellidomaterno,
+        'usuario': user.usuario,
+        'correo': user.correo,
+        'rol': user.rol,
+        'verificado': user.verificado
+    } for user in users]), 200
+
+# En routes.py
+
+@admin_bp.route('/admin/users', methods=['POST'])
+@token_required
+def create_user(current_user):
+    if current_user.rol != 1:
+        return jsonify({'message': 'No autorizado'}), 403
+    
+    data = request.json
+    if classusuarios.query.filter_by(usuario=data['usuario']).first():
+        return jsonify({'message': 'El nombre de usuario ya existe'}), 400
+    
+    if classusuarios.query.filter_by(correo=data['correo']).first():
+        return jsonify({'message': 'El correo ya está registrado'}), 400
+    
+    new_user = classusuarios(
+        nombre=data['nombre'],
+        apellidopaterno=data['apellidopaterno'],
+        apellidomaterno=data['apellidomaterno'],
+        usuario=data['usuario'],
+        correo=data['correo'],
+        rol=data['rol'],
+        verificado=True  # Los usuarios creados por admin están verificados por defecto
+    )
+    new_user.set_password(data['password'])
+    
+    db.session.add(new_user)
+    db.session.commit()
+    
+    return jsonify({'message': 'Usuario creado correctamente'}), 201
+
+@admin_bp.route('/admin/users/<int:user_id>', methods=['PUT'])
+@token_required
+def update_user(current_user, user_id):
+    if current_user.rol != 1:
+        return jsonify({'message': 'No autorizado'}), 403
+    
+    user = classusuarios.query.get_or_404(user_id)
+    data = request.json
+    
+    # Verificar duplicados solo si el valor ha cambiado
+    if data['usuario'] != user.usuario and \
+       classusuarios.query.filter_by(usuario=data['usuario']).first():
+        return jsonify({'message': 'El nombre de usuario ya existe'}), 400
+    
+    if data['correo'] != user.correo and \
+       classusuarios.query.filter_by(correo=data['correo']).first():
+        return jsonify({'message': 'El correo ya está registrado'}), 400
+    
+    user.nombre = data['nombre']
+    user.apellidopaterno = data['apellidopaterno']
+    user.apellidomaterno = data['apellidomaterno']
+    user.usuario = data['usuario']
+    user.correo = data['correo']
+    user.rol = data['rol']
+    
+    db.session.commit()
+    return jsonify({'message': 'Usuario actualizado correctamente'}), 200
+
+@admin_bp.route('/admin/users/<int:user_id>/verify', methods=['PUT'])
+@token_required
+def toggle_user_verification(current_user, user_id):
+    if current_user.rol != 1:
+        return jsonify({'message': 'No autorizado'}), 403
+    
+    user = classusuarios.query.get_or_404(user_id)
+    data = request.json
+    user.verificado = data['verificado']
+    
+    db.session.commit()
+    return jsonify({
+        'message': 'Estado de verificación actualizado correctamente',
+        'verificado': user.verificado
+    }), 200
+
+@admin_bp.route('/admin/users/<int:user_id>/reset-password', methods=['POST'])
+@token_required
+def reset_user_password(current_user, user_id):
+    if current_user.rol != 1:
+        return jsonify({'message': 'No autorizado'}), 403
+    
+    user = classusuarios.query.get_or_404(user_id)
+    
+    # Generar una contraseña aleatoria
+    new_password = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+    user.set_password(new_password)
+    db.session.commit()
+    
+    # Enviar correo con la nueva contraseña
+    msg = Message('Nueva contraseña',
+                recipients=[user.correo])
+    msg.body = f'Tu nueva contraseña es: {new_password}. Recomendamos que la cambies cuanto antes :)'
+    mail = Mail(current_app)
+    mail.send(msg)
+    
+    return jsonify({'message': 'Contraseña reseteada y enviada por correo'}), 200
+
+@admin_bp.route('/admin/users/<int:user_id>', methods=['DELETE'])
+@token_required
+def delete_user(current_user, user_id):
+    if current_user.rol != 1:
+        return jsonify({'message': 'No autorizado'}), 403
+    
+    if current_user.id == user_id:
+        return jsonify({'message': 'No puedes eliminar tu propio usuario'}), 400
+    
+    user = classusuarios.query.get_or_404(user_id)
+    db.session.delete(user)
+    db.session.commit()
+    
+    return jsonify({'message': 'Usuario eliminado correctamente'}), 200
+
+@admin_bp.route('/admin/stats', methods=['GET'])
+@token_required
+def get_admin_stats(current_user):
+    if current_user.rol != 1:
+        return jsonify({'message': 'No autorizado'}), 403
+    
+    total_users = classusuarios.query.count()
+    total_doctors = classusuarios.query.filter_by(rol=2).count()
+    total_patients = classusuarios.query.filter_by(rol=3).count()
+    verified_users = classusuarios.query.filter_by(verificado=True).count()
+    total_foods = classalimentos.query.count()
+    
+    return jsonify({
+        'totalUsers': total_users,
+        'totalDoctors': total_doctors,
+        'totalPatients': total_patients,
+        'verifiedUsers': verified_users,
+        'totalFoods': total_foods
+    }), 200
+

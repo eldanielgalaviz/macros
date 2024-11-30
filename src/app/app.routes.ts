@@ -17,6 +17,8 @@ import { authGuard } from './auth/guards/auth.guard';
 import { SettingsComponent } from './settings/settings.component';
 import { PatientMealsComponent } from './patientmeals/patientmeals.component';
 import { PatientHistoryComponent } from './patient-history/patient-history.component';
+import { UserAdminComponent } from './user-admin/user-admin.component';
+import { AdminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -53,6 +55,11 @@ export const routes: Routes = [
     path: 'patient-history/:id', 
     component: PatientHistoryComponent,
     canActivate: [DoctorGuard]
+  },
+  {
+    path: 'admin-users',
+    component: UserAdminComponent,
+    canActivate: [AdminGuard]
   },
   
   //{ path: 'reset_password/:token', component: VerifyTokenComponent },

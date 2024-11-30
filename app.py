@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from models import db, classusuarios ,classalimentos, RegistroMedico, RegistroAgua, RegistroComidas
-from routes import usuarios_bp, alimentos_bp, registro_comidas_bp, auth_bp, personal_info_bp
+from routes import usuarios_bp, alimentos_bp, registro_comidas_bp, auth_bp, personal_info_bp, admin_bp
 from config import Config
 from flask_mail import Mail
 from flask_migrate import Migrate
@@ -37,6 +37,7 @@ app.register_blueprint(alimentos_bp)
 app.register_blueprint(registro_comidas_bp)
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(personal_info_bp, url_prefix='/personal-info')
+app.register_blueprint(admin_bp)
 
 # Ruta adicional para obtener la cantidad de comidas
 @app.route('/get_cantidad_comidas', methods=['POST'])
