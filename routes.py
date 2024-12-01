@@ -1,6 +1,6 @@
 import jwt
 import datetime
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Blueprint, jsonify, request, current_app, url_for, make_response
 from models import db, classusuarios, classalimentos, RegistroComidas, RegistroAgua, RegistroMedico
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -86,7 +86,7 @@ def login():
             'nombre': user.nombre,
             'apellidopaterno': user.apellidopaterno,
             'apellidomaterno': user.apellidomaterno,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+            'exp': datetime.utcnow() + timedelta(hours=24)
         }, current_app.config['SECRET_KEY'], algorithm='HS256')
 
         return jsonify ({'token':token}),200
@@ -572,7 +572,7 @@ def registrar_comida(current_user):
     nuevo_registro = RegistroComidas(
         usuario_id=current_user.id,
         alimento_id=data['alimento_id'],
-        fecha=datetime.datetime.strptime(data['fecha'], '%Y-%m-%d').date(),
+        fecha=datetime.strptime(data['fecha'], '%Y-%m-%d').date(),
         cantidad=data['cantidad'],
         numero_comida=data['numero_comida']
     )
@@ -585,7 +585,7 @@ def registrar_comida(current_user):
 @registro_comidas_bp.route('/comidas-diarias/<string:fecha>', methods=['GET'])
 @token_required
 def obtener_comidas_diarias(current_user, fecha):
-    fecha_obj = datetime.datetime.strptime(fecha, '%Y-%m-%d').date()
+    fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
     
     comidas = RegistroComidas.query.filter_by(
         usuario_id=current_user.id,
@@ -596,7 +596,7 @@ def obtener_comidas_diarias(current_user, fecha):
 @registro_comidas_bp.route('/resumen-diario/<string:fecha>', methods=['GET'])
 @token_required
 def resumen_diario(current_user, fecha):
-    fecha_obj = datetime.datetime.strptime(fecha, '%Y-%m-%d').date()
+    fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
     
     # Consulta para obtener el desglose por alimento
     desglose = db.session.query(
@@ -656,7 +656,7 @@ def resumen_diario(current_user, fecha):
 @registro_comidas_bp.route('/macronutrientes-diarios/<string:fecha>', methods=['GET'])
 @token_required
 def obtener_macronutrientes_diarios(current_user, fecha):
-    fecha_obj = datetime.datetime.strptime(fecha, '%Y-%m-%d').date()
+    fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
     
     resultados = db.session.query(
         func.sum(classalimentos.proteinas * RegistroComidas.cantidad).label('proteinas_totales'),
@@ -697,7 +697,7 @@ def actualizar_comida(current_user, registro_id):
     if 'alimento_id' in data:
         registro.alimento_id = data['alimento_id']
     if 'fecha' in data:
-        registro.fecha = datetime.datetime.strptime(data['fecha'], '%Y-%m-%d').date()
+        registro.fecha = datetime.strptime(data['fecha'], '%Y-%m-%d').date()
     if 'cantidad' in data:
         registro.cantidad = data['cantidad']
     if 'numero_comida' in data:
@@ -726,7 +726,7 @@ def eliminar_comida(current_user, registro_id):
 @token_required
 def registrar_agua(current_user):
     data = request.json
-    fecha = datetime.datetime.strptime(data['fecha'], '%Y-%m-%d').date()
+    fecha = datetime.strptime(data['fecha'], '%Y-%m-%d').date()
     
     # Buscar si ya existe un registro para esta fecha
     registro_existente = RegistroAgua.query.filter_by(
@@ -753,7 +753,7 @@ def registrar_agua(current_user):
 @registro_comidas_bp.route('/agua-diaria/<string:fecha>', methods=['GET'])
 @token_required
 def obtener_agua_diaria(current_user, fecha):
-    fecha_obj = datetime.datetime.strptime(fecha, '%Y-%m-%d').date()
+    fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
     
     registro = RegistroAgua.query.filter_by(
         usuario_id=current_user.id,
@@ -773,7 +773,7 @@ def resumen_diario_paciente(current_user, patient_id, fecha):
     if current_user.rol != 2:
         return jsonify({'message': 'No autorizado'}), 403
     
-    fecha_obj = datetime.datetime.strptime(fecha, '%Y-%m-%d').date()
+    fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
     
     # Consulta para obtener el desglose por alimento
     desglose = db.session.query(
@@ -942,7 +942,7 @@ def crear_registro_medico(current_user):
     data = request.json
     nuevo_registro = RegistroMedico(
         usuario_id=data['usuario_id'],
-        fecha=datetime.datetime.strptime(data['fecha'], '%Y-%m-%d').date(),
+        fecha=datetime.strptime(data['fecha'], '%Y-%m-%d').date(),
         peso=data['peso'],
         imc=data['imc'],
         observaciones=data['observaciones']

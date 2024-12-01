@@ -162,4 +162,48 @@
     </div>
   </div>
 
+  <div class="modal fade" [class.show]="showPasswordResetModal" [style.display]="showPasswordResetModal ? 'block' : 'none'" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Confirmar restablecimiento de contraseña</h5>
+          <button type="button" class="btn-close" (click)="cancelPasswordReset()" [disabled]="isResettingPassword"></button>
+        </div>
+        <div class="modal-body">
+          <div *ngIf="!isResettingPassword">
+            <p>¿Estás seguro de que deseas restablecer la contraseña del usuario 
+              <strong>{{ userToResetPassword?.nombre }} {{ userToResetPassword?.apellidopaterno }}</strong>?
+            </p>
+            <p class="text-muted">
+              Se enviará una nueva contraseña al correo electrónico del usuario.
+            </p>
+          </div>
+          <div *ngIf="isResettingPassword" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-3 mb-0">Restableciendo contraseña...</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cancelPasswordReset()" [disabled]="isResettingPassword">
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-primary" (click)="confirmPasswordReset()" [disabled]="isResettingPassword">
+            <span *ngIf="!isResettingPassword">
+              <i class="bi bi-key me-2"></i>Restablecer Contraseña
+            </span>
+            <span *ngIf="isResettingPassword">
+              <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Procesando...
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  
+  <!-- Backdrop para el modal -->
+
+
+  
   <div class="modal-backdrop fade show" *ngIf="showModal"></div>

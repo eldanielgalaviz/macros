@@ -38,6 +38,9 @@ export class UserAdminComponent implements OnInit {
   showModal: boolean = false;
   editingUser: boolean = false;
   userModel: User = this.getEmptyUserModel();
+  showPasswordResetModal = false;
+  userToResetPassword: User | null = null;
+  isResettingPassword = false;
 
   constructor(
     private http: HttpClient,
@@ -195,23 +198,39 @@ export class UserAdminComponent implements OnInit {
   }
 
   resetPassword(user: User) {
-    if (!confirm(`¿Estás seguro de que deseas resetear la contraseña de ${user.nombre}?`)) {
-      return;
-    }
+    this.userToResetPassword = user;
+    this.showPasswordResetModal = true;
+  }
 
+  cancelPasswordReset() {
+    this.showPasswordResetModal = false;
+    this.userToResetPassword = null;
+  }
+
+  confirmPasswordReset() {
+    if (!this.userToResetPassword) return;
+
+    this.isResettingPassword = true;
     const options = { headers: this.getHeaders() };
     
-    this.http.post(`http://localhost:5000/admin/users/${user.id}/reset-password`, {}, options).subscribe({
-      next: () => {
-        this.successMessage = 'Se ha enviado un correo con la nueva contraseña';
-        setTimeout(() => this.successMessage = '', 3000);
-      },
-      error: (error) => {
-        console.error('Error:', error);
-        this.errorMessage = 'Error al resetear la contraseña';
-        setTimeout(() => this.errorMessage = '', 3000);
-      }
-    });
+    this.http.post(`http://localhost:5000/admin/users/${this.userToResetPassword.id}/reset-password`, {}, options)
+      .subscribe({
+        next: () => {
+          this.isResettingPassword = false;
+          this.showPasswordResetModal = false;
+          this.userToResetPassword = null;
+          this.successMessage = 'Se ha enviado un correo con la nueva contraseña';
+          setTimeout(() => this.successMessage = '', 3000);
+        },
+        error: (error) => {
+          console.error('Error:', error);
+          this.isResettingPassword = false;
+          this.showPasswordResetModal = false;
+          this.userToResetPassword = null;
+          this.errorMessage = 'Error al resetear la contraseña';
+          setTimeout(() => this.errorMessage = '', 3000);
+        }
+      });
   }
 
   getRoleBadgeClass(rol: number): string {
