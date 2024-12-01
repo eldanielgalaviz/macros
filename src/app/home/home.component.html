@@ -18,6 +18,11 @@
         <div class="col">
           <h5 class="card-title mb-0">Panel de Control - Dr. {{ currentUser?.nombre }} {{ currentUser?.apellidopaterno }}</h5>
         </div>
+        <div class="col text-end">
+          <button class="btn btn-primary" (click)="goToFoodManagement()">
+            <i class="bi bi-gear-fill me-2"></i>Gestionar Alimentos
+          </button>
+        </div>
         <div class="col">
           <div class="input-group">
             <input type="text" class="form-control" placeholder="Buscar paciente..." [(ngModel)]="searchTerm" (ngModelChange)="searchPatients()">
@@ -196,3 +201,4 @@
     </div>
   </div>
 </div>
+

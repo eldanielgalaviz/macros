@@ -533,17 +533,20 @@ def crear_alimento():
     db.session.commit()
     return jsonify(new_alimento.to_dict()), 201
 
-@alimentos_bp.route('/alimentos/<int:id>', methods = ['PUT'])
+@alimentos_bp.route('/alimentos/<int:id>', methods=['PUT'])
 #@token_required
 def update_alimento(id):
     alimento = classalimentos.query.get_or_404(id)
-    data = request.json()
+    data = request.json  # Remove the parentheses
+    
     alimento.nombre = data['nombre']
     alimento.porcion = data['porcion']
+    alimento.tipo_porcion = data['tipo_porcion']  # No olvides actualizar el tipo de porción
     alimento.proteinas = data['proteinas']
     alimento.carbohidratos = data['carbohidratos']
     alimento.grasas = data['grasas']
     alimento.calorias = data['calorias']
+    
     db.session.commit()
     return jsonify(alimento.to_dict())
     

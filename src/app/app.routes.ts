@@ -19,6 +19,7 @@ import { PatientMealsComponent } from './patientmeals/patientmeals.component';
 import { PatientHistoryComponent } from './patient-history/patient-history.component';
 import { UserAdminComponent } from './user-admin/user-admin.component';
 import { AdminGuard } from './guards/admin.guard';
+import { FoodManagementComponent } from './food-management/food-management.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -60,6 +61,11 @@ export const routes: Routes = [
     path: 'admin-users',
     component: UserAdminComponent,
     canActivate: [AdminGuard]
+  },
+  {
+    path: 'food-management',
+    component: FoodManagementComponent,
+    canActivate: [DoctorGuard]
   },
   
   //{ path: 'reset_password/:token', component: VerifyTokenComponent },

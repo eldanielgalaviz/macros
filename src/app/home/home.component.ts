@@ -1,8 +1,9 @@
 // src/app/home/home.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgForm, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../auth/services/auth.service';
 
 interface User {
@@ -13,6 +14,16 @@ interface User {
   nombre: string;
   apellidopaterno: string;
   apellidomaterno: string;
+}
+
+interface NewFood {
+  nombre: string;
+  porcion: number;
+  tipo_porcion: string;
+  proteinas: number;
+  carbohidratos: number;
+  grasas: number;
+  calorias: number;
 }
 
 interface Patient {
@@ -55,9 +66,22 @@ export class HomeComponent implements OnInit {
   successMessage: string = '';
   isLoading: boolean = false;
 
+  showCreateFoodModal = false;
+  isCreatingFood = false;
+  newFood: NewFood = {
+    nombre: '',
+    porcion: 0,
+    tipo_porcion: 'gramos',
+    proteinas: 0,
+    carbohidratos: 0,
+    grasas: 0,
+    calorias: 0
+  };
+
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private http: HttpClient
   ) {}
 
   ngOnInit() {
@@ -65,6 +89,14 @@ export class HomeComponent implements OnInit {
     this.authService.getCurrentUser().subscribe(user => {
       console.log('Current user data:', user); // Para debug
       this.currentUser = user;
+    });
+  }
+
+  private getHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
     });
   }
 
@@ -147,4 +179,11 @@ export class HomeComponent implements OnInit {
   logout() {
     this.authService.logout();
   }
+
+  goToFoodManagement() {
+    this.router.navigate(['/food-management']);
+  }
 }
+
+
+
