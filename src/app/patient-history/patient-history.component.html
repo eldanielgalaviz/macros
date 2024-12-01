@@ -31,12 +31,41 @@
   <div class="row mb-4">
       <div class="col">
           <div class="card">
-              <div class="card-header d-flex justify-content-between align-items-center">
-                  <h5 class="mb-0">Evolución del Peso</h5>
-                  <button class="btn btn-primary btn-sm" (click)="generateReport()">
-                    <i class="fas fa-file-pdf me-2"></i>Generar Reporte
-                  </button>
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Evolución del Peso</h5>
+              <div class="d-flex gap-3 align-items-center">
+                <div class="d-flex gap-2">
+                  <div class="input-group">
+                    <span class="input-group-text">Desde</span>
+                    <input 
+                      type="date" 
+                      class="form-control" 
+                      [(ngModel)]="reportStartDate"
+                      [max]="reportEndDate">
+                  </div>
+                  <div class="input-group">
+                    <span class="input-group-text">Hasta</span>
+                    <input 
+                      type="date" 
+                      class="form-control" 
+                      [(ngModel)]="reportEndDate"
+                      [min]="reportStartDate">
+                  </div>
+                </div>
+                <button 
+                  class="btn btn-primary" 
+                  (click)="generateReport()"
+                  [disabled]="isGeneratingPdf">
+                  <span *ngIf="!isGeneratingPdf">
+                    <i class="bi bi-file-pdf me-2"></i>Generar Reporte
+                  </span>
+                  <span *ngIf="isGeneratingPdf">
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Generando PDF...
+                  </span>
+                </button>
               </div>
+            </div>
               <div class="card-body">
                   <canvas #weightChart></canvas>
               </div>

@@ -1,6 +1,7 @@
 import jwt
 import datetime
-from flask import Blueprint, jsonify, request, current_app, url_for, render_template
+from datetime import datetime
+from flask import Blueprint, jsonify, request, current_app, url_for, make_response
 from models import db, classusuarios, classalimentos, RegistroComidas, RegistroAgua, RegistroMedico
 from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
@@ -9,8 +10,23 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from flask_mail import Mail, Message
 from sqlalchemy import func
 import random
-import string
 
+import string
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.graphics.shapes import Drawing
+from reportlab.graphics.charts.linecharts import HorizontalLineChart
+import traceback
+from io import BytesIO
+import matplotlib.pyplot as plt
+import numpy as np
 
 mail = Mail()
 #--------------------------------------------------Proteger rutas ------------------------------------------------------------
@@ -1088,3 +1104,141 @@ def get_admin_stats(current_user):
         'totalFoods': total_foods
     }), 200
 
+
+
+@personal_info_bp.route('/generar-reporte/<int:patient_id>', methods=['POST'])
+@token_required
+def generar_reporte(current_user, patient_id):
+    if current_user.rol != 2:
+        return jsonify({'message': 'No autorizado'}), 403
+
+    try:
+        data = request.json
+        start_date = datetime.strptime(data['startDate'], '%Y-%m-%d')
+        end_date = datetime.strptime(data['endDate'], '%Y-%m-%d')
+
+        patient = classusuarios.query.get_or_404(patient_id)
+
+        # Obtener registros filtrados por fecha
+        registros_medicos = RegistroMedico.query.filter(
+            RegistroMedico.usuario_id == patient_id,
+            RegistroMedico.fecha.between(start_date, end_date)
+        ).order_by(RegistroMedico.fecha).all()
+
+        buffer = BytesIO()
+        doc = SimpleDocTemplate(
+            buffer, 
+            pagesize=letter,
+            rightMargin=72,
+            leftMargin=72,
+            topMargin=72,
+            bottomMargin=72
+        )
+
+        # Estilos
+        styles = getSampleStyleSheet()
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            alignment=1,  # Centrado
+            spaceAfter=30
+        )
+        heading_style = ParagraphStyle(
+            'CustomHeading',
+            parent=styles['Heading2'],
+            spaceBefore=20,
+            spaceAfter=20
+        )
+        normal_style = styles['Normal']
+
+        # Título y contenido inicial...
+        elements = []
+
+        # Título principal
+        elements.append(Paragraph('Reporte Médico', title_style))
+        elements.append(Paragraph(f'Fecha: {datetime.now().strftime("%d/%m/%Y")}', normal_style))
+        elements.append(Spacer(1, 20))
+
+        # Información del paciente
+        elements.append(Paragraph('Información del Paciente', heading_style))
+        elements.append(Paragraph(f'Nombre: {patient.nombre} {patient.apellidopaterno} {patient.apellidomaterno}', normal_style))
+        elements.append(Paragraph(f'Edad: {patient.edad} años', normal_style))
+        elements.append(Paragraph(f'Objetivo: {patient.objetivo}', normal_style))
+        elements.append(Spacer(1, 20))
+
+        # Gráfica de evolución del peso
+        if registros_medicos:
+            elements.append(Paragraph('Evolución del Peso', heading_style))
+            plt.figure(figsize=(8, 4))
+            fechas = [reg.fecha for reg in registros_medicos]
+            pesos = [reg.peso for reg in registros_medicos]
+            
+            plt.plot(fechas, pesos, 'b-o')
+            plt.title('Evolución del Peso')
+            plt.xlabel('Fecha')
+            plt.ylabel('Peso (kg)')
+            plt.grid(True)
+            plt.xticks(rotation=45)
+            
+            # Guardar la gráfica
+            img_buffer = BytesIO()
+            plt.savefig(img_buffer, format='png', bbox_inches='tight')
+            img_buffer.seek(0)
+            plt.close()
+
+            # Añadir la gráfica al PDF
+            img = Image(img_buffer)
+            img.drawHeight = 200
+            img.drawWidth = 400
+            elements.append(img)
+            elements.append(Spacer(1, 20))
+
+        # Tabla de registros médicos
+        elements.append(Paragraph('Registros Médicos', heading_style))
+        if registros_medicos:
+            data = [['Fecha', 'Peso (kg)', 'IMC', 'Observaciones']]
+            for registro in registros_medicos:
+                data.append([
+                    registro.fecha.strftime('%d/%m/%Y'),
+                    str(registro.peso),
+                    f"{registro.imc:.2f}",
+                    registro.observaciones or ''
+                ])
+
+            table = Table(data, colWidths=[80, 80, 80, 200])
+            table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 12),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                ('FONTSIZE', (0, 1), (-1, -1), 10),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ]))
+            elements.append(table)
+        else:
+            elements.append(Paragraph('No hay registros médicos disponibles', normal_style))
+
+        # Generar el PDF
+        doc.build(elements)
+        pdf_value = buffer.getvalue()
+        buffer.close()
+
+        response = make_response(pdf_value)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'attachment; filename=reporte_medico_{patient_id}.pdf'
+        
+        return response
+
+    except Exception as e:
+        print("Error al generar el reporte:")
+        print(traceback.format_exc())
+        return jsonify({
+            'message': 'Error al generar el reporte',
+            'error': str(e)
+        }), 500

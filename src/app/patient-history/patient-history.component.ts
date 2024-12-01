@@ -23,6 +23,9 @@ export class PatientHistoryComponent implements OnInit {
   resumenComidas: any[] = [];
   weightChart: any;
   fechaBusqueda: string = '';
+  isGeneratingPdf: boolean = false;
+  reportStartDate: string = '';
+  reportEndDate: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -37,6 +40,12 @@ export class PatientHistoryComponent implements OnInit {
       console.log('Patient ID:', this.patientId);
       this.loadPatientInfo();
       this.loadHistorial();
+      const today = new Date();
+      const lastMonth = new Date();
+      lastMonth.setMonth(lastMonth.getMonth() - 1);
+      
+      this.reportEndDate = today.toISOString().split('T')[0];
+      this.reportStartDate = lastMonth.toISOString().split('T')[0];
     });
   }
 
@@ -59,8 +68,9 @@ export class PatientHistoryComponent implements OnInit {
     this.http.get<any>(`http://localhost:5000/personal-info/historial/${this.patientId}`, { headers })
       .subscribe({
         next: (data) => {
+          // Ordenar los registros por fecha de manera ascendente
           this.registrosMedicos = data.registros_medicos.sort((a: any, b: any) => {
-            return new Date(b.fecha).getTime() - new Date(a.fecha).getTime();
+            return new Date(a.fecha).getTime() - new Date(b.fecha).getTime();
           });
           this.registrosMedicosFiltrados = [...this.registrosMedicos];
           this.resumenComidas = data.resumen_comidas;
@@ -90,11 +100,14 @@ export class PatientHistoryComponent implements OnInit {
     this.fechaBusqueda = '';
     this.registrosMedicosFiltrados = [...this.registrosMedicos];
   }
+
   initWeightChart() {
     const ctx = this.weightChartRef.nativeElement.getContext('2d');
     
-    // Preparar los datos ordenados cronológicamente
-    const dates = this.registrosMedicos.map(reg => {
+    // Revertir el orden de los datos para la visualización
+    const reversedData = [...this.registrosMedicos].reverse();
+    
+    const dates = reversedData.map(reg => {
       const fecha = new Date(reg.fecha);
       return fecha.toLocaleDateString('es-ES', {
         day: '2-digit',
@@ -103,12 +116,12 @@ export class PatientHistoryComponent implements OnInit {
       });
     });
     
-    const weights = this.registrosMedicos.map(reg => reg.peso);
-
+    const weights = reversedData.map(reg => reg.peso);
+  
     if (this.weightChart) {
       this.weightChart.destroy();
     }
-
+  
     this.weightChart = new Chart(ctx, {
       type: 'line',
       data: {
@@ -123,18 +136,21 @@ export class PatientHistoryComponent implements OnInit {
       },
       options: {
         responsive: true,
+        indexAxis: 'x',
         scales: {
+          x: {
+            position: 'bottom',
+            reverse: true,  // Invertimos el eje X
+            title: {
+              display: true,
+              text: 'Fecha'
+            }
+          },
           y: {
             beginAtZero: false,
             title: {
               display: true,
               text: 'Peso (kg)'
-            }
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'Fecha'
             }
           }
         },
@@ -154,23 +170,44 @@ export class PatientHistoryComponent implements OnInit {
 
   generateReport() {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    
+    this.isGeneratingPdf = true;
+
+    const params = {
+      startDate: this.reportStartDate,
+      endDate: this.reportEndDate
+    };
+
     this.http.post(
       `http://localhost:5000/personal-info/generar-reporte/${this.patientId}`,
-      {},
+      params,
       { 
         headers,
         responseType: 'blob' 
       }
     ).subscribe({
       next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
+        // Crear y descargar el archivo
+        const fecha = new Date().toISOString().split('T')[0];
+        const fileName = `reporte_paciente_${this.patientId}_${fecha}.pdf`;
+        
+        const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
         const link = document.createElement('a');
         link.href = url;
-        link.download = `reporte_${this.patientId}.pdf`;
+        link.download = fileName;
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
+        
+        // Desactivar indicador de carga
+        this.isGeneratingPdf = false;
       },
-      error: (error) => console.error('Error generating report:', error)
+      error: (error) => {
+        console.error('Error generando el reporte:', error);
+        this.isGeneratingPdf = false;
+        alert('Error al generar el reporte. Por favor intente nuevamente.');
+      }
     });
   }
 
