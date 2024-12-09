@@ -1,7 +1,7 @@
 <div class="chat-container">
   <div class="messages" #scrollContainer>
     <div *ngFor="let message of messages" 
-         [ngClass]="{'user-message': message.isUser, 'assistant-message': !message.isUser}">
+          [ngClass]="{'user-message': message.isUser, 'assistant-message': !message.isUser}">
       {{ message.text }}
     </div>
     
@@ -21,10 +21,10 @@
 
   <div class="input-container">
     <input type="text" 
-           [(ngModel)]="userInput" 
-           (keyup.enter)="sendMessage()"
-           [disabled]="isLoading"
-           placeholder="Consulta tu duda sobre nutrición...">
+            [(ngModel)]="userInput" 
+            (keyup.enter)="sendMessage()"
+            [disabled]="isLoading"
+            placeholder="Consulta tu duda sobre nutrición...">
     <button (click)="sendMessage()" 
             [disabled]="isLoading || !userInput.trim()">
       <span *ngIf="!isLoading">Enviar</span>

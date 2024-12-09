@@ -179,13 +179,23 @@
 
           <div class="mb-3">
             <label for="password" class="form-label">Contraseña</label>
-            <input 
-              type="password" 
-              class="form-control" 
-              id="password" 
-              name="password"
-              [(ngModel)]="newPatient.password"
-              required>
+            <div class="input-group">
+              <input 
+                [type]="showPassword ? 'text' : 'password'"
+                class="form-control"
+                id="password"
+                name="password"
+                [(ngModel)]="newPatient.password"
+                required
+              >
+              <button 
+                class="btn btn-outline-secondary" 
+                type="button"
+                (click)="togglePasswordVisibility()"
+              >
+                <i [class]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+              </button>
+            </div>
           </div>
         </div>
         <div class="modal-footer">

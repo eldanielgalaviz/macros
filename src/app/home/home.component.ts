@@ -60,8 +60,9 @@ export class HomeComponent implements OnInit {
     correo: '',
     edad: '',
     usuario: '',
-    password: ''
+    password: '',
   };
+  showPassword: boolean = false;
   errorMessage: string = '';
   successMessage: string = '';
   isLoading: boolean = false;
@@ -98,6 +99,10 @@ export class HomeComponent implements OnInit {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 
   loadPatients() {
@@ -155,6 +160,9 @@ export class HomeComponent implements OnInit {
           } else {
             this.errorMessage = 'Error al registrar el paciente';
           }
+          setTimeout(() => {
+            this.errorMessage = '';
+          }, 2000);
         }
       });
     }

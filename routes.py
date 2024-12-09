@@ -342,8 +342,6 @@ personal_info_bp = Blueprint('personal_info_bp', __name__)
     }
 })
 @token_required
-
-@token_required
 def update_patient_info(current_user, patient_id):
 
     if current_user.rol != 2:
