@@ -28,6 +28,8 @@ from io import BytesIO
 import matplotlib.pyplot as plt
 import numpy as np
 
+from flasgger import swag_from
+
 mail = Mail()
 #--------------------------------------------------Proteger rutas ------------------------------------------------------------
 def token_required(f):
@@ -65,6 +67,35 @@ auth_bp = Blueprint('auth', __name__)
 #--------------------------------------------------Rutas para login ------------------------------------------------------------
 usuarios_bp = Blueprint('usuarios', __name__)
 @auth_bp.route('/login', methods=['POST'])
+@swag_from({
+    'tags': ['Autenticación'],
+    'parameters': [{
+        'in': 'body',
+        'name': 'body',
+        'required': True,
+        'schema': {
+            'type': 'object',
+            'properties': {
+                'usuario': {'type': 'string', 'description': 'Nombre de usuario'},
+                'password': {'type': 'string', 'description': 'Contraseña del usuario'}
+            }
+        }
+    }],
+    'responses': {
+        200: {
+            'description': 'Login exitoso',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'token': {'type': 'string', 'description': 'JWT token'}
+                }
+            }
+        },
+        401: {'description': 'Credenciales inválidas'},
+        403: {'description': 'Cuenta no verificada'},
+        500: {'description': 'Error interno del servidor'}
+    }
+})
 def login():
     try:
 
@@ -99,6 +130,40 @@ def login():
         #return jsonify ({'message': 'Credenciales invalidas'})
     
 @auth_bp.route('/register', methods=['POST'])
+@swag_from({
+    'tags': ['Autenticación'],
+    'description': 'Registrar nuevo usuario',
+    'parameters': [{
+        'in': 'body',
+        'name': 'user',
+        'required': True,
+        'schema': {
+            'type': 'object',
+            'required': ['apellidopaterno', 'apellidomaterno', 'nombre', 'rol', 'usuario', 'correo', 'password'],
+            'properties': {
+                'apellidopaterno': {'type': 'string'},
+                'apellidomaterno': {'type': 'string'},
+                'nombre': {'type': 'string'},
+                'rol': {'type': 'integer', 'description': '1=Admin, 2=Doctor, 3=Paciente'},
+                'usuario': {'type': 'string'},
+                'correo': {'type': 'string', 'format': 'email'},
+                'password': {'type': 'string'}
+            }
+        }
+    }],
+    'responses': {
+        201: {
+            'description': 'Usuario registrado exitosamente',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'message': {'type': 'string'}
+                }
+            }
+        },
+        400: {'description': 'Error de validación (correo o usuario ya existe)'}
+    }
+})
 def register():
     data = request.json
     if classusuarios.query.filter_by(correo=data['correo']).first():
@@ -155,6 +220,34 @@ def verify_account(token):
     return jsonify({'message': 'Cuenta verificada exitosamente.'}), 200
 
 @auth_bp.route('/forgot_password', methods=['POST'])
+@swag_from({
+    'tags': ['Autenticación'],
+    'description': 'Solicitar recuperación de contraseña',
+    'parameters': [{
+        'in': 'body',
+        'name': 'email',
+        'required': True,
+        'schema': {
+            'type': 'object',
+            'required': ['correo'],
+            'properties': {
+                'correo': {'type': 'string', 'format': 'email'}
+            }
+        }
+    }],
+    'responses': {
+        200: {
+            'description': 'Correo de recuperación enviado',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'message': {'type': 'string'}
+                }
+            }
+        },
+        404: {'description': 'Usuario no encontrado'}
+    }
+})
 def forgot_password():
     data=request.json
     user=classusuarios.query.filter_by(correo=data["correo"]).first()
@@ -210,6 +303,46 @@ def reset_password(token):
 
 personal_info_bp = Blueprint('personal_info_bp', __name__)
 @personal_info_bp.route('/update/<int:patient_id>', methods =['PUT'])
+@swag_from({
+    'tags': ['Información Personal'],
+    'description': 'Actualizar información del paciente (solo médicos)',
+    'security': [{'Bearer': []}],
+    'parameters': [
+        {
+            'name': 'patient_id',
+            'in': 'path',
+            'type': 'integer',
+            'required': True
+        },
+        {
+            'in': 'body',
+            'name': 'data',
+            'required': True,
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'peso': {'type': 'number'},
+                    'estatura': {'type': 'number'},
+                    'edad': {'type': 'integer'},
+                    'sexo': {'type': 'string', 'enum': ['m', 'f']},
+                    'actividad': {'type': 'string', 'enum': ['baja', 'moderada', 'alta']},
+                    'objetivo': {'type': 'string', 'enum': ['mantener', 'aumentar', 'disminuir']},
+                    'cantidad_comidas': {'type': 'integer'}
+                }
+            }
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'Información actualizada exitosamente',
+            'schema': {'properties': {'message': {'type': 'string'}}}
+        },
+        403: {'description': 'No autorizado - Solo médicos'},
+        404: {'description': 'Paciente no encontrado'}
+    }
+})
+@token_required
+
 @token_required
 def update_patient_info(current_user, patient_id):
 
@@ -257,6 +390,31 @@ def update_patient_info(current_user, patient_id):
     return jsonify({'message': 'Información personal actualizada exitosamente'}), 200
 #--------------------------------------------------Validar token -----------------------------------------------------------------
 @usuarios_bp.route('/validar-token', methods=['GET'])
+@swag_from({
+    'tags': ['Usuarios'],
+    'description': 'Validar token JWT y obtener información del usuario',
+    'security': [{'Bearer': []}],
+    'responses': {
+        200: {
+            'description': 'Token válido e información del usuario',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'message': {'type': 'string'},
+                    'usuario': {'type': 'string'},
+                    'rol': {'type': 'integer'},
+                    'id': {'type': 'integer'},
+                    'correo': {'type': 'string'},
+                    'nombre': {'type': 'string'},
+                    'apellidopaterno': {'type': 'string'},
+                    'cantidad_comidas': {'type': 'integer'},
+                    'apellidomaterno': {'type': 'string'}
+                }
+            }
+        },
+        401: {'description': 'Token no proporcionado o inválido'}
+    }
+})
 @token_required
 def validar_token(current_user):
     print("Datos del usuario actual:", {
@@ -279,6 +437,33 @@ def validar_token(current_user):
 #--------------------------------------------------Rutas para gestión de usuarios.--------------------------------------------------
 
 @usuarios_bp.route('/usuarios', methods=['GET'])
+@swag_from({
+    'tags': ['Usuarios'],
+    'description': 'Obtener lista de todos los usuarios (solo médicos)',
+    'security': [{'Bearer': []}],
+    'responses': {
+        200: {
+            'description': 'Lista de usuarios obtenida exitosamente',
+            'schema': {
+                'type': 'array',
+                'items': {
+                    'type': 'object',
+                    'properties': {
+                        'id': {'type': 'integer'},
+                        'nombre': {'type': 'string'},
+                        'apellidopaterno': {'type': 'string'},
+                        'apellidomaterno': {'type': 'string'},
+                        'usuario': {'type': 'string'},
+                        'correo': {'type': 'string'},
+                        'rol': {'type': 'integer'},
+                        'verificado': {'type': 'boolean'}
+                    }
+                }
+            }
+        },
+        403: {'description': 'No tiene permiso para acceder a esta ruta'}
+    }
+})
 @token_required
 def get_users(current_user):
     if current_user.rol != 2:
@@ -288,11 +473,42 @@ def get_users(current_user):
     return jsonify([user.to_dict() for user in users]), 200
 
 @usuarios_bp.route('/usuarios/<int:id>', methods=['GET'])
+@swag_from({
+    'tags': ['Usuarios'],
+    'description': 'Obtener información de un usuario específico',
+    'parameters': [{
+        'name': 'id',
+        'in': 'path',
+        'type': 'integer',
+        'required': True,
+        'description': 'ID del usuario'
+    }],
+    'responses': {
+        200: {
+            'description': 'Información del usuario',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'id': {'type': 'integer'},
+                    'nombre': {'type': 'string'},
+                    'apellidopaterno': {'type': 'string'},
+                    'apellidomaterno': {'type': 'string'},
+                    'usuario': {'type': 'string'},
+                    'correo': {'type': 'string'},
+                    'rol': {'type': 'integer'}
+                }
+            }
+        },
+        404: {'description': 'Usuario no encontrado'}
+    }
+})
+
 def get_user(id):
     user = classusuarios.query.get_or_404(id)
     return jsonify(user.to_dict())
 
 @usuarios_bp.route('/usuarios/<int:id>/comidas', methods=['GET'])
+
 @token_required
 def get_comidas(current_user, id):
     if current_user.id != id and current_user.rol != 2:  # Verifica que el usuario actual es el mismo o un admin
@@ -357,167 +573,115 @@ def get_requerimientos_nutricionales(current_user, id):
 
     return jsonify(requerimientos), 200
 
-
-"""
-@usuarios_bp.route('/usuarios', methods=['POST'])
-@token_required
-def create_user(current_user):
-    if current_user.rol != 2:
-        return jsonify({"message": "No tienes permiso para acceder a esta ruta"}), 403
-
-    data = request.json
-    if not data:  # Verifica que se recibió datos
-        return jsonify({"error": "No se recibieron datos"}), 400
-
-    #Calcular imc
-    alturaMetros = data['estatura'] / (100)
-    imc = data['peso'] / (alturaMetros ** 2)
-
-    #Calcular metabolismo basal
-    if data['sexo'] == 'm' or 'M':
-        metabolismobasal = 88.362 + (13.97 * data['peso']) + (4.799 * data['estatura']) - (5.677 * data['edad'])
-    else:
-        metabolismobasal = 447.593 + (9.247 * data['peso']) + (3.098 * data['estatura']) - (4.330 * data['edad'])
-
-    #Calcular requerimiento de agua.
-    requerimientoagua = data['peso'] * 35
-    
-    #Calcular valor numérico de factor de avtividad física
-    if data['actividad'] == "baja":
-        fap = 1.2
-    elif data['actividad'] == "moderada":
-        fap = 1.55
-    elif data['actividad'] == "alta":
-        fap = 1.9
-    else:
-        return jsonify({"error": "Nivel de actividad no válido"})
-    
-    # Calcular Requerimiento Calórico según el objetivo
-    if data['objetivo'] == 'mantener':
-        requerimientocalorico = metabolismobasal * fap
-    elif data['objetivo'] == 'aumentar':
-        requerimientocalorico = metabolismobasal * fap * 1.15
-    elif data['objetivo'] == 'disminuir':
-        requerimientocalorico = metabolismobasal * fap * 1.85
-
-    new_user = classusuarios(
-        apellidopaterno=data['apellidopaterno'],
-        apellidomaterno=data['apellidomaterno'],
-        nombre=data['nombre'],
-        rol=data['rol'],
-        usuario=data['usuario'],
-        correo=data['correo'],
-        peso=data['peso'],
-        estatura=data['estatura'],
-        edad=data['edad'],
-        sexo=data['sexo'],
-        actividad=data['actividad'],
-        metabolismobasal=metabolismobasal,
-        imc=imc,
-        requerimentoagua=requerimientoagua,
-        requerimientocalorico = requerimientocalorico,
-        objetivo=data['objetivo'],
-        cantidad_comidas=data['cantidad_comidas']
-    )
-    new_user.set_password(data['password'])
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify(new_user.to_dict()), 201
-
-@usuarios_bp.route('/usuarios/<int:id>/personaldata', methods=['PUT'])
-#@token_required
-def update_userpersonaldata(id):
-    user = classusuarios.query.get_or_404(id)
-    data = request.json
-
-    if not data:  # Verifica que se recibió datos
-        return jsonify({"error": "No se recibieron datos"}), 400
-
-    user.apellidopaterno = data['apellidopaterno']
-    user.apellidomaterno = data['apellidomaterno']
-    user.nombre = data['nombre']
-    user.peso = data['peso']
-    user.estatura = data['estatura']
-    user.edad = data['edad']
-    user.sexo=data['sexo']
-    user.actividad = data['actividad']
-    user.objetivo = data['objetivo']
-    user.cantidad_comidas = data['cantidad_comidas']
-
-    # Recalcular IMC
-    altura_metros = user.estatura / 100  # Convertir altura a metros
-    user.imc = user.peso / (altura_metros ** 2)
-
-    # Recalcular Metabolismo Basal
-    if user.sexo == 'm' or 'M':
-        user.metabolismobasal = 88.362 + (13.397 * user.peso) + (4.799 * user.estatura) - (5.677 * user.edad)
-    else:
-        user.metabolismobasal = 447.593 + (9.247 * user.peso) + (3.098 * user.estatura) - (4.330 * user.edad)
-
-    # Recalcular Requerimiento de Agua
-    user.requerimentoagua = user.peso * 35
-
-    # Mapear el nivel de actividad física a un factor numérico
-    if user.actividad == 'baja':
-        actividad_factor = 1.2
-    elif user.actividad == 'moderada':
-        actividad_factor = 1.55
-    elif user.actividad == 'alta':
-        actividad_factor = 1.9
-    else:
-        return jsonify({"error": "Nivel de actividad no válido"}), 400
-
-    # Recalcular Requerimiento Calórico según el objetivo
-    if data['objetivo'] == 'mantener':
-        user.requerimientocalorico = user.metabolismobasal * actividad_factor
-    elif data['objetivo'] == 'aumentar':
-        user.requerimientocalorico = user.metabolismobasal * actividad_factor * 1.15
-    elif data['objetivo'] == 'disminuir':
-        user.requerimientocalorico = user.metabolismobasal * actividad_factor * 0.85
-    else:
-        return jsonify({"error": "Objetivo no válido"}), 400
-
-    # Actualizar el campo de objetivo
-    user.objetivo = data['objetivo']
-
-    db.session.commit()
-    return jsonify(user.to_dict())
-
-@usuarios_bp.route('/usuarios/<int:id>/accountdata', methods=['PUT'])
-#@token_required
-def update_accountdata(id):
-    user = classusuarios.query.get_or_404(id)
-    data = request.json
-    user.usuario = data['usuario']
-    user.correo = data['correo']
-    user.rol = data['rol']
-    if 'password' in data and data['password']:
-        user.set_password(data['password'])
-    db.session.commit()
-    return jsonify(user.to_dict())
-
-@usuarios_bp.route('/usuarios/<int:id>', methods=['DELETE'])
-#@token_required
-def delete_user(id):
-    user = classusuarios.query.get_or_404(id)
-    db.session.delete(user)
-    db.session.commit()
-    return '', 204
-"""
 #--------------------------------------------------Rutas para gestión de alimentos.--------------------------------------------------
 alimentos_bp = Blueprint('alimentos' ,__name__)
 #@token_required
 @alimentos_bp.route('/alimentos', methods=['GET'])
+@swag_from({
+    'tags': ['Alimentos'],
+    'description': 'Obtener lista de todos los alimentos',
+    'responses': {
+        200: {
+            'description': 'Lista de alimentos',
+            'schema': {
+                'type': 'array',
+                'items': {
+                    'type': 'object',
+                    'properties': {
+                        'id': {'type': 'integer'},
+                        'nombre': {'type': 'string'},
+                        'porcion': {'type': 'number', 'format': 'float'},
+                        'tipo_porcion': {'type': 'string'},
+                        'proteinas': {'type': 'number', 'format': 'float'},
+                        'carbohidratos': {'type': 'number', 'format': 'float'},
+                        'grasas': {'type': 'number', 'format': 'float'},
+                        'calorias': {'type': 'number', 'format': 'float'}
+                    }
+                }
+            }
+        }
+    }
+})
 def get_alimentos():
     alimentos = classalimentos.query.all()
     return jsonify([alimento.to_dict() for alimento in alimentos])
 
 @alimentos_bp.route('/alimentos/<int:id>', methods=['GET'])
+@swag_from({
+    'tags': ['Alimentos'],
+    'description': 'Obtener detalles de un alimento específico',
+    'parameters': [{
+        'name': 'id',
+        'in': 'path',
+        'type': 'integer',
+        'required': True,
+        'description': 'ID del alimento'
+    }],
+    'responses': {
+        200: {
+            'description': 'Detalles del alimento',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'id': {'type': 'integer'},
+                    'nombre': {'type': 'string'},
+                    'porcion': {'type': 'number', 'format': 'float'},
+                    'tipo_porcion': {'type': 'string'},
+                    'proteinas': {'type': 'number', 'format': 'float'},
+                    'carbohidratos': {'type': 'number', 'format': 'float'},
+                    'grasas': {'type': 'number', 'format': 'float'},
+                    'calorias': {'type': 'number', 'format': 'float'}
+                }
+            }
+        },
+        404: {'description': 'Alimento no encontrado'}
+    }
+})
 def get_alimento(id):
     alimento = classalimentos.query.get_or_404(id)
     return jsonify(alimento.to_dict())
 
 @alimentos_bp.route('/alimentos', methods = ['POST'])
+@swag_from({
+    'tags': ['Alimentos'],
+    'description': 'Crear un nuevo alimento',
+    'parameters': [{
+        'in': 'body',
+        'name': 'alimento',
+        'required': True,
+        'schema': {
+            'type': 'object',
+            'required': ['nombre', 'porcion', 'tipo_porcion', 'proteinas', 'carbohidratos', 'grasas', 'calorias'],
+            'properties': {
+                'nombre': {'type': 'string'},
+                'porcion': {'type': 'number', 'format': 'float'},
+                'tipo_porcion': {'type': 'string', 'enum': ['gramos', 'unidad']},
+                'proteinas': {'type': 'number', 'format': 'float'},
+                'carbohidratos': {'type': 'number', 'format': 'float'},
+                'grasas': {'type': 'number', 'format': 'float'},
+                'calorias': {'type': 'number', 'format': 'float'}
+            }
+        }
+    }],
+    'responses': {
+        201: {
+            'description': 'Alimento creado exitosamente',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'id': {'type': 'integer'},
+                    'nombre': {'type': 'string'},
+                    'porcion': {'type': 'number'},
+                    'tipo_porcion': {'type': 'string'},
+                    'proteinas': {'type': 'number'},
+                    'carbohidratos': {'type': 'number'},
+                    'grasas': {'type': 'number'},
+                    'calorias': {'type': 'number'}
+                }
+            }
+        }
+    }
+})
 def crear_alimento():
     data = request.json
     new_alimento = classalimentos(
@@ -534,6 +698,56 @@ def crear_alimento():
     return jsonify(new_alimento.to_dict()), 201
 
 @alimentos_bp.route('/alimentos/<int:id>', methods=['PUT'])
+@swag_from({
+    'tags': ['Alimentos'],
+    'description': 'Actualizar un alimento existente',
+    'parameters': [
+        {
+            'name': 'id',
+            'in': 'path',
+            'type': 'integer',
+            'required': True,
+            'description': 'ID del alimento'
+        },
+        {
+            'in': 'body',
+            'name': 'alimento',
+            'required': True,
+            'schema': {
+                'type': 'object',
+                'required': ['nombre', 'porcion', 'tipo_porcion', 'proteinas', 'carbohidratos', 'grasas', 'calorias'],
+                'properties': {
+                    'nombre': {'type': 'string'},
+                    'porcion': {'type': 'number', 'format': 'float'},
+                    'tipo_porcion': {'type': 'string', 'enum': ['gramos', 'unidad']},
+                    'proteinas': {'type': 'number', 'format': 'float'},
+                    'carbohidratos': {'type': 'number', 'format': 'float'},
+                    'grasas': {'type': 'number', 'format': 'float'},
+                    'calorias': {'type': 'number', 'format': 'float'}
+                }
+            }
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'Alimento actualizado exitosamente',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'id': {'type': 'integer'},
+                    'nombre': {'type': 'string'},
+                    'porcion': {'type': 'number'},
+                    'tipo_porcion': {'type': 'string'},
+                    'proteinas': {'type': 'number'},
+                    'carbohidratos': {'type': 'number'},
+                    'grasas': {'type': 'number'},
+                    'calorias': {'type': 'number'}
+                }
+            }
+        },
+        404: {'description': 'Alimento no encontrado'}
+    }
+})
 #@token_required
 def update_alimento(id):
     alimento = classalimentos.query.get_or_404(id)
@@ -552,6 +766,21 @@ def update_alimento(id):
     
     
 @alimentos_bp.route('/alimentos/<int:id>', methods = ['DELETE'])
+@swag_from({
+    'tags': ['Alimentos'],
+    'description': 'Eliminar un alimento',
+    'parameters': [{
+        'name': 'id',
+        'in': 'path',
+        'type': 'integer',
+        'required': True,
+        'description': 'ID del alimento'
+    }],
+    'responses': {
+        204: {'description': 'Alimento eliminado exitosamente'},
+        404: {'description': 'Alimento no encontrado'}
+    }
+})
 #@token_required
 def delete_alimento(id):
     alimento = classalimentos.query.get_or_404(id)
@@ -564,6 +793,44 @@ def delete_alimento(id):
 registro_comidas_bp = Blueprint('registro_comidas', __name__)
 
 @registro_comidas_bp.route('/registrar-comida', methods=['POST'])
+@swag_from({
+    'tags': ['Registro de Comidas'],
+    'description': 'Registrar una nueva comida para el usuario',
+    'security': [{'Bearer': []}],
+    'parameters': [{
+        'in': 'body',
+        'name': 'comida',
+        'required': True,
+        'schema': {
+            'type': 'object',
+            'required': ['alimento_id', 'fecha', 'cantidad', 'numero_comida'],
+            'properties': {
+                'alimento_id': {'type': 'integer', 'description': 'ID del alimento'},
+                'fecha': {'type': 'string', 'format': 'date', 'description': 'Fecha en formato YYYY-MM-DD'},
+                'cantidad': {'type': 'number', 'format': 'float', 'description': 'Cantidad consumida'},
+                'numero_comida': {'type': 'integer', 'description': 'Número de comida del día'}
+            }
+        }
+    }],
+    'responses': {
+        201: {
+            'description': 'Comida registrada exitosamente',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'id': {'type': 'integer'},
+                    'usuario_id': {'type': 'integer'},
+                    'alimento_id': {'type': 'integer'},
+                    'fecha': {'type': 'string'},
+                    'cantidad': {'type': 'number'},
+                    'numero_comida': {'type': 'integer'}
+                }
+            }
+        },
+        400: {'description': 'Número de comida inválido'},
+        401: {'description': 'No autorizado'}
+    }
+})
 @token_required
 def registrar_comida(current_user):
     data = request.json
@@ -586,6 +853,39 @@ def registrar_comida(current_user):
     return jsonify(nuevo_registro.to_dict()), 201
 
 @registro_comidas_bp.route('/comidas-diarias/<string:fecha>', methods=['GET'])
+@swag_from({
+    'tags': ['Registro de Comidas'],
+    'description': 'Obtener todas las comidas registradas en una fecha específica',
+    'security': [{'Bearer': []}],
+    'parameters': [{
+        'name': 'fecha',
+        'in': 'path',
+        'type': 'string',
+        'format': 'date',
+        'required': True,
+        'description': 'Fecha en formato YYYY-MM-DD'
+    }],
+    'responses': {
+        200: {
+            'description': 'Lista de comidas del día',
+            'schema': {
+                'type': 'array',
+                'items': {
+                    'type': 'object',
+                    'properties': {
+                        'id': {'type': 'integer'},
+                        'usuario_id': {'type': 'integer'},
+                        'alimento_id': {'type': 'integer'},
+                        'fecha': {'type': 'string'},
+                        'cantidad': {'type': 'number'},
+                        'numero_comida': {'type': 'integer'}
+                    }
+                }
+            }
+        },
+        401: {'description': 'No autorizado'}
+    }
+})
 @token_required
 def obtener_comidas_diarias(current_user, fecha):
     fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
@@ -597,6 +897,56 @@ def obtener_comidas_diarias(current_user, fecha):
     
     return jsonify([comida.to_dict() for comida in comidas]), 200
 @registro_comidas_bp.route('/resumen-diario/<string:fecha>', methods=['GET'])
+@swag_from({
+    'tags': ['Registro de Comidas'],
+    'description': 'Obtener resumen diario de alimentación',
+    'security': [{'Bearer': []}],
+    'parameters': [{
+        'name': 'fecha',
+        'in': 'path',
+        'type': 'string',
+        'format': 'date',
+        'required': True,
+        'description': 'Fecha en formato YYYY-MM-DD'
+    }],
+    'responses': {
+        200: {
+            'description': 'Resumen diario de alimentación',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'fecha': {'type': 'string'},
+                    'desglose_por_alimento': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'object',
+                            'properties': {
+                                'id': {'type': 'integer'},
+                                'numero_comida': {'type': 'integer'},
+                                'alimento': {'type': 'string'},
+                                'cantidad': {'type': 'number'},
+                                'proteinas': {'type': 'number'},
+                                'carbohidratos': {'type': 'number'},
+                                'grasas': {'type': 'number'},
+                                'calorias': {'type': 'number'}
+                            }
+                        }
+                    },
+                    'totales_del_dia': {
+                        'type': 'object',
+                        'properties': {
+                            'proteinas_totales': {'type': 'number'},
+                            'carbohidratos_totales': {'type': 'number'},
+                            'grasas_totales': {'type': 'number'},
+                            'calorias_totales': {'type': 'number'}
+                        }
+                    }
+                }
+            }
+        },
+        401: {'description': 'No autorizado'}
+    }
+})
 @token_required
 def resumen_diario(current_user, fecha):
     fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
@@ -657,6 +1007,34 @@ def resumen_diario(current_user, fecha):
     return jsonify(resumen), 200
 
 @registro_comidas_bp.route('/macronutrientes-diarios/<string:fecha>', methods=['GET'])
+@swag_from({
+    'tags': ['Registro de Comidas'],
+    'description': 'Obtener totales de macronutrientes para una fecha específica',
+    'security': [{'Bearer': []}],
+    'parameters': [{
+        'name': 'fecha',
+        'in': 'path',
+        'type': 'string',
+        'format': 'date',
+        'required': True,
+        'description': 'Fecha en formato YYYY-MM-DD'
+    }],
+    'responses': {
+        200: {
+            'description': 'Totales de macronutrientes',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'proteinas_totales': {'type': 'number', 'format': 'float'},
+                    'carbohidratos_totales': {'type': 'number', 'format': 'float'},
+                    'grasas_totales': {'type': 'number', 'format': 'float'},
+                    'calorias_totales': {'type': 'number', 'format': 'float'}
+                }
+            }
+        },
+        401: {'description': 'No autorizado'}
+    }
+})
 @token_required
 def obtener_macronutrientes_diarios(current_user, fecha):
     fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
@@ -681,6 +1059,54 @@ def obtener_macronutrientes_diarios(current_user, fecha):
     }), 200
 
 @registro_comidas_bp.route('/actualizar-comida/<int:registro_id>', methods=['PUT'])
+@swag_from({
+    'tags': ['Registro de Comidas'],
+    'description': 'Actualizar un registro de comida existente',
+    'security': [{'Bearer': []}],
+    'parameters': [
+        {
+            'name': 'registro_id',
+            'in': 'path',
+            'type': 'integer',
+            'required': True,
+            'description': 'ID del registro de comida'
+        },
+        {
+            'in': 'body',
+            'name': 'comida',
+            'required': True,
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'alimento_id': {'type': 'integer'},
+                    'fecha': {'type': 'string', 'format': 'date'},
+                    'cantidad': {'type': 'number', 'format': 'float'},
+                    'numero_comida': {'type': 'integer'}
+                }
+            }
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'Registro actualizado exitosamente',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'id': {'type': 'integer'},
+                    'usuario_id': {'type': 'integer'},
+                    'alimento_id': {'type': 'integer'},
+                    'fecha': {'type': 'string'},
+                    'cantidad': {'type': 'number'},
+                    'numero_comida': {'type': 'integer'}
+                }
+            }
+        },
+        400: {'description': 'Número de comida inválido'},
+        401: {'description': 'No autorizado'},
+        403: {'description': 'No tienes permiso para modificar este registro'},
+        404: {'description': 'Registro no encontrado'}
+    }
+})
 @token_required
 def actualizar_comida(current_user, registro_id):
     registro = RegistroComidas.query.get_or_404(registro_id)
@@ -711,6 +1137,32 @@ def actualizar_comida(current_user, registro_id):
     return jsonify(registro.to_dict()), 200
 
 @registro_comidas_bp.route('/eliminar-comida/<int:registro_id>', methods=['DELETE'])
+@swag_from({
+    'tags': ['Registro de Comidas'],
+    'description': 'Eliminar un registro de comida',
+    'security': [{'Bearer': []}],
+    'parameters': [{
+        'name': 'registro_id',
+        'in': 'path',
+        'type': 'integer',
+        'required': True,
+        'description': 'ID del registro de comida'
+    }],
+    'responses': {
+        200: {
+            'description': 'Registro eliminado exitosamente',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'message': {'type': 'string'}
+                }
+            }
+        },
+        401: {'description': 'No autorizado'},
+        403: {'description': 'No tienes permiso para eliminar este registro'},
+        404: {'description': 'Registro no encontrado'}
+    }
+})
 @token_required
 def eliminar_comida(current_user, registro_id):
     registro = RegistroComidas.query.get_or_404(registro_id)
@@ -726,6 +1178,51 @@ def eliminar_comida(current_user, registro_id):
 
 # Añade esto en routes.py
 @registro_comidas_bp.route('/registrar-agua', methods=['POST'])
+@swag_from({
+    'tags': ['Registro de Agua'],
+    'description': 'Registrar o actualizar consumo de agua',
+    'security': [{'Bearer': []}],
+    'parameters': [{
+        'in': 'body',
+        'name': 'agua',
+        'required': True,
+        'schema': {
+            'type': 'object',
+            'required': ['fecha', 'cantidad'],
+            'properties': {
+                'fecha': {'type': 'string', 'format': 'date', 'description': 'Fecha en formato YYYY-MM-DD'},
+                'cantidad': {'type': 'integer', 'description': 'Cantidad en ml'}
+            }
+        }
+    }],
+    'responses': {
+        200: {
+            'description': 'Registro de agua actualizado',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'id': {'type': 'integer'},
+                    'usuario_id': {'type': 'integer'},
+                    'fecha': {'type': 'string'},
+                    'cantidad': {'type': 'integer'}
+                }
+            }
+        },
+        201: {
+            'description': 'Nuevo registro de agua creado',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'id': {'type': 'integer'},
+                    'usuario_id': {'type': 'integer'},
+                    'fecha': {'type': 'string'},
+                    'cantidad': {'type': 'integer'}
+                }
+            }
+        },
+        401: {'description': 'No autorizado'}
+    }
+})  
 @token_required
 def registrar_agua(current_user):
     data = request.json
@@ -754,6 +1251,31 @@ def registrar_agua(current_user):
         return jsonify(nuevo_registro.to_dict()), 201
 
 @registro_comidas_bp.route('/agua-diaria/<string:fecha>', methods=['GET'])
+@swag_from({
+    'tags': ['Registro de Agua'],
+    'description': 'Obtener registro de agua para una fecha específica',
+    'security': [{'Bearer': []}],
+    'parameters': [{
+        'name': 'fecha',
+        'in': 'path',
+        'type': 'string',
+        'format': 'date',
+        'required': True,
+        'description': 'Fecha en formato YYYY-MM-DD'
+    }],
+    'responses': {
+        200: {
+            'description': 'Registro de agua del día',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'cantidad': {'type': 'integer', 'description': 'Cantidad en ml'}
+                }
+            }
+        },
+        401: {'description': 'No autorizado'}
+    }
+})
 @token_required
 def obtener_agua_diaria(current_user, fecha):
     fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
@@ -770,6 +1292,66 @@ def obtener_agua_diaria(current_user, fecha):
     
 
 @registro_comidas_bp.route('/<int:patient_id>/resumen-diario/<string:fecha>', methods=['GET'])
+@swag_from({
+    'tags': ['Registro de Comidas'],
+    'description': 'Obtener resumen diario de alimentación de un paciente (solo para médicos)',
+    'security': [{'Bearer': []}],
+    'parameters': [
+        {
+            'name': 'patient_id',
+            'in': 'path',
+            'type': 'integer',
+            'required': True,
+            'description': 'ID del paciente'
+        },
+        {
+            'name': 'fecha',
+            'in': 'path',
+            'type': 'string',
+            'format': 'date',
+            'required': True,
+            'description': 'Fecha en formato YYYY-MM-DD'
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'Resumen diario del paciente',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'fecha': {'type': 'string'},
+                    'desglose_por_alimento': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'object',
+                            'properties': {
+                                'id': {'type': 'integer'},
+                                'numero_comida': {'type': 'integer'},
+                                'alimento': {'type': 'string'},
+                                'cantidad': {'type': 'number'},
+                                'proteinas': {'type': 'number'},
+                                'carbohidratos': {'type': 'number'},
+                                'grasas': {'type': 'number'},
+                                'calorias': {'type': 'number'}
+                            }
+                        }
+                    },
+                    'totales_del_dia': {
+                        'type': 'object',
+                        'properties': {
+                            'proteinas_totales': {'type': 'number'},
+                            'carbohidratos_totales': {'type': 'number'},
+                            'grasas_totales': {'type': 'number'},
+                            'calorias_totales': {'type': 'number'}
+                        }
+                    }
+                }
+            }
+        },
+        401: {'description': 'No autorizado'},
+        403: {'description': 'No autorizado - Solo médicos pueden acceder'}
+    }
+})
 @token_required
 def resumen_diario_paciente(current_user, patient_id, fecha):
     # Verificar que el usuario actual es un médico
@@ -840,6 +1422,27 @@ def resumen_diario_paciente(current_user, patient_id, fecha):
 
 
 @usuarios_bp.route('/settings', methods=['GET'])
+@swag_from({
+    'tags': ['Usuarios'],
+    'description': 'Obtener configuración del usuario actual',
+    'security': [{'Bearer': []}],
+    'responses': {
+        200: {
+            'description': 'Configuración del usuario',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'nombre': {'type': 'string'},
+                    'apellidopaterno': {'type': 'string'},
+                    'apellidomaterno': {'type': 'string'},
+                    'edad': {'type': 'integer'},
+                    'usuario': {'type': 'string'}
+                }
+            }
+        },
+        401: {'description': 'No autorizado'}
+    }
+})
 @token_required
 def get_settings(current_user):
     user_data = {
@@ -852,6 +1455,40 @@ def get_settings(current_user):
     return jsonify(user_data), 200
 
 @usuarios_bp.route('/settings/personal', methods=['PUT'])
+@swag_from({
+    'tags': ['Usuarios'],
+    'description': 'Actualizar información personal del usuario',
+    'security': [{'Bearer': []}],
+    'parameters': [{
+        'in': 'body',
+        'name': 'data',
+        'required': True,
+        'schema': {
+            'type': 'object',
+            'required': ['nombre', 'apellidopaterno', 'apellidomaterno', 'edad', 'usuario'],
+            'properties': {
+                'nombre': {'type': 'string'},
+                'apellidopaterno': {'type': 'string'},
+                'apellidomaterno': {'type': 'string'},
+                'edad': {'type': 'integer'},
+                'usuario': {'type': 'string'}
+            }
+        }
+    }],
+    'responses': {
+        200: {
+            'description': 'Información actualizada correctamente',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'message': {'type': 'string'}
+                }
+            }
+        },
+        400: {'description': 'Nombre de usuario ya existe'},
+        401: {'description': 'No autorizado'}
+    }
+})
 @token_required
 def update_personal_settings(current_user):
     data = request.json
@@ -894,6 +1531,54 @@ def update_password(current_user):
 
 # En routes.py
 @personal_info_bp.route('/historial/<int:patient_id>', methods=['GET'])
+@swag_from({
+    'tags': ['Información Personal'],
+    'description': 'Obtener historial médico del paciente (solo médicos)',
+    'security': [{'Bearer': []}],
+    'parameters': [{
+        'name': 'patient_id',
+        'in': 'path',
+        'type': 'integer',
+        'required': True
+    }],
+    'responses': {
+        200: {
+            'description': 'Historial médico del paciente',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'registros_medicos': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'object',
+                            'properties': {
+                                'fecha': {'type': 'string', 'format': 'date'},
+                                'peso': {'type': 'number'},
+                                'imc': {'type': 'number'},
+                                'observaciones': {'type': 'string'}
+                            }
+                        }
+                    },
+                    'resumen_comidas': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'object',
+                            'properties': {
+                                'semana': {'type': 'string'},
+                                'proteinas_promedio': {'type': 'number'},
+                                'carbohidratos_promedio': {'type': 'number'},
+                                'grasas_promedio': {'type': 'number'},
+                                'calorias_promedio': {'type': 'number'}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        403: {'description': 'No autorizado - Solo médicos'},
+        404: {'description': 'Paciente no encontrado'}
+    }
+})
 @token_required
 def get_historial(current_user, patient_id):
     if current_user.rol != 2:
@@ -958,6 +1643,34 @@ def crear_registro_medico(current_user):
 
 admin_bp = Blueprint('admin', __name__)
 @admin_bp.route('/admin/users', methods=['GET'])
+@swag_from({
+    'tags': ['Administración'],
+    'description': 'Obtener lista de todos los usuarios (solo administradores)',
+    'security': [{'Bearer': []}],
+    'responses': {
+        200: {
+            'description': 'Lista de usuarios',
+            'schema': {
+                'type': 'array',
+                'items': {
+                    'type': 'object',
+                    'properties': {
+                        'id': {'type': 'integer'},
+                        'nombre': {'type': 'string'},
+                        'apellidopaterno': {'type': 'string'},
+                        'apellidomaterno': {'type': 'string'},
+                        'usuario': {'type': 'string'},
+                        'correo': {'type': 'string'},
+                        'rol': {'type': 'integer', 'description': '1=Admin, 2=Doctor, 3=Paciente'},
+                        'verificado': {'type': 'boolean'}
+                    }
+                }
+            }
+        },
+        401: {'description': 'No autorizado'},
+        403: {'description': 'No autorizado - Solo administradores'}
+    }
+})
 @token_required
 def get_all_users(current_user):
     if current_user.rol != 1:
@@ -978,6 +1691,43 @@ def get_all_users(current_user):
 # En routes.py
 
 @admin_bp.route('/admin/users', methods=['POST'])
+@swag_from({
+    'tags': ['Administración'],
+    'description': 'Crear nuevo usuario (solo administradores)',
+    'security': [{'Bearer': []}],
+    'parameters': [{
+        'in': 'body',
+        'name': 'user',
+        'required': True,
+        'schema': {
+            'type': 'object',
+            'required': ['nombre', 'apellidopaterno', 'apellidomaterno', 'usuario', 'correo', 'password', 'rol'],
+            'properties': {
+                'nombre': {'type': 'string'},
+                'apellidopaterno': {'type': 'string'},
+                'apellidomaterno': {'type': 'string'},
+                'usuario': {'type': 'string'},
+                'correo': {'type': 'string', 'format': 'email'},
+                'password': {'type': 'string'},
+                'rol': {'type': 'integer', 'description': '1=Admin, 2=Doctor, 3=Paciente'}
+            }
+        }
+    }],
+    'responses': {
+        201: {
+            'description': 'Usuario creado exitosamente',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'message': {'type': 'string'}
+                }
+            }
+        },
+        400: {'description': 'Usuario o correo ya existe'},
+        401: {'description': 'No autorizado'},
+        403: {'description': 'No autorizado - Solo administradores'}
+    }
+})
 @token_required
 def create_user(current_user):
     if current_user.rol != 1:
@@ -1007,6 +1757,52 @@ def create_user(current_user):
     return jsonify({'message': 'Usuario creado correctamente'}), 201
 
 @admin_bp.route('/admin/users/<int:user_id>', methods=['PUT'])
+@swag_from({
+    'tags': ['Administración'],
+    'description': 'Actualizar usuario existente (solo administradores)',
+    'security': [{'Bearer': []}],
+    'parameters': [
+        {
+            'name': 'user_id',
+            'in': 'path',
+            'type': 'integer',
+            'required': True,
+            'description': 'ID del usuario'
+        },
+        {
+            'in': 'body',
+            'name': 'user',
+            'required': True,
+            'schema': {
+                'type': 'object',
+                'required': ['nombre', 'apellidopaterno', 'apellidomaterno', 'usuario', 'correo', 'rol'],
+                'properties': {
+                    'nombre': {'type': 'string'},
+                    'apellidopaterno': {'type': 'string'},
+                    'apellidomaterno': {'type': 'string'},
+                    'usuario': {'type': 'string'},
+                    'correo': {'type': 'string', 'format': 'email'},
+                    'rol': {'type': 'integer', 'description': '1=Admin, 2=Doctor, 3=Paciente'}
+                }
+            }
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'Usuario actualizado exitosamente',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'message': {'type': 'string'}
+                }
+            }
+        },
+        400: {'description': 'Usuario o correo ya existe'},
+        401: {'description': 'No autorizado'},
+        403: {'description': 'No autorizado - Solo administradores'},
+        404: {'description': 'Usuario no encontrado'}
+    }
+})
 @token_required
 def update_user(current_user, user_id):
     if current_user.rol != 1:
@@ -1035,6 +1831,47 @@ def update_user(current_user, user_id):
     return jsonify({'message': 'Usuario actualizado correctamente'}), 200
 
 @admin_bp.route('/admin/users/<int:user_id>/verify', methods=['PUT'])
+@swag_from({
+    'tags': ['Administración'],
+    'description': 'Cambiar estado de verificación de un usuario (solo administradores)',
+    'security': [{'Bearer': []}],
+    'parameters': [
+        {
+            'name': 'user_id',
+            'in': 'path',
+            'type': 'integer',
+            'required': True,
+            'description': 'ID del usuario'
+        },
+        {
+            'in': 'body',
+            'name': 'verification',
+            'required': True,
+            'schema': {
+                'type': 'object',
+                'required': ['verificado'],
+                'properties': {
+                    'verificado': {'type': 'boolean'}
+                }
+            }
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'Estado de verificación actualizado',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'message': {'type': 'string'},
+                    'verificado': {'type': 'boolean'}
+                }
+            }
+        },
+        401: {'description': 'No autorizado'},
+        403: {'description': 'No autorizado - Solo administradores'},
+        404: {'description': 'Usuario no encontrado'}
+    }
+})
 @token_required
 def toggle_user_verification(current_user, user_id):
     if current_user.rol != 1:
@@ -1051,6 +1888,33 @@ def toggle_user_verification(current_user, user_id):
     }), 200
 
 @admin_bp.route('/admin/users/<int:user_id>/reset-password', methods=['POST'])
+@swag_from({
+        'tags': ['Administración'],
+    'description': 'Restablecer contraseña de usuario (solo administradores)',
+    'security': [{'Bearer': []}],
+    'parameters': [{
+        'name': 'user_id',
+        'in': 'path',
+        'type': 'integer',
+        'required': True,
+        'description': 'ID del usuario'
+    }],
+    'responses': {
+        200: {
+            'description': 'Contraseña restablecida y enviada por correo',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'message': {'type': 'string'}
+                }
+            }
+        },
+        401: {'description': 'No autorizado'},
+        403: {'description': 'No autorizado - Solo administradores'},
+        404: {'description': 'Usuario no encontrado'}
+    }
+})
+
 @token_required
 def reset_user_password(current_user, user_id):
     if current_user.rol != 1:
@@ -1073,6 +1937,33 @@ def reset_user_password(current_user, user_id):
     return jsonify({'message': 'Contraseña reseteada y enviada por correo'}), 200
 
 @admin_bp.route('/admin/users/<int:user_id>', methods=['DELETE'])
+@swag_from({
+    'tags': ['Administración'],
+    'description': 'Eliminar usuario (solo administradores)',
+    'security': [{'Bearer': []}],
+    'parameters': [{
+        'name': 'user_id',
+        'in': 'path',
+        'type': 'integer',
+        'required': True,
+        'description': 'ID del usuario'
+    }],
+    'responses': {
+        200: {
+            'description': 'Usuario eliminado exitosamente',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'message': {'type': 'string'}
+                }
+            }
+        },
+        400: {'description': 'No se puede eliminar el propio usuario'},
+        401: {'description': 'No autorizado'},
+        403: {'description': 'No autorizado - Solo administradores'},
+        404: {'description': 'Usuario no encontrado'}
+    }
+})
 @token_required
 def delete_user(current_user, user_id):
     if current_user.rol != 1:
@@ -1088,6 +1979,28 @@ def delete_user(current_user, user_id):
     return jsonify({'message': 'Usuario eliminado correctamente'}), 200
 
 @admin_bp.route('/admin/stats', methods=['GET'])
+@swag_from({
+    'tags': ['Administración'],
+    'description': 'Obtener estadísticas generales (solo administradores)',
+    'security': [{'Bearer': []}],
+    'responses': {
+        200: {
+            'description': 'Estadísticas del sistema',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'totalUsers': {'type': 'integer'},
+                    'totalDoctors': {'type': 'integer'},
+                    'totalPatients': {'type': 'integer'},
+                    'verifiedUsers': {'type': 'integer'},
+                    'totalFoods': {'type': 'integer'}
+                }
+            }
+        },
+        401: {'description': 'No autorizado'},
+        403: {'description': 'No autorizado - Solo administradores'}
+    }
+})
 @token_required
 def get_admin_stats(current_user):
     if current_user.rol != 1:
@@ -1110,6 +2023,40 @@ def get_admin_stats(current_user):
 
 
 @personal_info_bp.route('/generar-reporte/<int:patient_id>', methods=['POST'])
+@swag_from({
+    'tags': ['Información Personal'],
+    'description': 'Generar reporte médico en PDF (solo médicos)',
+    'security': [{'Bearer': []}],
+    'parameters': [
+        {
+            'name': 'patient_id',
+            'in': 'path',
+            'type': 'integer',
+            'required': True
+        },
+        {
+            'in': 'body',
+            'name': 'dates',
+            'required': True,
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'startDate': {'type': 'string', 'format': 'date'},
+                    'endDate': {'type': 'string', 'format': 'date'}
+                }
+            }
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'Reporte PDF generado exitosamente',
+            'content': {'application/pdf': {}}
+        },
+        403: {'description': 'No autorizado - Solo médicos'},
+        404: {'description': 'Paciente no encontrado'},
+        500: {'description': 'Error al generar el reporte'}
+    }
+})
 @token_required
 def generar_reporte(current_user, patient_id):
     if current_user.rol != 2:

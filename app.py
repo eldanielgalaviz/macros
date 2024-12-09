@@ -5,9 +5,11 @@ from config import Config
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_cors import CORS
+from flasgger import Swagger
 
 # Crear la aplicación Flask
 app = Flask(__name__)
+swagger = Swagger(app)
 
 # Configuración de CORS
 CORS(app, resources={
