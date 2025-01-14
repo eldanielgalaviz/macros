@@ -8,7 +8,7 @@ import { ActivityService } from '../activity.service';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './actividad.component.html',
-  styleUrl: './actividad.component.css'
+  styleUrls: ['./actividad.component.css']
 })
 export class ActividadComponent {
   constructor(private activityService: ActivityService, private router: Router) {}

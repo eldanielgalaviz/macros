@@ -11,7 +11,7 @@ import { FooterComponent } from '../footer/footer.component';
     FooterComponent
   ],
   templateUrl: './micuenta.component.html',
-  styleUrl: './micuenta.component.css'
+  styleUrls: ['./micuenta.component.css']
 })
 export class MicuentaComponent {
 

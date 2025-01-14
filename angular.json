@@ -34,8 +34,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "2mb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -46,10 +46,12 @@
               "outputHashing": "all"
             },
             "development": {
+              "buildOptimizer": false,
               "optimization": false,
-              "sourceMap": true,
+              "vendorChunk": true,
               "extractLicenses": false,
-              "vendorChunk": true
+              "sourceMap": true,
+              "namedChunks": true
             }
           },
           "defaultConfiguration": "production"
@@ -58,10 +60,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "nutri:build:production"
+              "browserTarget": "nutri:build:production"
             },
             "development": {
-              "buildTarget": "nutri:build:development"
+              "browserTarget": "nutri:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -69,7 +71,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "nutri:build"
+            "browserTarget": "nutri:build"
           }
         },
         "test": {
@@ -94,6 +96,6 @@
     }
   },
   "cli": {
-    "analytics": "46ab6913-01ba-403f-b18f-41da06a58c45"
+    "analytics": "a8ac9f76-d56d-424a-b8a7-f628bd3139ca"
   }
 }

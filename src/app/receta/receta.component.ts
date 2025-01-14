@@ -7,7 +7,7 @@ import { NgForm, FormsModule } from '@angular/forms';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './receta.component.html',
-  styleUrl: './receta.component.css'
+  styleUrls: ['./receta.component.css']
 })
 export class RecetaComponent {
   constructor( private router: Router){}
