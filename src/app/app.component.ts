@@ -12,7 +12,7 @@ import { RecetaComponent } from './receta/receta.component';
 import { CalendarComponent } from './calendar/calendar.component';
 import { FooterComponent } from './footer/footer.component';
 import { MicuentaComponent } from './micuenta/micuenta.component';
-
+  
 @Component({
   selector: 'app-root',
   standalone: true,
